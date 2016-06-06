@@ -1,0 +1,1 @@
+sandboxフォルダはgit/githubの練習用です。
