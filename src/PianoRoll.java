@@ -3,9 +3,9 @@ import javafx.scene.shape.Rectangle;
 
 public class PianoRoll extends Group {
 	public static final int WHITE_KEY_WIDTH = 160;
-	public static final int WHITE_KEY_HEIGHT = 30;
+	public static final int WHITE_KEY_HEIGHT = 32;
 	public static final int BLACK_KEY_WIDTH = 100;
-	public static final int BLACK_KEY_HEIGHT = 20;
+	public static final int BLACK_KEY_HEIGHT = 16;
 
 	private Rectangle[] whiteKey;
 	private Rectangle[] blackKey;
@@ -17,7 +17,7 @@ public class PianoRoll extends Group {
 	}
 
 	public void createWhiteKeyBoard() {
-		int[] y = {0, 30, 60, 90, 120, 150, 180, 210};
+		int[] y = {0, 32, 64, 96, 128, 160, 192, 224};
 		this.whiteKey = new Rectangle[8];
 		for(int n = 0; n < 8; n++) {
 			this.whiteKey[n] = new Rectangle(0, y[n], WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT);
@@ -33,7 +33,7 @@ public class PianoRoll extends Group {
 	}
 
 	public void createBlackKeyBoard() {
-		int[] y = {50, 80, 110, 170, 200};
+		int[] y = {56, 88, 120, 184, 216};
 		this.blackKey = new Rectangle[5];
 		for(int n = 0; n < 5; n++) {
 			this.blackKey[n] = new Rectangle(0, y[n], BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT);
