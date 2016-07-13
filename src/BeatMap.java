@@ -1,45 +1,52 @@
+/*
+ * 拍のマップを表すクラス.
+ */
+
 import javafx.scene.Group;
 import javafx.scene.shape.Rectangle;
 
 public class BeatMap extends Group {
-	public static final int BEAT_MAP_WIDTH = 40;
-	public static final int BEAT_MAP_HEIGHT = 256;
+	public static final String DEFAULT_STYLE = "-fx-fill: null;-fx-stroke: #888888;-fx-stroke-type: outside;-fx-arc-width: 0;-fx-arc-height: 0;";
+	public static final int BEAT_MAP_WIDTH   = 40;
+	public static final int BEAT_MAP_HEIGHT  = 144;
+	public static final int INTERVAL_NUM     = 12;
+	public static final int[] INTERVAL_Y     = {0, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132};
+	public static final String[] INTERVAL    = {"B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"};
 
-	private int number;
-	private NoteMap[] noteMap;
+	private MeasureMap parent; // 自身が含まれている小節マップオブジェクトを親として持つ
+	private int beat;          // 自身の拍番号
+	private IntervalMap[] intervalMap;
 	private Rectangle region;
 
-	public BeatMap(int number, int x, int y) {
+	public BeatMap(MeasureMap parent, int beat, int x, int y) {
 		super();
-		this.number = number;
 		this.setLayoutX(x);
 		this.setLayoutY(y);
-		this.createNoteMap();
+		this.createIntervalMap();
 		this.createRegion();
+		this.parent = parent;
+		this.beat   = beat;
 	}
 
-	public void createNoteMap() {
-		int[] y = {0, 32, 56, 72, 88, 104, 120, 136, 160, 184, 200, 216, 232};
-		this.noteMap = new NoteMap[13];
-		for(int n = 0; n < 13; n++) {
-			if(n == 0) this.noteMap[n] = new NoteMap(0, y[n], 40, 32);
-			else if(n == 1 || n == 7 || n == 8 || n == 12) this.noteMap[n] = new NoteMap(0, y[n], 40, 24);
-			else this.noteMap[n] = new NoteMap(0, y[n], 40, 16);
-			this.getChildren().add(this.noteMap[n]);
+	public void createIntervalMap() {
+		this.intervalMap = new IntervalMap[INTERVAL_NUM];
+		for(int n = 0; n < INTERVAL_NUM; n++) {
+			if(INTERVAL[n].contains("#") || INTERVAL[n].contains("♭")) { // 黒鍵の音程
+				this.intervalMap[n] = new IntervalMap(this, INTERVAL[n], "#DDDDDD", 0, INTERVAL_Y[n]);
+			} else { // 白鍵の音程
+				this.intervalMap[n] = new IntervalMap(this, INTERVAL[n], "#FFFFFF", 0, INTERVAL_Y[n]);
+			}
+			this.getChildren().add(this.intervalMap[n]);
 		}
 	}
 
 	public void createRegion() {
 		this.region = new Rectangle(0, 0, BEAT_MAP_WIDTH, BEAT_MAP_HEIGHT);
-		this.region.setStyle(
-			"-fx-fill: null;"
-			+ "-fx-stroke: #AAAAAA;"
-			+ "-fx-stroke-type: outside;"
-			+ "-fx-arc-width: 0;"
-			+ "-fx-arc-height: 0;"
-		);
+		this.region.setStyle(DEFAULT_STYLE);
 		this.getChildren().add(this.region);
 	}
 
-	public int getNumber() { return this.number; }
+	public int getOctave()  { return this.parent.getOctave(); }
+	public int getMeasure() { return this.parent.getMeasure(); }
+	public int getBeat()    { return this.beat; }
 }

@@ -1,11 +1,15 @@
+/*
+ * システムを実行するMainクラス.
+ */
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	public static final int CLIENT_AREA_WIDTH = 860;
-	public static final int CLIENT_AREA_HEIGHT = 300;
-	public static final int WINDOW_OFFSET_WIDTH = 8;
+	public static final int CLIENT_AREA_WIDTH    = 860;
+	public static final int CLIENT_AREA_HEIGHT   = 300;
+	public static final int WINDOW_OFFSET_WIDTH  = 8;
 	public static final int WINDOW_OFFSET_HEIGHT = 34;
 
 	@Override
