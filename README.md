@@ -17,8 +17,10 @@ sandboxフォルダはgit/githubの練習用です。
 DAWエンジン全体
 - SetBPM(int bpm)
 - NewProject()
-- OpenProject(String filename)
+- OpenProject(String filename)  
+現状は.MIDファイルが読み込める。（いずれ付加的情報も読むようにするかも）
 - SaveProject(String filename)
+現状は.MIDファイルが書き込める。
 - CloseProject()
 
 #### daw.controller
