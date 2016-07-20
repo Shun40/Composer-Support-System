@@ -67,7 +67,7 @@ public class DawRunner {
 					daw.track[0].NoteOff(72);
 					break;
 				case 'q':
-					daw.Close();
+					daw.CloseProject();
 					System.out.println("Bye!");
 					loop = false;
 					break;

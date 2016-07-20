@@ -29,10 +29,6 @@ public class DAW {
 		}
 	}
 
-	public void Close() {
-		controller.Close();
-	}
-
 	public void SetBPM(float bpm) {
 		sequencer_.setTempoInBPM(bpm);
 	}
@@ -75,7 +71,7 @@ public class DAW {
 	}
 
 	public void CloseProject() {
-		NewProject();
+		controller.Close();
 	}
 
 }

@@ -26,7 +26,7 @@ public class Controller {
 		if (sequencer_.isRunning()) {
 			sequencer_.stop();
 		}
-		sequencer_.setTickPosition(0);
+		sequencer_.setTickPosition(0); // move to start point
 	}
 	
 	public void Pause() {
@@ -36,7 +36,8 @@ public class Controller {
 	}
 	
 	public void Restart() {
-		
+		Stop();
+		Start();
 	}
 	
 	public void Close() {

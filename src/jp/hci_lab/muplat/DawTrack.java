@@ -33,6 +33,7 @@ public class DawTrack {
 		channel_.noteOff(note_no);
 	}
 
+	// publicにするか要検討
 	public void AddMidiEvent(MidiEvent e) {
 		track_.add(e);
 	}
