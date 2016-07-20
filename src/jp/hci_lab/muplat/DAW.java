@@ -12,32 +12,22 @@ public class DAW {
 	public Mixer mixer;
 	public Score score;
 	public Config config;
+	public Track track[] = new Track[16];
 	
 	DAW() {
 		try {
 			Sequencer sequencer = MidiSystem.getSequencer();
 			controller = new Controller(sequencer);
 
+			score = new Score(this);
+			
 		     // TicksPerBeatに480を指定
 		     Sequence sequence = new Sequence(Sequence.PPQ, 480);			
-			
 		      // トラックを生成
-		      Track track = sequence.createTrack();
-
-		      // ノートオンイベントの生成
-		      ShortMessage noteOn = new ShortMessage();
-		      noteOn.setMessage(ShortMessage.NOTE_ON, 60, 127);
-		      MidiEvent e1 = new MidiEvent(noteOn, 480);
-
-		      // ノートオフイベントの生成
-		      ShortMessage noteOff = new ShortMessage();
-		      noteOff.setMessage(ShortMessage.NOTE_OFF, 60, 0);
-		      MidiEvent e2 = new MidiEvent(noteOff, 960);
-
-		      // イベントをトラックに追加する
-		      track.add(e1);
-		      track.add(e2);
-
+		     for (int i = 0; i < 16; i++) {
+		    	 track[i] = sequence.createTrack();
+		     }
+		    	 
 		      // シーケンスをシーケンサに追加する
 		      sequencer.setSequence(sequence);
 

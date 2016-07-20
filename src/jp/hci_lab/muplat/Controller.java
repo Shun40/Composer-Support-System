@@ -5,24 +5,24 @@ import javax.sound.midi.Sequencer;
 
 public class Controller {
 
-	private Sequencer sequencer;
+	private Sequencer sequencer_;
 	
 	Controller(Sequencer seq) {
-		sequencer = seq;
+		sequencer_ = seq;
 	}
 	
 	public void Start() {
 		try {
 	      // 演奏開始
-	      sequencer.open();
-	      sequencer.start();
+	      sequencer_.open();
+	      sequencer_.start();
 	
 	      // 標準入力でブロック
 	      System.in.read();
 	
 	      // 終了
-	      sequencer.stop();
-	      sequencer.close();
+	      sequencer_.stop();
+	      sequencer_.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
