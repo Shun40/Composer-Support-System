@@ -26,17 +26,34 @@ public class DawRunner {
 
 			boolean loop = true;
 			while (loop) {
-				System.out.println("[p:Play  m:Midi t:Stop  o:NoteOn  f:NoteOff  q:quit]");
+				System.out.println("[p:Play  m:FileLoad  s:FileSave  t:Stop  ' ':Pause  o:NoteOn  f:NoteOff  q:quit]");
 				System.out.print("> ");
 				int c = System.in.read();		
 
 				switch (c) {
+				case '0':
+					daw.track[0].SetInstrument(0);
+					break;
+				case '1':
+					daw.track[0].SetInstrument(1);
+					break;
+				case '2':
+					daw.track[0].SetInstrument(2);
+					break;
+				case '3':
+					daw.track[0].SetInstrument(3);
+					break;
+				case '4':
+					daw.track[0].SetInstrument(4);
+					break;
 				case 'p':
 					daw.controller.Start();
 					break;
 				case 'm':
-					daw.PlayMidiFile("spain.mid");
+					daw.OpenProject("spain.mid");
 					break;
+				case 's':
+					daw.SaveProject("save.mid");
 				case 't':
 					daw.controller.Stop();
 					break;

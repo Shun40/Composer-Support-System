@@ -37,4 +37,8 @@ public class DawTrack {
 		track_.add(e);
 	}
 	
+	public void SetInstrument(int n) {
+		channel_.programChange(n);
+	}
+	
 }
