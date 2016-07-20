@@ -16,7 +16,7 @@ public class Score {
 	}
 	
 	public void SetTrack(int track_no) {
-		current_track_ = track_no - 1;
+		current_track_ = track_no;
 	}
 	
 	public void AddNote(int position, int note_no, int duration) {
@@ -32,8 +32,8 @@ public class Score {
 		      MidiEvent e2 = new MidiEvent(noteOff, position + duration);
 	
 		      // イベントをトラックに追加する
-		      daw_.track[current_track_].add(e1);
-		      daw_.track[current_track_].add(e2);
+		      daw_.track[current_track_].AddMidiEvent(e1);
+		      daw_.track[current_track_].AddMidiEvent(e2);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

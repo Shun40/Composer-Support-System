@@ -17,19 +17,15 @@ public class Controller {
 	      sequencer_.open();
 	      sequencer_.start();
 	
-	      // 標準入力でブロック
-	      System.in.read();
-	
-	      // 終了
-	      sequencer_.stop();
-	      sequencer_.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void Stop() {
-		
+		// 終了
+		sequencer_.stop();
+		sequencer_.close();		
 	}
 	
 	public void Pause() {
