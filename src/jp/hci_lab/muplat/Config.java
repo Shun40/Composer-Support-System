@@ -1,8 +1,6 @@
 package jp.hci_lab.muplat;
 
+import javax.sound.midi.Sequencer;
+
 public class Config {
-	Controller controller;
-	Mixer mixer;
-	Score score;
-	Config config;	
 }
