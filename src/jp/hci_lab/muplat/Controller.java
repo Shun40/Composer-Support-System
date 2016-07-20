@@ -14,7 +14,7 @@ public class Controller {
 	public void Start() {
 		try {
 	      // 演奏開始
-	      sequencer_.open();
+//	      sequencer_.open();
 	      sequencer_.start();
 	
 		} catch(Exception e) {
@@ -23,18 +23,24 @@ public class Controller {
 	}
 	
 	public void Stop() {
-		// 終了
-		sequencer_.stop();
-		sequencer_.close();		
+		if (sequencer_.isRunning()) {
+			sequencer_.stop();
+		}
+		sequencer_.setTickPosition(0);
 	}
 	
 	public void Pause() {
-		
+		if (sequencer_.isRunning()) {
+			sequencer_.stop();
+		}
 	}
 	
 	public void Restart() {
 		
 	}
 	
+	public void Close() {
+		sequencer_.close();
+	}
 	
 }
