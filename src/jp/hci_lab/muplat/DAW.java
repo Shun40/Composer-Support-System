@@ -18,6 +18,7 @@ public class DAW {
 		try {
 			sequencer_ = MidiSystem.getSequencer();
 			controller = new Controller(sequencer_);
+			mixer = new Mixer(sequencer_);
 			config = new Config();
 			score = new Score(this);
 
@@ -73,5 +74,17 @@ public class DAW {
 	public void CloseProject() {
 		controller.Close();
 	}
+	
+	// easy access functions
+	public void NoteOn(int note_no, int velocity) {
+		track[0].NoteOn(note_no, velocity);
+	}
+	
+	public void NoteOff(int note_no) {
+		track[0].NoteOff(note_no);
+	}
 
+	public void SetInstrument(int n) {
+		track[0].SetInstrument(n);
+	}
 }

@@ -1,6 +1,13 @@
 package jp.hci_lab.muplat;
 
+import javax.sound.midi.Sequencer;
+
 public class Mixer {
+	Sequencer seq_;
+	
+	Mixer(Sequencer seq) {
+		seq_ = seq;
+	}
 
 	public void SetMasterLevel(int level) {
 		
@@ -15,10 +22,10 @@ public class Mixer {
 	}
 	
 	public void SetSolo(int tr, boolean solo) {
-		
+		seq_.setTrackSolo(tr,  solo);
 	}
 
 	public void SetMute(int tr, boolean mute) {
-		
+		seq_.setTrackMute(tr,  mute);		
 	}
 }
