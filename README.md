@@ -37,6 +37,9 @@ DAWのトラックに相当するクラス(デフォルトで16トラック)
 - void NoteOff(int note_no)  
 即時発音停止。
 - void SetInstrument(int n)
+音色の選択
+- List<String> GetInstrumentList()
+音色名の一覧取得
 
 #### daw.score
 楽曲データ関係。MIDIデータを少し抽象化してアクセスしやすくする（予定）

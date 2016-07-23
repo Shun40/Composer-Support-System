@@ -1,6 +1,11 @@
 package jp.hci_lab.muplat;
 
 import javax.sound.midi.Synthesizer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiEvent;
@@ -42,4 +47,12 @@ public class DawTrack {
 		channel_.programChange(n);
 	}
 	
+	public List<String> GetInstrumentList() {
+		List<String> names = new ArrayList<String>();
+		Instrument[] list = synth_.getAvailableInstruments();
+		for (Instrument inst : list) {
+			names.add(inst.getName());
+		}
+		return names;
+	}
 }
