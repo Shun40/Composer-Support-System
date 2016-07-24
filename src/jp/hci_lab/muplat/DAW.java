@@ -6,6 +6,7 @@ import java.util.List;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Track;
 
 public class DAW {
 	public Controller controller;
@@ -61,6 +62,10 @@ public class DAW {
 		    sequence_ = MidiSystem.getSequence(in);
 		    in.close();//ファイルをクローズ
 		    sequencer_.setSequence(sequence_);
+		    Track t[] = sequence_.getTracks();
+		    for (int i = 0; i < 16; i++) {
+		    	track[i] = new DawTrack(t[i]);
+		    }
 		} catch(Exception e) {
 			e.printStackTrace();
 		}		

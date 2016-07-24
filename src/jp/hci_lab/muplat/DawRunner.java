@@ -28,6 +28,8 @@ import javafx.stage.WindowEvent;
  
 public class DawRunner extends Application {
 	DAW daw;
+
+	Label lblNumEvent[];
 	
     public static void main(String[] args) {
     	launch(args);
@@ -37,7 +39,7 @@ public class DawRunner extends Application {
     public void start(Stage stage) throws Exception {
 		daw = new DAW();
 		System.out.println("Lounch DAW");
-
+		
 		daw.score.SetTrack(0);
 		daw.score.AddNote(480 * 1,  60,  480);
 		daw.score.AddNote(480 * 2,  62,  480);
@@ -73,7 +75,9 @@ public class DawRunner extends Application {
             File inFile = fc.showOpenDialog(stage);
             if (inFile != null) {
                 daw.OpenProject(inFile.getPath().toString());
-            }		});
+                UpdateNumEvent();
+            }
+        });
 		MenuItem exit = new MenuItem("Exit");
 		exit.setOnAction((ActionEvent t) -> {
 			ExitProc();
@@ -179,10 +183,16 @@ public class DawRunner extends Application {
         MakeKeyboard(400, 120, pane);
 
         // ミキサー
+    	lblNumEvent = new Label[16];
         for (int i = 0; i < 16; i++) {
         	MakeTrackControl(i, pane);
-        }
-        
+    		// label
+        	lblNumEvent[i] = new Label("0");
+        	lblNumEvent[i].setLayoutX(50 + i * 70);
+        	lblNumEvent[i].setLayoutY(380);
+            pane.getChildren().add(lblNumEvent[i]);    	
+        }        
+        UpdateNumEvent();
         
         // 終了時コールバック
         stage.setOnCloseRequest((WindowEvent event) -> {
@@ -205,7 +215,7 @@ public class DawRunner extends Application {
     public void MakeTrackControl(int n, Group g) {
     	int x = 30 + n * 70;
     	int y = 400;
-    	
+
     	ToggleButton solo = new ToggleButton("S");
 		solo.setStyle("-fx-background-color: lightgrey");         		
         solo.setOnAction(new EventHandler<ActionEvent>() {
@@ -313,89 +323,12 @@ public class DawRunner extends Application {
         });
 
     }
-}
 
-/*
-import java.util.List;
-
-public class DawRunner {
-	public static void main(String[] args) {
-		try {
-
-			System.out.println("Hello DAW!");
-
-			DAW daw = new DAW();
-
-			// MIDIデバイス名の一覧出力
-			System.out.println("MIDI Devices:");
-			List<String>devices = daw.config.GetMidiDeviceNameList();
-			for (String s: devices) {
-				System.out.println("  [" + s + "]");
-			}
-			
-			daw.SetBPM(250);
-			
-			daw.score.SetTrack(0);
-			daw.score.AddNote(480,  60,  480);
-			daw.score.AddNote(960,  62,  480);
-			daw.score.AddNote(1440,  64,  480);
-
-			boolean loop = true;
-			while (loop) {
-				System.out.println("[p:Play  m:FileLoad  s:FileSave  t:Stop  ' ':Pause  o:NoteOn  f:NoteOff  q:quit]");
-				System.out.print("> ");
-				int c = System.in.read();		
-
-				switch (c) {
-				case '0':
-					daw.track[0].SetInstrument(0);
-					break;
-				case '1':
-					daw.track[0].SetInstrument(1);
-					break;
-				case '2':
-					daw.track[0].SetInstrument(2);
-					break;
-				case '3':
-					daw.track[0].SetInstrument(3);
-					break;
-				case '4':
-					daw.track[0].SetInstrument(4);
-					break;
-				case 'p':
-					daw.controller.Restart();
-					break;
-				case 'm':
-					daw.OpenProject("spain.mid");
-					break;
-				case 's':
-					daw.SaveProject("save.mid");
-				case 't':
-					daw.controller.Stop();
-					break;
-				case ' ':
-					daw.controller.Pause();
-					break;
-				case 'o':
-					daw.track[0].NoteOn(72, 127);
-					break;
-				case 'f':
-					daw.track[0].NoteOff(72);
-					break;
-				case 'q':
-					daw.CloseProject();
-					System.out.println("Bye!");
-					loop = false;
-					break;
-				}
-			}
-
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
+    void UpdateNumEvent() {
+    	for (int i = 0; i < 16; i++) {
+    		int n = daw.track[i].GetEventCount();
+    		lblNumEvent[i].setText(String.valueOf(n));
+    	}
+    }
 
 }
-*/
