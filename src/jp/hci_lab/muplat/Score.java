@@ -39,5 +39,9 @@ public class Score {
 		}
 	}
 	
+	public void GetSize() {
+		daw_.track[current_track_].GetEventCount();		
+	}
+	
 	
 }

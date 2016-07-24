@@ -1,6 +1,8 @@
 package jp.hci_lab.muplat;
 
 import java.io.FileInputStream;
+import java.util.List;
+
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -11,6 +13,7 @@ public class DAW {
 	public Score score;
 	public Config config;
 	public DawTrack track[] = new DawTrack[16];
+	public ChordPlayer chordplayer = new ChordPlayer(this);
 	private Sequencer sequencer_;
 	private Sequence sequence_;
 	
@@ -75,7 +78,7 @@ public class DAW {
 		controller.Close();
 	}
 	
-	// easy access functions
+	///// easy access functions //////////////////////////////
 	public void NoteOn(int note_no, int velocity) {
 		track[0].NoteOn(note_no, velocity);
 	}
@@ -84,7 +87,12 @@ public class DAW {
 		track[0].NoteOff(note_no);
 	}
 
+	public List<String> GetInstrumentList() {
+		return track[0].GetInstrumentList();
+	}
+
 	public void SetInstrument(int n) {
 		track[0].SetInstrument(n);
 	}
+
 }

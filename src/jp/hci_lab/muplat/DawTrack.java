@@ -43,6 +43,10 @@ public class DawTrack {
 		track_.add(e);
 	}
 	
+	public int GetEventCount() {
+		return track_.size();
+	}
+	
 	public void SetInstrument(int n) {
 		channel_.programChange(n);
 	}

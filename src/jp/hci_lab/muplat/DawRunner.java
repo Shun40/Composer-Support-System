@@ -1,5 +1,7 @@
 package jp.hci_lab.muplat;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
  
@@ -63,58 +66,102 @@ public class DawRunner extends Application {
 		menu.setStyle("-fx-background-color: darkgrey");
 		// file menu
 		Menu fileMenu = new Menu("_File");
+		MenuItem open = new MenuItem("Open");
+		open.setOnAction((ActionEvent t) -> {
+			// ファイル入出力
+			FileChooser fc = new FileChooser();
+            File inFile = fc.showOpenDialog(stage);
+            if (inFile != null) {
+                daw.OpenProject(inFile.getPath().toString());
+            }		});
 		MenuItem exit = new MenuItem("Exit");
 		exit.setOnAction((ActionEvent t) -> {
 			ExitProc();
 		    System.exit(0);
 		});
-		fileMenu.getItems().addAll(exit);
+		fileMenu.getItems().addAll(open, exit);
 		// edit menu
 		Menu editMenu = new Menu("_Edit");
 		// set submenu
 		menu.getMenus().addAll(fileMenu, editMenu);
 		pane.getChildren().add(menu);		
-		
+			
 		// BPMボックスの作成
 		// label
     	Label labelBPM = new Label("BPM");
-    	labelBPM.setLayoutX(160);
-    	labelBPM.setLayoutY(60);
+    	labelBPM.setLayoutX(200);
+    	labelBPM.setLayoutY(65);
         pane.getChildren().add(labelBPM);
         // text field
 		TextField textBPM = new TextField ();
 		textBPM.setPrefWidth(50);
-		textBPM.setLayoutX(200);
+		textBPM.setLayoutX(235);
 		textBPM.setLayoutY(60);
 		textBPM.setText("120");
         pane.getChildren().add(textBPM);
 		
 		// STOPボタン
-        Button stopbtn = new Button("◾︎︎");
+        Button stopbtn = new Button("STOP");
         stopbtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
 				daw.controller.Stop();
             }
         });
+		stopbtn.setPrefWidth(70);
         stopbtn.setLayoutX(30);
         stopbtn.setLayoutY(60);
         pane.getChildren().add(stopbtn);
 
         // STARTボタン
-        Button startbtn = new Button("▶︎");
+        Button startbtn = new Button("START︎");
         startbtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
 				daw.controller.Restart();
             }
         });
-        startbtn.setLayoutX(60);
+		startbtn.setPrefWidth(70);
+        startbtn.setLayoutX(110);
         startbtn.setLayoutY(60);
         pane.getChildren().add(startbtn);
+
+        // STARTボタン
+        Button chordplaybtn = new Button("Chord Play");
+        chordplaybtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+/*            	daw.SetChordPattern("/-// r/r/   n4    n8 n8  r8 n8 r8 n8"); */
+            	daw.chordplayer.PlayChord("C");
+            	daw.chordplayer.PlayChord("Am");
+            	daw.chordplayer.PlayChord("Dm7");
+            	daw.chordplayer.PlayChord("G7");
+            	daw.chordplayer.PlayChord("C");
+            	daw.chordplayer.PlayChord("Am");
+            	daw.chordplayer.PlayChord("Dm7");
+            	daw.chordplayer.PlayChord("G7");
+            	daw.chordplayer.PlayChord("C");
+            	daw.chordplayer.PlayChord("Am");
+            	daw.chordplayer.PlayChord("Dm7");
+            	daw.chordplayer.PlayChord("G7");
+            	daw.chordplayer.PlayChord("C");
+            	daw.chordplayer.PlayChord("Am");
+            	daw.chordplayer.PlayChord("Dm7");
+            	daw.chordplayer.PlayChord("G7");
+            }
+        });
+        chordplaybtn.setPrefWidth(100);
+        chordplaybtn.setLayoutX(30);
+        chordplaybtn.setLayoutY(120);
+        pane.getChildren().add(chordplaybtn);
+        
+        
+        
+        
+        
         
         // 音色選択ドロップダウン
-		ObservableList<String> names = FXCollections.observableArrayList(daw.track[0].GetInstrumentList());
+		ObservableList<String> names = FXCollections.observableArrayList(daw.GetInstrumentList());
 		ComboBox<String> instSelector = new ComboBox<String>(names);
 		instSelector.setLayoutX(400);
 		instSelector.setLayoutY(60);
@@ -157,7 +204,7 @@ public class DawRunner extends Application {
 
     public void MakeTrackControl(int n, Group g) {
     	int x = 30 + n * 70;
-    	int y = 300;
+    	int y = 400;
     	
     	ToggleButton solo = new ToggleButton("S");
 		solo.setStyle("-fx-background-color: lightgrey");         		
