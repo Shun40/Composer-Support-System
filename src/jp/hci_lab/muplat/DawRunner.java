@@ -18,6 +18,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
@@ -130,28 +131,19 @@ public class DawRunner extends Application {
         startbtn.setLayoutY(60);
         pane.getChildren().add(startbtn);
 
-        // STARTボタン
+        // Chord Playボタン
+        TextArea araChord = new TextArea("C Am Dm7 G7 C Am Dm7 G7");
+        araChord.setPrefWidth(200);
+        araChord.setPrefHeight(100);
+        araChord.setLayoutX(30);
+        araChord.setLayoutY(155);
+        pane.getChildren().add(araChord);
+
         Button chordplaybtn = new Button("Chord Play");
         chordplaybtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-/*            	daw.SetChordPattern("/-// r/r/   n4    n8 n8  r8 n8 r8 n8"); */
-            	daw.chordplayer.PlayChord("C");
-            	daw.chordplayer.PlayChord("Am");
-            	daw.chordplayer.PlayChord("Dm7");
-            	daw.chordplayer.PlayChord("G7");
-            	daw.chordplayer.PlayChord("C");
-            	daw.chordplayer.PlayChord("Am");
-            	daw.chordplayer.PlayChord("Dm7");
-            	daw.chordplayer.PlayChord("G7");
-            	daw.chordplayer.PlayChord("C");
-            	daw.chordplayer.PlayChord("Am");
-            	daw.chordplayer.PlayChord("Dm7");
-            	daw.chordplayer.PlayChord("G7");
-            	daw.chordplayer.PlayChord("C");
-            	daw.chordplayer.PlayChord("Am");
-            	daw.chordplayer.PlayChord("Dm7");
-            	daw.chordplayer.PlayChord("G7");
+            	daw.chordplayer.PlayChordProgression(araChord.getText());
             }
         });
         chordplaybtn.setPrefWidth(100);

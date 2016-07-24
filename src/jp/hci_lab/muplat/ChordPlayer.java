@@ -1,6 +1,7 @@
 package jp.hci_lab.muplat;
 
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 public class ChordPlayer {
 	HashMap<String, int[]> chordnotes = new HashMap<String, int[]>();
@@ -54,6 +55,23 @@ public class ChordPlayer {
 
 	}
 	
+	public void PlayChordProgression(String s) {
+     	class PlayThread extends Thread {
+    	    public void run() {
+    	        try {
+    	        	StringTokenizer st = new StringTokenizer(s);
+	    	   	     while (st.hasMoreTokens()) {
+	    	   	    	 daw_.chordplayer.PlayChord(st.nextToken());
+	    		     }	
+    	        }
+    	        catch(Exception ex) {
+    	            ex.printStackTrace();
+    	        }
+    	    }
+    	}
+    	PlayThread p = new PlayThread();
+    	p.start();
+    }
 	
 	public void SetChordPattern(String s) {
 		
