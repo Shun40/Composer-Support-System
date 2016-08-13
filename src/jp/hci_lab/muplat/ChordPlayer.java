@@ -40,6 +40,9 @@ public class ChordPlayer {
 		DefineChord("Cm", new int[] {60, 63, 67});
 		ShiftAll("m");
 
+		DefineChord("C6", new int[] {60, 64, 67, 69});
+		ShiftAll("6");
+
 		DefineChord("C7", new int[] {60, 64, 67, 70});
 		ShiftAll("7");
 
@@ -51,6 +54,9 @@ public class ChordPlayer {
 
 		DefineChord("Csus4", new int[] {60, 65, 67});
 		ShiftAll("sus4");
+
+		DefineChord("Cadd9", new int[] {60, 64, 67, 74});
+		ShiftAll("add9");
 		
 		DefineChord("Bmb5", new int[] {71, 74, 77});
 		ShiftAll("B", "mb5");
@@ -102,7 +108,19 @@ public class ChordPlayer {
 	public void PlayChord(String s) {
 		try {
 			int root = 0;
-			int notes[] = chordnotes.get(s).clone();
+			int notes[];
+
+			StringTokenizer chordName = new StringTokenizer(s, "/");
+			if (chordName.countTokens() == 2) {
+				String part = chordName.nextToken();
+				notes = chordnotes.get(part).clone();
+				part = chordName.nextToken();
+				root = noteId.get(part);
+			} else {
+				notes = chordnotes.get(s).clone();				
+				root = notes[0];
+			}
+			root = aroundNote(bassCenter, root);
 
 			if (chordAround) {
 				for (int i = 0; i < notes.length; i++) {
@@ -112,7 +130,6 @@ public class ChordPlayer {
 
 			if (notes != null) {
 				if (baseEnable) {
-					root = aroundNote(bassCenter, notes[0]);
 					daw_.NoteOn(root, 100);
 				}
 				
