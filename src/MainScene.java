@@ -1,28 +1,27 @@
-/*
- * シーン(画面全体)を表すクラス.
- * この中にピアノロール等のコンポーネントを配置する.
- */
+import static constants.MainSceneConstants.*;
 
+/**
+ * コンポーネントを配置するシーンのクラス
+ * @author Shun Yamashita
+ */
 import javafx.scene.Group;
 import javafx.scene.Scene;
 
 public class MainScene extends Scene {
-	public static final int PIANO_ROLL_X = 10;
-	public static final int PIANO_ROLL_Y = 20;
-	public static final int OCTAVE_MAP_X = 120;
-	public static final int OCTAVE_MAP_Y = 20;
-
 	public MainScene(Group root, int width, int height) {
 		super(root, width, height);
 
-		PianoRoll pianoRoll1 = new PianoRoll(PIANO_ROLL_X, PIANO_ROLL_Y);
-		PianoRoll pianoRoll2 = new PianoRoll(PIANO_ROLL_X, PIANO_ROLL_Y + 144);
-		root.getChildren().add(pianoRoll1);
-		root.getChildren().add(pianoRoll2);
+		setupKeyboard(root);
+		setupPianoroll(root);
+	}
 
-		OctaveMap octaveMap1 = new OctaveMap(4, OCTAVE_MAP_X, OCTAVE_MAP_Y);
-		OctaveMap octaveMap2 = new OctaveMap(3, OCTAVE_MAP_X, OCTAVE_MAP_Y + 144);
-		root.getChildren().add(octaveMap1);
-		root.getChildren().add(octaveMap2);
+	public void setupKeyboard(Group root) {
+		Keyboard keyboard = new Keyboard(2, KEYBOARD_X, KEYBOARD_Y);
+		root.getChildren().add(keyboard);
+	}
+
+	public void setupPianoroll(Group root) {
+		Pianoroll pianoroll = new Pianoroll(8, 2, 128, PIANOROLL_X, PIANOROLL_Y);
+		root.getChildren().add(pianoroll);
 	}
 }
