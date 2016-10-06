@@ -31,13 +31,12 @@ public class Keyboard extends Group{
 		for(int m = 0; m < octaveCount; m++) {
 			for(int n = 0; n < WHITE_KEY_COUNT; n++) {
 				String interval = intervals[n];
-				String octave = Integer.toString(5 - m);
-				String position = interval + octave;
+				int octave = 5 - m;
 				int x = 0;
 				int y = WHITE_KEY_Y[n] + KEYBOARD_Y_OFFSET * m;
 				int w = WHITE_KEY_WIDTH;
 				int h = WHITE_KEY_HEIGHT[n];
-				whiteKey[n] = new Key(position, x, y, w, h);
+				whiteKey[n] = new Key(interval, octave, x, y, w, h);
 				if(n == WHITE_KEY_COUNT - 1) { // 各オクターブのCの鍵盤にラベルを表示
 					whiteKey[n].showPositionLabel();
 				}
@@ -52,13 +51,12 @@ public class Keyboard extends Group{
 		for(int m = 0; m < octaveCount; m++) {
 			for(int n = 0; n < BLACK_KEY_COUNT; n++) {
 				String interval = intervals[n];
-				String octave = Integer.toString(5 - m);
-				String position = interval + octave;
+				int octave = 5 - m;
 				int x = 0;
 				int y = BLACK_KEY_Y[n] + KEYBOARD_Y_OFFSET * m;
 				int w = BLACK_KEY_WIDTH;
 				int h = BLACK_KEY_HEIGHT[n];
-				blackKey[n] = new Key(position, x, y, w, h);
+				blackKey[n] = new Key(interval, octave, x, y, w, h);
 				getChildren().add(blackKey[n]);
 			}
 		}
