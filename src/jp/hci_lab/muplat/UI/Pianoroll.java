@@ -27,6 +27,8 @@ public class Pianoroll extends Group {
 	private int bpm;
 	private int currentMeasure;
 	private ArrayList<Note> notes;
+	private MainScene parent;
+
 	private Timeline playTimeline;
 	private NoteResolutionSelector noteResolutionSelector;
 	private BpmLabel bpmLabel;
@@ -41,13 +43,14 @@ public class Pianoroll extends Group {
 	private Line playLine;
 
 
-	public Pianoroll(int measureCount, int octaveCount, int bpm, int x, int y) {
+	public Pianoroll(int measureCount, int octaveCount, int bpm, int x, int y, MainScene parent) {
 		super();
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
 		this.bpm = bpm;
 		this.currentMeasure = 1;
 		this.notes = new ArrayList<Note>();
+		this.parent = parent;
 		setupPoint(x, y);
 		setupNoteResolutionSelector();
 		setupBpmLabel();
@@ -251,6 +254,10 @@ public class Pianoroll extends Group {
 
 	public void stop() {
 		if(playTimeline == null) return;
+
+		// エンジンへの停止指示
+		parent.stop();
+
 		playTimeline.stop();
 		setupAfterPlay();
 	}
@@ -262,6 +269,10 @@ public class Pianoroll extends Group {
 			n++;
 		}
 		setupBeforePlay();
+
+		// エンジンへの再生指示
+		parent.play();
+
 		playAnimation();
 	}
 
@@ -281,6 +292,12 @@ public class Pianoroll extends Group {
 		playLine.toFront();
 		playLine.setLayoutX(0);
 		sp.setHvalue(0.0);
+
+		// エンジンへのセットアップ
+		parent.setBpm(bpm);
+		for(Note note : notes) {
+			parent.addNote(note);
+		}
 	}
 
 	public void setupAfterPlay() {
@@ -330,6 +347,6 @@ public class Pianoroll extends Group {
 
 	public int getOctaveCount() { return octaveCount; }
 	public int getBpm() { return bpm; }
-	public void setBpm(int bpm) { this.bpm =bpm; }
+	public void setBpm(int bpm) { this.bpm = bpm; }
 	public int getCurrentMeasure() { return currentMeasure; }
 }
