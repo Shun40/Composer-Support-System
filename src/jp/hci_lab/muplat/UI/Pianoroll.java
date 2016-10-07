@@ -1,4 +1,5 @@
 import static constants.PianorollConstants.*;
+import static constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
@@ -135,29 +136,14 @@ public class Pianoroll extends Group {
 		int horizontalSize = 4 * measureCount;
 		noteGrids = new NoteGrid[verticalSize][horizontalSize];
 		for(int j = 0; j < verticalSize; j++) {
-			// 0 2 4 6 7 9 11
-			boolean isWhite = true;
-			int temp = j % 12;
-			switch(temp) {
-			case 0:
-			case 2:
-			case 4:
-			case 6:
-			case 7:
-			case 9:
-			case 11:
-				isWhite = true;
-				break;
-			default:
-				isWhite = false;
-				break;
-			}
+			String interval = intervals[j % 12];
+			int octave = 5 - (j / 12);
 			for(int i = 0; i < horizontalSize; i++) {
 				int x = NOTE_GRID_X[(int)(i % 4)] + NOTE_GRID_X_OFFSET * (int)(i / 4);
 				int y = NOTE_GRID_Y[(int)(j % 12)] + NOTE_GRID_Y_OFFSET * (int)(j / 12);
 				int w = NOTE_GRID_WIDTH;
 				int h = NOTE_GRID_HEIGHT;
-				noteGrids[j][i] = new NoteGrid(isWhite, 4, x, y, w, h, this);
+				noteGrids[j][i] = new NoteGrid(4, interval, octave, x, y, w, h, this);
 				editArea.getChildren().add(noteGrids[j][i]);
 			}
 		}

@@ -1,4 +1,5 @@
 import static constants.NoteGridConstants.*;
+import static constants.UniversalConstants.*;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -11,28 +12,36 @@ import javafx.scene.shape.Rectangle;
  * @author Shun Yamashita
  */
 public class NoteGrid extends Group {
-	private boolean isWhite;
+	private int noteNumber;
+	private int progNumber;
 	private int resolution;
+	private String color;
 	private Rectangle frame;
 	private Pianoroll parent;
 
-	public NoteGrid(boolean isWhite, int resolution, int x, int y, int width, int height, Pianoroll parent) {
+	public NoteGrid(int resolution, String interval, int octave, int x, int y, int width, int height, Pianoroll parent) {
 		super();
-		this.isWhite = isWhite;
+		this.noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
+		this.progNumber = 0;
 		this.resolution = resolution;
 		this.parent = parent;
+		setupColor(interval);
 		setupFrame(x, y, width, height);
 		setupEventListener();
+	}
+
+	public void setupColor(String interval) {
+		if(interval.contains("#") || interval.contains("♭")) {
+			color = BLACK_GRID_COLOR;
+		} else {
+			color = WHITE_GRID_COLOR;
+		}
 	}
 
 	public void setupFrame(int x, int y, int width, int height) {
 		frame = new Rectangle(x + 0.5, y + 0.5, width, height);
 		frame.setStyle(DEFAULT_STYLE);
-		if(isWhite) {
-			frame.setStyle("-fx-fill: " + WHITE_GRID_COLOR + ";" + DEFAULT_STYLE);
-		} else {
-			frame.setStyle("-fx-fill: " + BLACK_GRID_COLOR + ";" + DEFAULT_STYLE);
-		}
+		frame.setStyle("-fx-fill: " + color + ";" + DEFAULT_STYLE);
 		getChildren().add(frame);
 	}
 
@@ -42,11 +51,26 @@ public class NoteGrid extends Group {
 				NoteGrid.this.press(e);
 			}
 		});
+		setOnMouseReleased(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				NoteGrid.this.release(e);
+			}
+		});
 	}
 
 	public void press(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			this.putNote(e);
+			// 発音
+			toneOn();
+		} else {
+		}
+	}
+
+	public void release(MouseEvent e) {
+		if(e.getButton() == MouseButton.PRIMARY) { // Left click
+			// 無発音
+			toneOff();
 		} else {
 		}
 	}
@@ -74,6 +98,15 @@ public class NoteGrid extends Group {
 			else if(30 <= clickX && clickX < 40) putX = (int)frame.getX() + 30;
 		}
 		parent.putNote(putX, putY, width, height);
+	}
+
+	public void toneOn() {
+		UISynth.synth.getChannels()[0].programChange(progNumber);
+		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
+	}
+
+	public void toneOff() {
+		UISynth.synth.getChannels()[0].allNotesOff();
 	}
 
 	public void setResolution(int resolution) { this.resolution = resolution; }

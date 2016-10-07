@@ -25,7 +25,6 @@ public class Key extends Group {
 		super();
 		this.noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
 		this.progNumber = 0;
-
 		this.position = interval + Integer.toString(octave);
 		setupColor(interval);
 		setupFrame(x, y, width, height);
