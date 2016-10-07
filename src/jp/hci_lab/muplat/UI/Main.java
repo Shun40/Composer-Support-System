@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
+		new UISynth();
+
 		Group root = new Group();
 		MainScene mainScene = new MainScene(root, CLIENT_AREA_WIDTH + WINDOW_OFFSET_WIDTH, CLIENT_AREA_HEIGHT + WINDOW_OFFSET_HEIGHT);
 

@@ -157,8 +157,6 @@ public class Note extends Rectangle {
 	}
 
 	public void printNoteInfo() {
-		int x = (int)(getX() - 0.5);
-		int y = (int)(getY() - 0.5 - 46);
 		System.out.println("measure: " + measure + ", beat: " + beat + ", place: " + place + ", duration: " + duration + ", NO.: " + interval + octave);
 	}
 

@@ -76,7 +76,5 @@ public class NoteGrid extends Group {
 		parent.putNote(putX, putY, width, height);
 	}
 
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
-	}
+	public void setResolution(int resolution) { this.resolution = resolution; }
 }
