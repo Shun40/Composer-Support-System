@@ -1,5 +1,4 @@
 import static constants.NoteGridConstants.*;
-import static constants.UniversalConstants.*;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -12,8 +11,6 @@ import javafx.scene.shape.Rectangle;
  * @author Shun Yamashita
  */
 public class NoteGrid extends Group {
-	private int noteNumber;
-	private int progNumber;
 	private int resolution;
 	private String color;
 	private Rectangle frame;
@@ -21,8 +18,6 @@ public class NoteGrid extends Group {
 
 	public NoteGrid(int resolution, String interval, int octave, int x, int y, int width, int height, Pianoroll parent) {
 		super();
-		this.noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
-		this.progNumber = 0;
 		this.resolution = resolution;
 		this.parent = parent;
 		setupColor(interval);
@@ -61,8 +56,6 @@ public class NoteGrid extends Group {
 	public void press(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			this.putNote(e);
-			// 発音
-			toneOn();
 		} else {
 		}
 	}
@@ -98,11 +91,6 @@ public class NoteGrid extends Group {
 			else if(30 <= clickX && clickX < 40) putX = (int)frame.getX() + 30;
 		}
 		parent.putNote(putX, putY, width, height);
-	}
-
-	public void toneOn() {
-		UISynth.synth.getChannels()[0].programChange(progNumber);
-		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
 	}
 
 	public void toneOff() {

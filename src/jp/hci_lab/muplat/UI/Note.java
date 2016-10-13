@@ -1,4 +1,5 @@
 import static constants.NoteConstants.*;
+import static constants.UniversalConstants.*;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
@@ -14,6 +15,7 @@ import javafx.scene.shape.Rectangle;
  * @author Shun Yamashita
  */
 public class Note extends Rectangle {
+	private int progNumber;
 	private int resolution;
 	private float minX;
 	private float maxX;
@@ -30,6 +32,7 @@ public class Note extends Rectangle {
 
 	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, Pianoroll parent) {
 		super(x + 0.5, y + 0.5, width, height);
+		this.progNumber = 81;
 		this.resolution = resolution;
 		this.minX = minX + 0.5f;
 		this.maxX = maxX + 0.5f;
@@ -54,9 +57,9 @@ public class Note extends Rectangle {
 				Note.this.press(e);
 			}
 		});
-		setOnMouseClicked(new EventHandler<MouseEvent>() {
+		setOnMouseReleased(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
-				Note.this.click(e);
+				Note.this.release(e);
 			}
 		});
 		setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -78,14 +81,18 @@ public class Note extends Rectangle {
 			if((getWidth() / 3) * 2 <= pressX && pressX < getWidth()) {
 				pressedPos = "right";
 			}
+			// 発音
+			toneOn();
 		} else { // Right Click
 			removeNote();
 		}
 	}
 
-	public void click(MouseEvent e) {
+	public void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
-			printNoteInfo();
+			// 無発音
+			toneOff();
+		} else {
 		}
 	}
 
@@ -148,16 +155,31 @@ public class Note extends Rectangle {
 	public void updateNoteInfo() {
 		int x = (int)(getX() - 0.5);
 		int y = (int)(getY() - 0.5 - 46);
+		String oldInterval = interval;
+		String newInterval = intervals[(y % 144 / 12)];
 		measure = parent.getCurrentMeasure() + (x / 160);
 		beat = (x % 160) / 40 + 1;
 		place = (int)((x % 40 * 0.1) * 240);
 		duration = (int)((getWidth() / 40) * 960);
 		interval = intervals[(y % 144 / 12)];
 		octave = 5 - (y / 144);
+		// 音高が変化したら再発音
+		if(oldInterval != newInterval) {
+			// 無発音
+			toneOff();
+			// 発音
+			toneOn();
+		}
 	}
 
-	public void printNoteInfo() {
-		System.out.println("measure: " + measure + ", beat: " + beat + ", place: " + place + ", duration: " + duration + ", NO.: " + interval + octave);
+	public void toneOn() {
+		int noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
+		UISynth.synth.getChannels()[0].programChange(progNumber);
+		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
+	}
+
+	public void toneOff() {
+		UISynth.synth.getChannels()[0].allNotesOff();
 	}
 
 	public int getMeasure() { return measure; };
