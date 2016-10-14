@@ -11,9 +11,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -36,15 +36,16 @@ public class Pianoroll extends Group {
 	private StopButton stopButton;
 	private PlayButton playButton;
 
-	private ScrollPane sp;
 	private Group editArea;
+	private Group measureArea;
+	private Keyboard keyboard;
 	private Label[] measureLabels;
 	private NoteGrid[][] noteGrids;
 	private Line[] snapLines;
 	private Line playLine;
 
 
-	public Pianoroll(int measureCount, int octaveCount, int bpm, int x, int y, MainScene parent) {
+	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
@@ -52,41 +53,19 @@ public class Pianoroll extends Group {
 		this.currentMeasure = 1;
 		this.notes = new ArrayList<Note>();
 		this.parent = parent;
-		setupPoint(x, y);
+		//setupPoint(x, y);
 		setupNoteResolutionSelector();
 		setupBpmLabel();
 		setupStopButton();
 		setupPlayButton();
-		setupScrollPane();
+		setupKeyboard();
+		setupMeasureArea();
+		setupEditArea();
 	}
 
 	public void setupPoint(int x, int y) {
 		setLayoutX(x);
 		setLayoutY(y);
-	}
-
-	public void setupScrollPane() {
-		int width = PIANOROLL_WIDTH + 3;
-		int height = PIANOROLL_HEIGHT * octaveCount + 33;
-		int x = 1;
-		int y = 28;
-		sp = new ScrollPane();
-		sp.setPrefSize(width, height);
-		sp.setLayoutX(x);
-		sp.setLayoutY(y);
-
-		setupEditArea();
-		setupMeasureLabels();
-		setupNoteGrids();
-		setupSnapLines();
-		setupFrameLines();
-		setupPlayLine();
-		sp.setContent(editArea);
-		getChildren().add(sp);
-	}
-
-	public void setupEditArea() {
-		editArea = new Group();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -117,18 +96,16 @@ public class Pianoroll extends Group {
 		getChildren().add(playButton);
 	}
 
-	public void setupMeasureLabels() {
-		measureLabels = new Label[measureCount];
-		for(int n = 0; n < measureCount; n++) {
-			int x = MEASURE_LABEL_X + MEASURE_WIDTH * n;
-			int y = MEASURE_LABEL_Y;
-			measureLabels[n] = new Label(Integer.toString(n + 1));
-			measureLabels[n].setFont(Font.font("Arial", 12));
-			measureLabels[n].setTextFill(Color.web("#000000"));
-			measureLabels[n].setLayoutX(x);
-			measureLabels[n].setLayoutY(y);
-			editArea.getChildren().add(measureLabels[n]);
-		}
+	public void setupEditArea() {
+		editArea = new Group();
+		editArea.setLayoutX(EDIT_AREA_X);
+		editArea.setLayoutY(EDIT_AREA_Y);
+		editArea.setClip(new Rectangle(PIANOROLL_WIDTH + 0.5, PIANOROLL_HEIGHT * 2 + 0.5)); // 実際に表示する領域サイズ
+		setupNoteGrids();
+		setupEditAreaSnapLines();
+		setupEditAreaFrameLines();
+		setupEditAreaPlayLine();
+		getChildren().add(editArea);
 	}
 
 	public void setupNoteGrids() {
@@ -149,10 +126,10 @@ public class Pianoroll extends Group {
 		}
 	}
 
-	public void setupFrameLines() {
+	public void setupEditAreaFrameLines() {
 		// Vertical lines
-		int vStartY = 29;
-		int vEndY = MEASURE_HEIGHT * octaveCount + 46;
+		int vStartY = 0;
+		int vEndY = vStartY + MEASURE_HEIGHT * octaveCount;
 		for(int n = 0; n < measureCount + 1; n++) {
 			int x = 160 * n;
 			Line line = new Line(x + 0.5, vStartY, x + 0.5, vEndY);
@@ -162,7 +139,7 @@ public class Pianoroll extends Group {
 		// Horizontal lines
 		int hStartX = 0;
 		int hEndX = MEASURE_WIDTH * measureCount;
-		int[] hStartY = {29, 46, MEASURE_HEIGHT * octaveCount + 46};
+		int[] hStartY = {0, MEASURE_HEIGHT * 2};
 		int[] hEndY = hStartY;
 		for(int n = 0; n < hStartY.length; n++) {
 			Line line = new Line(hStartX, hStartY[n] + 0.5, hEndX, hEndY[n] + 0.5);
@@ -171,11 +148,11 @@ public class Pianoroll extends Group {
 		}
 	}
 
-	public void setupSnapLines() {
+	public void setupEditAreaSnapLines() {
 		snapLines = new Line[16 * measureCount];
 		int[] xArray = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150};
-		int startY = 46;
-		int endY = MEASURE_HEIGHT * octaveCount + 46;
+		int startY = 0;
+		int endY = startY + MEASURE_HEIGHT * octaveCount;
 		for(int n = 0; n < snapLines.length; n++) {
 			int x = xArray[n % 16] + 160 * (n / 16);
 			snapLines[n] = new Line(x + 0.5, startY, x + 0.5, endY);
@@ -187,13 +164,65 @@ public class Pianoroll extends Group {
 		}
 	}
 
-	public void setupPlayLine() {
-		int startY = 29;
-		int endY = MEASURE_HEIGHT * octaveCount + 46;
+	public void setupEditAreaPlayLine() {
+		int startY = 0;
+		int endY = startY + MEASURE_HEIGHT * octaveCount;
 		playLine = new Line(0 + 0.5, startY, 0 + 0.5, endY);
 		playLine.setStrokeLineCap(StrokeLineCap.BUTT);
 		playLine.setStroke(Color.web("#FF0000"));
 		editArea.getChildren().add(playLine);
+	}
+
+	public void setupMeasureArea() {
+		measureArea = new Group();
+		measureArea.setLayoutX(MEASURE_AREA_X);
+		measureArea.setLayoutY(MEASURE_AREA_Y);
+		measureArea.setClip(new Rectangle(PIANOROLL_WIDTH + 0.5, 64 + 0.5)); // 実際に表示する領域サイズ
+		setupMeasureLabels();
+		setupMeasureAreaFrameLines();
+		getChildren().add(measureArea);
+	}
+
+	public void setupMeasureLabels() {
+		measureLabels = new Label[measureCount];
+		for(int n = 0; n < measureCount; n++) {
+			int x = MEASURE_LABEL_X + MEASURE_WIDTH * n;
+			int y = MEASURE_LABEL_Y;
+			measureLabels[n] = new Label(Integer.toString(n + 1));
+			measureLabels[n].setFont(Font.font("Arial", 12));
+			measureLabels[n].setTextFill(Color.web("#000000"));
+			measureLabels[n].setLayoutX(x);
+			measureLabels[n].setLayoutY(y);
+			measureArea.getChildren().add(measureLabels[n]);
+		}
+	}
+
+	public void setupMeasureAreaFrameLines() {
+		// Vertical lines
+		int vStartY = 0;
+		int vEndY = vStartY + 17;
+		for(int n = 0; n < measureCount + 1; n++) {
+			int x = 160 * n;
+			Line line = new Line(x + 0.5, vStartY, x + 0.5, vEndY);
+			line.setStrokeLineCap(StrokeLineCap.BUTT);
+			measureArea.getChildren().add(line);
+		}
+		// Horizontal lines
+		int hStartX = 0;
+		int hEndX = MEASURE_WIDTH * measureCount;
+		int[] hStartY = {0, 17};
+		int[] hEndY = hStartY;
+		for(int n = 0; n < hStartY.length; n++) {
+			Line line = new Line(hStartX, hStartY[n] + 0.5, hEndX, hEndY[n] + 0.5);
+			line.setStrokeLineCap(StrokeLineCap.BUTT);
+			measureArea.getChildren().add(line);
+		}
+	}
+
+	public void setupKeyboard() {
+		keyboard = new Keyboard(octaveCount, KEYBOARD_X, KEYBOARD_Y);
+		keyboard.setClip(new Rectangle(PIANOROLL_WIDTH + 0.5, PIANOROLL_HEIGHT * 2 + 0.5)); // 実際に表示する領域サイズ
+		getChildren().add(keyboard);
 	}
 
 	public void updateSnapLines(int resolution) {
@@ -214,7 +243,7 @@ public class Pianoroll extends Group {
 		int resolution = noteResolutionSelector.getIntValue();
 		int minX = 0;
 		int maxX = minX + MEASURE_WIDTH * measureCount;
-		int minY = 46;
+		int minY = 0;
 		int maxY = minY + MEASURE_HEIGHT * octaveCount;
 		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, this);
 		notes.add(note);

@@ -154,7 +154,7 @@ public class Note extends Rectangle {
 
 	public void updateNoteInfo() {
 		int x = (int)(getX() - 0.5);
-		int y = (int)(getY() - 0.5 - 46);
+		int y = (int)(getY() - 0.5);
 		String oldInterval = interval;
 		String newInterval = intervals[(y % 144 / 12)];
 		measure = parent.getCurrentMeasure() + (x / 160);
