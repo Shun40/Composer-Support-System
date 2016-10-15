@@ -1,10 +1,12 @@
+import static constants.UniversalConstants.*;
+
+import javafx.scene.Group;
+import javafx.scene.Scene;
+
 /**
  * コンポーネントを配置するシーンのクラス
  * @author Shun Yamashita
  */
-import javafx.scene.Group;
-import javafx.scene.Scene;
-
 public class MainScene extends Scene {
 	private UIController uiController;
 
@@ -15,7 +17,7 @@ public class MainScene extends Scene {
 	}
 
 	public void setupPianoroll(Group root) {
-		Pianoroll pianoroll = new Pianoroll(8, 3, 128, this);
+		Pianoroll pianoroll = new Pianoroll(DEFAULT_MEASURE, DEFAULT_OCTAVE, DEFAULT_BPM, this);
 		root.getChildren().add(pianoroll);
 	}
 

@@ -28,9 +28,9 @@ public class Note extends Rectangle {
 	private int duration;
 	private String interval;
 	private int octave;
-	private Pianoroll parent;
+	private EditArea parent;
 
-	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, Pianoroll parent) {
+	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, EditArea parent) {
 		super(x + 0.5, y + 0.5, width, height);
 		this.progNumber = 81;
 		this.resolution = resolution;
@@ -118,7 +118,7 @@ public class Note extends Rectangle {
 
 	public void horizontalDrug2(MouseEvent e) {
 		int moveX = (int)(e.getX() - getX());
-		int resolutionWidth = 160 / resolution;
+		int resolutionWidth = MEASURE_WIDTH / resolution;
 		if(pressedPos.equals("right") && 0 <= moveX) {
 			for(int n = 0; n < resolution; n++) {
 				int min = resolutionWidth * n;
@@ -156,13 +156,13 @@ public class Note extends Rectangle {
 		int x = (int)(getX() - 0.5);
 		int y = (int)(getY() - 0.5);
 		String oldInterval = interval;
-		String newInterval = intervals[(y % 144 / 12)];
-		measure = parent.getCurrentMeasure() + (x / 160);
-		beat = (x % 160) / 40 + 1;
-		place = (int)((x % 40 * 0.1) * 240);
-		duration = (int)((getWidth() / 40) * 960);
-		interval = intervals[(y % 144 / 12)];
-		octave = 5 - (y / 144);
+		String newInterval = INTERVALS[(y % MEASURE_HEIGHT / 12)];
+		measure = parent.getCurrentMeasure() + (x / MEASURE_WIDTH);
+		beat = (x % MEASURE_WIDTH) / BEAT_WIDTH + 1;
+		place = (int)((x % BEAT_WIDTH * 0.1) * 240); // 240 is number of tick of 1/16 musical note
+		duration = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
+		interval = INTERVALS[(y % MEASURE_HEIGHT / 12)];
+		octave = MAX_OCTAVE - (y / MEASURE_HEIGHT);
 		// 音高が変化したら再発音
 		if(oldInterval != newInterval) {
 			// 無発音
@@ -173,7 +173,7 @@ public class Note extends Rectangle {
 	}
 
 	public void toneOn() {
-		int noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
+		int noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval);
 		UISynth.synth.getChannels()[0].programChange(progNumber);
 		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
 	}

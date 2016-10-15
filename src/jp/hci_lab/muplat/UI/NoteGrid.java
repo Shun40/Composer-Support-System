@@ -1,4 +1,5 @@
 import static constants.NoteGridConstants.*;
+import static constants.UniversalConstants.*;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -14,9 +15,9 @@ public class NoteGrid extends Group {
 	private int resolution;
 	private String color;
 	private Rectangle frame;
-	private Pianoroll parent;
+	private EditArea parent;
 
-	public NoteGrid(int resolution, String interval, int octave, int x, int y, int width, int height, Pianoroll parent) {
+	public NoteGrid(int resolution, String interval, int octave, int x, int y, int width, int height, EditArea parent) {
 		super();
 		this.resolution = resolution;
 		this.parent = parent;
@@ -72,23 +73,23 @@ public class NoteGrid extends Group {
 		int putX = 0;
 		int putY = (int)frame.getY();
 		int width = 0;
-		int height = 12;
+		int height = (int)frame.getHeight();
 		int clickX = (int)(e.getX() - frame.getX());
 		if(resolution == 4) {
-			width = 40;
-			if(0 <= clickX && clickX < 40) putX = (int)frame.getX();
+			width = BEAT_WIDTH;
+			if(0 <= clickX && clickX < width) putX = (int)frame.getX();
 		}
 		if(resolution == 8) {
-			width = 20;
-			if(0 <= clickX && clickX < 20) putX = (int)frame.getX();
-			else if(20 <= clickX && clickX < 40) putX = (int)frame.getX() + 20;
+			width = BEAT_WIDTH / 2;
+			if(0 <= clickX && clickX < width) putX = (int)frame.getX();
+			else if(width <= clickX && clickX < width * 2) putX = (int)frame.getX() + width;
 		}
 		if(resolution == 16) {
-			width = 10;
-			if(0 <= clickX && clickX < 10) putX = (int)frame.getX();
-			else if(10 <= clickX && clickX < 20) putX = (int)frame.getX() + 10;
-			else if(20 <= clickX && clickX < 30) putX = (int)frame.getX() + 20;
-			else if(30 <= clickX && clickX < 40) putX = (int)frame.getX() + 30;
+			width = BEAT_WIDTH / 4;
+			if(0 <= clickX && clickX < width) putX = (int)frame.getX();
+			else if(width <= clickX && clickX < width * 2) putX = (int)frame.getX() + width;
+			else if(width * 2 <= clickX && clickX < width * 3) putX = (int)frame.getX() + width * 2;
+			else if(width * 3 <= clickX && clickX < width * 4) putX = (int)frame.getX() + width * 3;
 		}
 		parent.putNote(putX, putY, width, height);
 	}

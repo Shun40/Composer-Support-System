@@ -23,7 +23,7 @@ public class Key extends Group {
 
 	public Key(String interval, int octave, int x, int y, int width, int height) {
 		super();
-		this.noteNumber = 60 + (12 * (octave - 4)) + midiNumbers.get(interval);
+		this.noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
 		this.progNumber = 0;
 		this.position = interval + Integer.toString(octave);
 		setupColor(interval);
