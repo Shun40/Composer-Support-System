@@ -104,6 +104,7 @@ public class Pianoroll extends Group {
 		vScrollBar.valueProperty().addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
 			vTranslate();
 		});
+		vScrollBar.setValue(50.0); // 真ん中らへんの音程(C4~C5あたり)を表示するよう垂直方向スクロール値を設定
 		getChildren().add(vScrollBar);
 	}
 
