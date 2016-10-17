@@ -28,16 +28,18 @@ public class Note extends Rectangle {
 	private int duration;
 	private String interval;
 	private int octave;
+	private boolean canTone; // 発音許可フラグ
 	private EditArea parent;
 
-	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, EditArea parent) {
+	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
 		super(x + 0.5, y + 0.5, width, height);
-		this.progNumber = 81;
+		this.progNumber = 0;
 		this.resolution = resolution;
 		this.minX = minX + 0.5f;
 		this.maxX = maxX + 0.5f;
 		this.minY = minY + 0.5f;
 		this.maxY = maxY + 0.5f;
+		this.canTone = canTone;
 		this.parent = parent;
 		setupColor();
 		setupEventListener();
@@ -173,6 +175,7 @@ public class Note extends Rectangle {
 	}
 
 	public void toneOn() {
+		if(!canTone) return;
 		int noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval);
 		UISynth.synth.getChannels()[0].programChange(progNumber);
 		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
@@ -188,4 +191,5 @@ public class Note extends Rectangle {
 	public int getDuration() { return duration; }
 	public String getInterval() { return interval; }
 	public int getOctave() { return octave; }
+	public void setCanTone(boolean canTone) { this.canTone = canTone; }
 }

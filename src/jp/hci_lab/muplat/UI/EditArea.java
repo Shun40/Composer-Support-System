@@ -2,6 +2,7 @@ import static constants.EditAreaConstants.*;
 import static constants.UniversalConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -193,6 +194,7 @@ public class EditArea extends Group {
 		playLine.setTranslateY(move);
 	}
 
+	// ピアノロールの格子をクリックしてノートを置く際に呼ばれる
 	public void putNote(int x, int y, int width, int height) {
 		int resolution = parent.getResolution();
 		int minX = 0;
@@ -205,9 +207,39 @@ public class EditArea extends Group {
 		double vIncPerUnit = -(MEASURE_HEIGHT * (octaveCount - SHOW_OCTAVE_COUNT)) / 100.0;
 		double vScrollBarVal = parent.getVScrollBarValue();
 		double vMove = vIncPerUnit * vScrollBarVal;
-		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, this);
+		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, true, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
+		notes.add(note);
+		getChildren().add(note);
+	}
+
+	// ファイルからノートを読み込んで置く際に呼ばれる
+	public void putNote(int measure, int beat, int place, int duration, String interval, int octave) {
+		HashMap<String, Integer> interval2index = new HashMap<String, Integer>() {
+			{put("C", 11);} {put("C#", 10);} {put("D", 9);} {put("D#", 8);} {put("E", 7);}
+			{put("F", 6);} {put("F#", 5);} {put("G", 4);} {put("G#", 3);} {put("A", 2);} {put("A#", 1);} {put("B", 0);}
+		};
+		int x = MEASURE_WIDTH * (measure - 1) + BEAT_WIDTH * (beat - 1) + 10 * (place / 240);
+		int y = MEASURE_HEIGHT * (MAX_OCTAVE - octave) + NOTE_GRID_HEIGHT * interval2index.get(interval);
+		int width = 10 * (duration / 240);
+		int height = NOTE_GRID_HEIGHT;
+
+		int resolution = parent.getResolution();
+		int minX = 0;
+		int maxX = minX + MEASURE_WIDTH * measureCount;
+		int minY = 0;
+		int maxY = minY + MEASURE_HEIGHT * octaveCount;
+		double hIncPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
+		double hScrollBarVal = parent.getHScrollBarValue();
+		double hMove = hIncPerUnit * hScrollBarVal;
+		double vIncPerUnit = -(MEASURE_HEIGHT * (octaveCount - SHOW_OCTAVE_COUNT)) / 100.0;
+		double vScrollBarVal = parent.getVScrollBarValue();
+		double vMove = vIncPerUnit * vScrollBarVal;
+		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, false, this);
+		note.setTranslateX(hMove);
+		note.setTranslateY(vMove);
+		note.setCanTone(true); // ノートの配置が完了したら発音許可フラグを真にしてやる
 		notes.add(note);
 		getChildren().add(note);
 	}

@@ -54,4 +54,8 @@ public class BpmLabel extends Label {
 			}
 		}
 	}
+
+	public void changeBpm(int bpm) {
+		setText("BPM: " + bpm);
+	}
 }

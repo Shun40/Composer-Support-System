@@ -1,6 +1,8 @@
 import static constants.PianorollConstants.*;
 import static constants.UniversalConstants.*;
 
+import java.util.ArrayList;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -173,7 +175,12 @@ public class Pianoroll extends Group {
 		hScrollBar.setValue(0.0);
 	}
 
+	public void putNote(int measure, int beat, int place, int duration, String interval, int octave) {
+		editArea.putNote(measure, beat, place, duration, interval, octave);
+	}
+
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
+	public ArrayList<Note> getNotes() { return editArea.getNotes(); }
 	public double getHScrollBarValue() { return hScrollBar.getValue(); }
 	public double getVScrollBarValue() { return vScrollBar.getValue(); }
 	public DoubleProperty getHScrollBarValueProperty() { return hScrollBar.valueProperty(); }
@@ -181,6 +188,9 @@ public class Pianoroll extends Group {
 	public int getMeasureCount() { return measureCount; }
 	public int getOctaveCount() { return octaveCount; }
 	public int getBpm() { return bpm; }
-	public void setBpm(int bpm) { this.bpm = bpm; }
+	public void setBpm(int bpm) {
+		this.bpm = bpm;
+		bpmLabel.changeBpm(bpm);
+	}
 	public int getCurrentMeasure() { return currentMeasure; }
 }
