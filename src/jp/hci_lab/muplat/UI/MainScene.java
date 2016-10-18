@@ -70,15 +70,13 @@ public class MainScene extends Scene {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(readFile));
 				pianoroll.setBpm(Integer.parseInt(br.readLine()));
+				pianoroll.removeAllNote();
 				String note = br.readLine();
 				while(note != null) {
-					int measure     = Integer.parseInt(note.split(":", -1)[0]);
-					int beat        = Integer.parseInt(note.split(":", -1)[1]);
-					int place       = Integer.parseInt(note.split(":", -1)[2]);
-					int duration    = Integer.parseInt(note.split(":", -1)[3]);
-					String interval = note.split(":", -1)[4];
-					int octave      = Integer.parseInt(note.split(":", -1)[5]);
-					pianoroll.putNote(measure, beat, place, duration, interval, octave);
+					int position   = Integer.parseInt(note.split(":", -1)[0]);
+					int noteNumber = Integer.parseInt(note.split(":", -1)[1]);
+					int duration   = Integer.parseInt(note.split(":", -1)[2]);
+					pianoroll.putNote(position, noteNumber, duration);
 
 					note = br.readLine();
 				}
@@ -108,12 +106,9 @@ public class MainScene extends Scene {
 				pw.println(bpm);
 				for(Note note : notes) {
 					pw.println(
-						note.getMeasure() + ":"+
-						note.getBeat() + ":" +
-						note.getPlace() + ":" +
-						note.getDuration() + ":" +
-						note.getInterval() + ":" +
-						note.getOctave()
+						note.getPosition() + ":"+
+						note.getNoteNumber() + ":" +
+						note.getDuration()
 					);
 				}
 				pw.close();

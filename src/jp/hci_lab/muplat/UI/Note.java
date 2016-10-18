@@ -15,25 +15,19 @@ import javafx.scene.shape.Rectangle;
  * @author Shun Yamashita
  */
 public class Note extends Rectangle {
-	private int progNumber;
+	private NoteInformation noteInformation;
 	private int resolution;
 	private float minX;
 	private float maxX;
 	private float minY;
 	private float maxY;
 	private String pressedPos;
-	private int measure;
-	private int beat;
-	private int place;
-	private int duration;
-	private String interval;
-	private int octave;
 	private boolean canTone; // 発音許可フラグ
 	private EditArea parent;
 
 	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
 		super(x + 0.5, y + 0.5, width, height);
-		this.progNumber = 0;
+		this.noteInformation = new NoteInformation(-1, -1, -1, -1, -1, -1, -1, 100, -1, 1, this);
 		this.resolution = resolution;
 		this.minX = minX + 0.5f;
 		this.maxX = maxX + 0.5f;
@@ -43,7 +37,7 @@ public class Note extends Rectangle {
 		this.parent = parent;
 		setupColor();
 		setupEventListener();
-		updateNoteInfo();
+		noteInformation.updateNoteInfo();
 	}
 
 	public void setupColor() {
@@ -84,7 +78,7 @@ public class Note extends Rectangle {
 				pressedPos = "right";
 			}
 			// 発音
-			toneOn();
+			toneOn(noteInformation.getNoteNumber(), noteInformation.getProgNumber(), noteInformation.getVelocity());
 		} else { // Right Click
 			removeNote();
 		}
@@ -101,8 +95,8 @@ public class Note extends Rectangle {
 	public void drag(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			verticalDrug(e);
-			horizontalDrug2(e);
-			updateNoteInfo();
+			horizontalDrug(e);
+			noteInformation.updateNoteInfo();
 		}
 	}
 
@@ -118,7 +112,7 @@ public class Note extends Rectangle {
 		}
 	}
 
-	public void horizontalDrug2(MouseEvent e) {
+	public void horizontalDrug(MouseEvent e) {
 		int moveX = (int)(e.getX() - getX());
 		int resolutionWidth = MEASURE_WIDTH / resolution;
 		if(pressedPos.equals("right") && 0 <= moveX) {
@@ -154,42 +148,25 @@ public class Note extends Rectangle {
 		this.resolution = resolution;
 	}
 
-	public void updateNoteInfo() {
-		int x = (int)(getX() - 0.5);
-		int y = (int)(getY() - 0.5);
-		String oldInterval = interval;
-		String newInterval = INTERVALS[(y % MEASURE_HEIGHT / 12)];
-		measure = parent.getCurrentMeasure() + (x / MEASURE_WIDTH);
-		beat = (x % MEASURE_WIDTH) / BEAT_WIDTH + 1;
-		place = (int)((x % BEAT_WIDTH * 0.1) * 240); // 240 is number of tick of 1/16 musical note
-		duration = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
-		interval = INTERVALS[(y % MEASURE_HEIGHT / 12)];
-		octave = MAX_OCTAVE - (y / MEASURE_HEIGHT);
-		// 音高が変化したら再発音
-		if(oldInterval != newInterval) {
-			// 無発音
-			toneOff();
-			// 発音
-			toneOn();
-		}
-	}
-
-	public void toneOn() {
+	public void toneOn(int noteNumber, int progNumber, int velocity) {
 		if(!canTone) return;
-		int noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval);
 		UISynth.synth.getChannels()[0].programChange(progNumber);
-		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
+		UISynth.synth.getChannels()[0].noteOn(noteNumber, velocity);
 	}
 
 	public void toneOff() {
 		UISynth.synth.getChannels()[0].allNotesOff();
 	}
 
-	public int getMeasure() { return measure; };
-	public int getBeat() { return beat; }
-	public int getPlace() { return place; }
-	public int getDuration() { return duration; }
-	public String getInterval() { return interval; }
-	public int getOctave() { return octave; }
+	public int getMeasure() { return noteInformation.getMeasure(); };
+	public int getBeat() { return noteInformation.getBeat(); }
+	public int getPlace() { return noteInformation.getPlace(); }
+	public int getDuration() { return noteInformation.getDuration(); }
+	public int getInterval() { return noteInformation.getInterval(); }
+	public int getOctave() { return noteInformation.getOctave(); }
+	public int getPosition() { return noteInformation.getPosition(); }
+	public int getVelocity() { return noteInformation.getVelocity(); }
+	public int getNoteNumber() { return noteInformation.getNoteNumber(); }
+	public int getProgNumber() { return  noteInformation.getProgNumber(); }
 	public void setCanTone(boolean canTone) { this.canTone = canTone; }
 }

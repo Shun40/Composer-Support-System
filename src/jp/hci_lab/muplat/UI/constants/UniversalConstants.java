@@ -23,7 +23,7 @@ public class UniversalConstants {
 	public static final int DEFAULT_OCTAVE = 5; // オクターブ数
 	public static final int MAX_OCTAVE = 6; // オクターブの最高値
 	public static final int SHOW_MEASURE_COUNT = 4; // ピアノロール上に表示する小節数
-	public static final int SHOW_OCTAVE_COUNT = 2; // ピアノロール上に表示するオクターブ数
+	public static final int SHOW_OCTAVE_COUNT = 3; // ピアノロール上に表示するオクターブ数
 
 	public static final int MEASURE_WIDTH = 160;
 	public static final int MEASURE_HEIGHT = 144;

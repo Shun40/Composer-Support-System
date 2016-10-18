@@ -17,7 +17,6 @@ public class Pianoroll extends Group {
 	private int measureCount;
 	private int octaveCount;
 	private int bpm;
-	private int currentMeasure;
 	private MainScene parent;
 
 	private NoteResolutionSelector noteResolutionSelector;
@@ -35,7 +34,6 @@ public class Pianoroll extends Group {
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
 		this.bpm = bpm;
-		this.currentMeasure = 1;
 		this.parent = parent;
 		setupNoteResolutionSelector();
 		setupBpmLabel();
@@ -175,8 +173,12 @@ public class Pianoroll extends Group {
 		hScrollBar.setValue(0.0);
 	}
 
-	public void putNote(int measure, int beat, int place, int duration, String interval, int octave) {
-		editArea.putNote(measure, beat, place, duration, interval, octave);
+	public void putNote(int position, int noteNumber, int duration) {
+		editArea.putNote(position, noteNumber, duration);
+	}
+
+	public void removeAllNote() {
+		editArea.removeAllNote();
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
@@ -192,5 +194,4 @@ public class Pianoroll extends Group {
 		this.bpm = bpm;
 		bpmLabel.changeBpm(bpm);
 	}
-	public int getCurrentMeasure() { return currentMeasure; }
 }

@@ -2,7 +2,6 @@ import static constants.EditAreaConstants.*;
 import static constants.UniversalConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -195,19 +194,19 @@ public class EditArea extends Group {
 	}
 
 	// ピアノロールの格子をクリックしてノートを置く際に呼ばれる
-	public void putNote(int x, int y, int width, int height) {
-		int resolution = parent.getResolution();
+	public void putNote(int x, int y, int w, int h) {
 		int minX = 0;
-		int maxX = minX + MEASURE_WIDTH * measureCount;
 		int minY = 0;
+		int maxX = minX + MEASURE_WIDTH * measureCount;
 		int maxY = minY + MEASURE_HEIGHT * octaveCount;
 		double hIncPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
-		double hScrollBarVal = parent.getHScrollBarValue();
-		double hMove = hIncPerUnit * hScrollBarVal;
 		double vIncPerUnit = -(MEASURE_HEIGHT * (octaveCount - SHOW_OCTAVE_COUNT)) / 100.0;
+		double hScrollBarVal = parent.getHScrollBarValue();
 		double vScrollBarVal = parent.getVScrollBarValue();
-		double vMove = vIncPerUnit * vScrollBarVal;
-		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, true, this);
+		int hMove = (int)(hIncPerUnit * hScrollBarVal);
+		int vMove = (int)(vIncPerUnit * vScrollBarVal);
+		int resolution = parent.getResolution();
+		Note note = new Note(x, y, w, h, resolution, minX, maxX, minY, maxY, true, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
 		notes.add(note);
@@ -215,28 +214,23 @@ public class EditArea extends Group {
 	}
 
 	// ファイルからノートを読み込んで置く際に呼ばれる
-	public void putNote(int measure, int beat, int place, int duration, String interval, int octave) {
-		HashMap<String, Integer> interval2index = new HashMap<String, Integer>() {
-			{put("C", 11);} {put("C#", 10);} {put("D", 9);} {put("D#", 8);} {put("E", 7);}
-			{put("F", 6);} {put("F#", 5);} {put("G", 4);} {put("G#", 3);} {put("A", 2);} {put("A#", 1);} {put("B", 0);}
-		};
-		int x = MEASURE_WIDTH * (measure - 1) + BEAT_WIDTH * (beat - 1) + 10 * (place / 240);
-		int y = MEASURE_HEIGHT * (MAX_OCTAVE - octave) + NOTE_GRID_HEIGHT * interval2index.get(interval);
-		int width = 10 * (duration / 240);
-		int height = NOTE_GRID_HEIGHT;
-
-		int resolution = parent.getResolution();
+	public void putNote(int position, int noteNumber, int duration) {
+		int x = (BEAT_WIDTH / 4) * (position / 240);
+		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - noteNumber);
+		int w = (BEAT_WIDTH / 4) * (duration / 240);
+		int h = NOTE_GRID_HEIGHT;
 		int minX = 0;
-		int maxX = minX + MEASURE_WIDTH * measureCount;
 		int minY = 0;
+		int maxX = minX + MEASURE_WIDTH * measureCount;
 		int maxY = minY + MEASURE_HEIGHT * octaveCount;
 		double hIncPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
-		double hScrollBarVal = parent.getHScrollBarValue();
-		double hMove = hIncPerUnit * hScrollBarVal;
 		double vIncPerUnit = -(MEASURE_HEIGHT * (octaveCount - SHOW_OCTAVE_COUNT)) / 100.0;
+		double hScrollBarVal = parent.getHScrollBarValue();
 		double vScrollBarVal = parent.getVScrollBarValue();
-		double vMove = vIncPerUnit * vScrollBarVal;
-		Note note = new Note(x, y, width, height, resolution, minX, maxX, minY, maxY, false, this);
+		int hMove = (int)(hIncPerUnit * hScrollBarVal);
+		int vMove = (int)(vIncPerUnit * vScrollBarVal);
+		int resolution = parent.getResolution();
+		Note note = new Note(x, y, w, h, resolution, minX, maxX, minY, maxY, false, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
 		note.setCanTone(true); // ノートの配置が完了したら発音許可フラグを真にしてやる
@@ -247,6 +241,13 @@ public class EditArea extends Group {
 	public void removeNote(Note note) {
 		notes.remove(note);
 		getChildren().remove(note);
+	}
+
+	public void removeAllNote() {
+		for(Note note : notes) {
+			getChildren().remove(note);
+		}
+		notes.clear();
 	}
 
 	public void setupBeforePlay() {
@@ -305,8 +306,6 @@ public class EditArea extends Group {
 	public void stop() {
 		playTimeline.stop();
 	}
-
-	public int getCurrentMeasure() { return parent.getCurrentMeasure(); }
 
 	public ArrayList<Note> getNotes() { return notes; }
 	public Timeline getPlayTimeline() { return playTimeline; }
