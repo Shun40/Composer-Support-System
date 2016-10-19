@@ -49,6 +49,10 @@ public class MainScene extends Scene {
 		uiController.addNote(note);
 	}
 
+	public void removeAllNote() {
+		uiController.removeAllNote();
+	}
+
 	public void play() {
 		uiController.play();
 	}

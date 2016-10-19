@@ -159,6 +159,7 @@ public class Pianoroll extends Group {
 
 		// エンジンへのセットアップ
 		parent.setBpm(bpm);
+		parent.removeAllNote();
 		for(Note note : editArea.getNotes()) {
 			parent.addNote(note);
 		}
