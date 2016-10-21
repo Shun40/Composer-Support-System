@@ -17,6 +17,7 @@ public class Pianoroll extends Group {
 	private int measureCount;
 	private int octaveCount;
 	private int bpm;
+	private int currentChannel;
 	private MainScene parent;
 
 	private NoteResolutionSelector noteResolutionSelector;
@@ -28,12 +29,14 @@ public class Pianoroll extends Group {
 	private Keyboard keyboard;
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
+	private InstrumentSelector instrumentSelector;
 
 	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
 		this.bpm = bpm;
+		this.currentChannel = 1;
 		this.parent = parent;
 		setupNoteResolutionSelector();
 		setupBpmLabel();
@@ -44,6 +47,7 @@ public class Pianoroll extends Group {
 		setupKeyboard();
 		setupHScrollBar();
 		setupVScrollBar();
+		setupInstrumentSelector();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -108,6 +112,11 @@ public class Pianoroll extends Group {
 		getChildren().add(vScrollBar);
 	}
 
+	public void setupInstrumentSelector() {
+		instrumentSelector = new InstrumentSelector(INSTRUMENTS_SELECTOR_X, INSTRUMENTS_SELECTOR_Y, this);
+		getChildren().add(instrumentSelector);
+	}
+
 	public void hTranslate() {
 		double incPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
 		double hScrollBarVal = hScrollBar.getValue();
@@ -126,7 +135,6 @@ public class Pianoroll extends Group {
 
 	public void changedNoteResolution(int resolution) {
 		editArea.updateSnapLines(resolution);
-		editArea.updateNoteResolution(resolution);
 		editArea.updateNoteGridResolution(resolution);
 	}
 
@@ -171,11 +179,20 @@ public class Pianoroll extends Group {
 		stopButton.setDisable(true);
 		playButton.setDisable(false);
 		editArea.setupAfterPlay();
+		editArea.changeCurrentChannel(currentChannel);
 		hScrollBar.setValue(0.0);
 	}
 
-	public void putNote(int position, int noteNumber, int duration) {
-		editArea.putNote(position, noteNumber, duration);
+	public void putNote(int noteNumber, int position, int duration) {
+		editArea.putNote(noteNumber, position, duration);
+	}
+
+	public void addNote(Note note) {
+		parent.addNote(note);
+	}
+
+	public void removeNote(Note note) {
+		parent.removeNote(note);
 	}
 
 	public void removeAllNote() {
@@ -194,5 +211,12 @@ public class Pianoroll extends Group {
 	public void setBpm(int bpm) {
 		this.bpm = bpm;
 		bpmLabel.changeBpm(bpm);
+		parent.setBpm(bpm);
+	}
+	public int getCurrentChannel() { return currentChannel; }
+	public void setCurrentChannel(int currentChannel) {
+		this.currentChannel = currentChannel;
+		editArea.changeCurrentChannel(currentChannel);
+		keyboard.changeInstrument(currentChannel, PROG_NUMBERS[currentChannel - 1]);
 	}
 }

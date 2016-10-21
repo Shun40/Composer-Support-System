@@ -49,6 +49,10 @@ public class MainScene extends Scene {
 		uiController.addNote(note);
 	}
 
+	public void removeNote(Note note) {
+		uiController.removeNote(note);
+	}
+
 	public void removeAllNote() {
 		uiController.removeAllNote();
 	}
@@ -59,6 +63,10 @@ public class MainScene extends Scene {
 
 	public void stop() {
 		uiController.stop();
+	}
+
+	public void close() {
+		uiController.close();
 	}
 
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装
@@ -77,10 +85,12 @@ public class MainScene extends Scene {
 				pianoroll.removeAllNote();
 				String note = br.readLine();
 				while(note != null) {
-					int position   = Integer.parseInt(note.split(":", -1)[0]);
-					int noteNumber = Integer.parseInt(note.split(":", -1)[1]);
-					int duration   = Integer.parseInt(note.split(":", -1)[2]);
-					pianoroll.putNote(position, noteNumber, duration);
+					int channel    = Integer.parseInt(note.split(":", -1)[0]);
+					int noteNumber = Integer.parseInt(note.split(":", -1)[2]);
+					int position   = Integer.parseInt(note.split(":", -1)[3]);
+					int duration   = Integer.parseInt(note.split(":", -1)[4]);
+					pianoroll.setCurrentChannel(channel);
+					pianoroll.putNote(noteNumber, position, duration);
 
 					note = br.readLine();
 				}
@@ -110,9 +120,11 @@ public class MainScene extends Scene {
 				pw.println(bpm);
 				for(Note note : notes) {
 					pw.println(
-						note.getPosition() + ":"+
-						note.getNoteNumber() + ":" +
-						note.getDuration()
+						note.getNoteInformation().getChannel() + ":" +
+						note.getNoteInformation().getProgNumber() + ":" +
+						note.getNoteInformation().getNoteNumber() + ":" +
+						note.getNoteInformation().getPosition() + ":"+
+						note.getNoteInformation().getDuration()
 					);
 				}
 				pw.close();

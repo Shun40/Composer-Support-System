@@ -83,6 +83,17 @@ public class Keyboard extends Group{
 		}
 		for(Key blackKey : blackKeys) {
 			blackKey.setTranslateY(move);
+		}
 	}
+
+	public void changeInstrument(int trackNumber, int progNumber) {
+		for(Key whiteKey : whiteKeys) {
+			whiteKey.setTrackNumber(trackNumber);
+			whiteKey.setProgNumber(progNumber);
+		}
+		for(Key blackKey : blackKeys) {
+			blackKey.setTrackNumber(trackNumber);
+			blackKey.setProgNumber(progNumber);
+		}
 	}
 }

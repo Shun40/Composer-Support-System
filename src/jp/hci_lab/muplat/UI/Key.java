@@ -14,8 +14,9 @@ import javafx.scene.text.Font;
  * @author Shun Yamashita
  */
 public class Key extends Group {
-	private int noteNumber;
+	private int trackNumber;
 	private int progNumber;
+	private int noteNumber;
 	private String position;
 	private String normalColor;
 	private String shadowColor;
@@ -23,8 +24,9 @@ public class Key extends Group {
 
 	public Key(String interval, int octave, int x, int y, int width, int height) {
 		super();
+		this.trackNumber = 1;
+		this.progNumber = PROG_NUMBERS[trackNumber - 1];
 		this.noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
-		this.progNumber = 0;
 		this.position = interval + Integer.toString(octave);
 		setupColor(interval);
 		setupFrame(x, y, width, height);
@@ -86,11 +88,14 @@ public class Key extends Group {
 	}
 
 	public void toneOn() {
-		UISynth.synth.getChannels()[0].programChange(progNumber);
-		UISynth.synth.getChannels()[0].noteOn(noteNumber, 100);
+		UISynth.synth.getChannels()[trackNumber - 1].programChange(progNumber - 1);
+		UISynth.synth.getChannels()[trackNumber - 1].noteOn(noteNumber, 100);
 	}
 
 	public void toneOff() {
-		UISynth.synth.getChannels()[0].allNotesOff();
+		UISynth.synth.getChannels()[trackNumber - 1].allNotesOff();
 	}
+
+	public void setTrackNumber(int trackNumber) { this.trackNumber = trackNumber; }
+	public void setProgNumber(int progNumber) { this.progNumber = progNumber; }
 }

@@ -95,7 +95,7 @@ public class NoteGrid extends Group {
 	}
 
 	public void toneOff() {
-		UISynth.synth.getChannels()[0].allNotesOff();
+		UISynth.toneOff(parent.getCurrentChannel());
 	}
 
 	public void setResolution(int resolution) { this.resolution = resolution; }

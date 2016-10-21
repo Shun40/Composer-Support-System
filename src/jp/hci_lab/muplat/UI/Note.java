@@ -4,7 +4,6 @@ import static constants.UniversalConstants.*;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -16,7 +15,6 @@ import javafx.scene.shape.Rectangle;
  */
 public class Note extends Rectangle {
 	private NoteInformation noteInformation;
-	private int resolution;
 	private float minX;
 	private float maxX;
 	private float minY;
@@ -25,10 +23,8 @@ public class Note extends Rectangle {
 	private boolean canTone; // 発音許可フラグ
 	private EditArea parent;
 
-	public Note(int x, int y, int width, int height, int resolution, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
+	public Note(int x, int y, int width, int height, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
 		super(x + 0.5, y + 0.5, width, height);
-		this.noteInformation = new NoteInformation(-1, -1, -1, -1, -1, -1, -1, 100, -1, 1, this);
-		this.resolution = resolution;
 		this.minX = minX + 0.5f;
 		this.maxX = maxX + 0.5f;
 		this.minY = minY + 0.5f;
@@ -37,11 +33,24 @@ public class Note extends Rectangle {
 		this.parent = parent;
 		setupColor();
 		setupEventListener();
-		noteInformation.updateNoteInfo();
+		setupNoteInformation();
+	}
+
+	public void setupNoteInformation() {
+		int channel     = parent.getCurrentChannel();
+		int progNumber  = PROG_NUMBERS[channel - 1];
+		int noteNumber  = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
+		int position    = (int)(240 * ((getX() - 0.5) / 10)); // 240 is number of tick of 1/16 musical note
+		int duration    = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
+		int velocity    = 100;
+		this.noteInformation = new NoteInformation(channel, progNumber, noteNumber, position, duration, velocity, this);
+		// 発音
+		toneOn(channel, progNumber, noteNumber, velocity);
 	}
 
 	public void setupColor() {
-		Stop[] stops = new Stop[] { new Stop(0.0, Color.BLUE), new Stop(1.0, Color.AQUAMARINE) };
+		int channel = parent.getCurrentChannel();
+		Stop[] stops = new Stop[] { new Stop(0.0, INSTRUMENTS_DARK_COLORS[channel - 1]), new Stop(1.0, INSTRUMENTS_LIGHT_COLORS[channel - 1]) };
 		LinearGradient grad = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
 		setFill(grad);
 		setStyle(DEFAULT_STYLE);
@@ -78,7 +87,7 @@ public class Note extends Rectangle {
 				pressedPos = "right";
 			}
 			// 発音
-			toneOn(noteInformation.getNoteNumber(), noteInformation.getProgNumber(), noteInformation.getVelocity());
+			toneOn(noteInformation.getChannel(), noteInformation.getProgNumber(), noteInformation.getNoteNumber(), noteInformation.getVelocity());
 		} else { // Right Click
 			removeNote();
 		}
@@ -87,7 +96,7 @@ public class Note extends Rectangle {
 	public void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			// 無発音
-			toneOff();
+			toneOff(noteInformation.getChannel());
 		} else {
 		}
 	}
@@ -113,6 +122,7 @@ public class Note extends Rectangle {
 	}
 
 	public void horizontalDrug(MouseEvent e) {
+		int resolution = parent.getResolution();
 		int moveX = (int)(e.getX() - getX());
 		int resolutionWidth = MEASURE_WIDTH / resolution;
 		if(pressedPos.equals("right") && 0 <= moveX) {
@@ -144,29 +154,28 @@ public class Note extends Rectangle {
 		parent.removeNote(this);
 	}
 
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	public void updateView(int currentChannel) {
+		int channel = noteInformation.getChannel();
+		if(channel == currentChannel) {
+			toFront();
+			setOpacity(1.0);
+			setDisable(false);
+		} else {
+			setOpacity(0.5);
+			setDisable(true);
+		}
 	}
 
-	public void toneOn(int noteNumber, int progNumber, int velocity) {
+	public void toneOn(int channel, int progNumber, int noteNumber, int velocity) {
 		if(!canTone) return;
-		UISynth.synth.getChannels()[0].programChange(progNumber);
-		UISynth.synth.getChannels()[0].noteOn(noteNumber, velocity);
+		UISynth.changeProgram(channel, progNumber);
+		UISynth.toneOn(channel, noteNumber, velocity);
 	}
 
-	public void toneOff() {
-		UISynth.synth.getChannels()[0].allNotesOff();
+	public void toneOff(int channel) {
+		UISynth.toneOff(channel);
 	}
 
-	public int getMeasure() { return noteInformation.getMeasure(); };
-	public int getBeat() { return noteInformation.getBeat(); }
-	public int getPlace() { return noteInformation.getPlace(); }
-	public int getDuration() { return noteInformation.getDuration(); }
-	public int getInterval() { return noteInformation.getInterval(); }
-	public int getOctave() { return noteInformation.getOctave(); }
-	public int getPosition() { return noteInformation.getPosition(); }
-	public int getVelocity() { return noteInformation.getVelocity(); }
-	public int getNoteNumber() { return noteInformation.getNoteNumber(); }
-	public int getProgNumber() { return  noteInformation.getProgNumber(); }
+	public NoteInformation getNoteInformation() { return noteInformation; }
 	public void setCanTone(boolean canTone) { this.canTone = canTone; }
 }

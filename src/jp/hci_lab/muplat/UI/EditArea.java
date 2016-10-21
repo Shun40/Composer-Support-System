@@ -115,6 +115,7 @@ public class EditArea extends Group {
 		playLine = new Line(0 + 0.5, startY, 0 + 0.5, endY);
 		playLine.setStrokeLineCap(StrokeLineCap.BUTT);
 		playLine.setStroke(Color.web("#FF0000"));
+		playLine.toFront();
 		getChildren().add(playLine);
 	}
 
@@ -140,12 +141,6 @@ public class EditArea extends Group {
 		for(int n = 0; n < snapLines.length; n++) {
 			if(n % indexResolution == 0) snapLines[n].setVisible(true);
 			else snapLines[n].setVisible(false);
-		}
-	}
-
-	public void updateNoteResolution(int resolution) {
-		for(Note note : notes) {
-			note.setResolution(resolution);
 		}
 	}
 
@@ -205,16 +200,18 @@ public class EditArea extends Group {
 		double vScrollBarVal = parent.getVScrollBarValue();
 		int hMove = (int)(hIncPerUnit * hScrollBarVal);
 		int vMove = (int)(vIncPerUnit * vScrollBarVal);
-		int resolution = parent.getResolution();
-		Note note = new Note(x, y, w, h, resolution, minX, maxX, minY, maxY, true, this);
+		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, true, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
 		notes.add(note);
 		getChildren().add(note);
+
+		// エンジンへノート追加
+		//parent.addNote(note);
 	}
 
 	// ファイルからノートを読み込んで置く際に呼ばれる
-	public void putNote(int position, int noteNumber, int duration) {
+	public void putNote(int noteNumber, int position, int duration) {
 		int x = (BEAT_WIDTH / 4) * (position / 240);
 		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - noteNumber);
 		int w = (BEAT_WIDTH / 4) * (duration / 240);
@@ -229,18 +226,23 @@ public class EditArea extends Group {
 		double vScrollBarVal = parent.getVScrollBarValue();
 		int hMove = (int)(hIncPerUnit * hScrollBarVal);
 		int vMove = (int)(vIncPerUnit * vScrollBarVal);
-		int resolution = parent.getResolution();
-		Note note = new Note(x, y, w, h, resolution, minX, maxX, minY, maxY, false, this);
+		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, false, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
 		note.setCanTone(true); // ノートの配置が完了したら発音許可フラグを真にしてやる
 		notes.add(note);
 		getChildren().add(note);
+
+		// エンジンへノート追加
+		//parent.addNote(note);
 	}
 
 	public void removeNote(Note note) {
 		notes.remove(note);
 		getChildren().remove(note);
+
+		// エンジンからノート削除
+		//parent.addNote(note);
 	}
 
 	public void removeAllNote() {
@@ -248,6 +250,12 @@ public class EditArea extends Group {
 			getChildren().remove(note);
 		}
 		notes.clear();
+	}
+
+	public void changeCurrentChannel(int currentChannel) {
+		for(Note note : notes) {
+			note.updateView(currentChannel);
+		}
 	}
 
 	public void setupBeforePlay() {
@@ -259,7 +267,6 @@ public class EditArea extends Group {
 				element.setDisable(true);
 			}
 		}
-		playLine.toFront();
 		playLine.setLayoutX(0);
 	}
 
@@ -306,6 +313,9 @@ public class EditArea extends Group {
 	public void stop() {
 		playTimeline.stop();
 	}
+
+	public int getCurrentChannel() { return parent.getCurrentChannel(); }
+	public int getResolution() { return parent.getResolution(); }
 
 	public ArrayList<Note> getNotes() { return notes; }
 	public Timeline getPlayTimeline() { return playTimeline; }
