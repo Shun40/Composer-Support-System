@@ -27,6 +27,7 @@ public class Main extends Application {
 
 	public void close() {
 		scene.close();
+		UISynth.close();
 		Platform.exit();
 	}
 

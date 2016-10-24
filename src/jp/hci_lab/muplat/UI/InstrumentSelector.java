@@ -12,6 +12,7 @@ import javafx.scene.control.ToggleGroup;
  */
 public class InstrumentSelector extends Group {
 	private final ToggleGroup toggleGroup;
+	private RadioButton[] radioButtons;
 	private Pianoroll parent;
 
 	public InstrumentSelector(int x, int y, Pianoroll parent) {
@@ -29,15 +30,16 @@ public class InstrumentSelector extends Group {
 	}
 
 	public void setupRadioButtons() {
+		radioButtons = new RadioButton[INSTRUMENTS.length];
 		for(int n = 0; n < INSTRUMENTS.length; n++) {
-			RadioButton rb = new RadioButton("[" + Integer.toString(n + 1) + "] " + INSTRUMENTS[n]);
-			rb.setUserData(CHANNEL_NUMBERS[n]);
-			rb.setTextFill(INSTRUMENTS_DARK_COLORS[n]);
-			rb.setLayoutX(0);
-			rb.setLayoutY(30 * n);
-			rb.setToggleGroup(toggleGroup);
-			if(n == 0) rb.setSelected(true);
-			getChildren().add(rb);
+			radioButtons[n] = new RadioButton("[" + Integer.toString(n + 1) + "] " + INSTRUMENTS[n]);
+			radioButtons[n].setUserData(CHANNEL_NUMBERS[n]);
+			radioButtons[n].setTextFill(INSTRUMENTS_DARK_COLORS[n]);
+			radioButtons[n].setLayoutX(0);
+			radioButtons[n].setLayoutY(30 * n);
+			radioButtons[n].setToggleGroup(toggleGroup);
+			if(n == 0) radioButtons[n].setSelected(true);
+			getChildren().add(radioButtons[n]);
 		}
 	}
 
@@ -45,5 +47,9 @@ public class InstrumentSelector extends Group {
 		toggleGroup.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle oldToggle, Toggle newToggle) -> {
 			parent.setCurrentChannel((int)toggleGroup.getSelectedToggle().getUserData());
 		});
+	}
+
+	public void setSelectedChannel(int selectedChannel) {
+		toggleGroup.selectToggle(radioButtons[selectedChannel - 1]);
 	}
 }

@@ -45,16 +45,16 @@ public class MainScene extends Scene {
 		uiController.setBpm(bpm);
 	}
 
-	public void addNote(Note note) {
-		uiController.addNote(note);
+	public void addNoteToEngine(Note note) {
+		uiController.addNoteToEngine(note);
 	}
 
-	public void removeNote(Note note) {
-		uiController.removeNote(note);
+	public void removeNoteFromEngine(Note note) {
+		uiController.removeNoteFromEngine(note);
 	}
 
-	public void removeAllNote() {
-		uiController.removeAllNote();
+	public void clearNoteFromEngine() {
+		uiController.clearNoteFromEngine();
 	}
 
 	public void play() {
@@ -82,13 +82,14 @@ public class MainScene extends Scene {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(readFile));
 				pianoroll.setBpm(Integer.parseInt(br.readLine()));
-				pianoroll.removeAllNote();
+				pianoroll.clearNoteFromUi();
+				pianoroll.clearNoteFromEngine();
 				String note = br.readLine();
 				while(note != null) {
 					int channel    = Integer.parseInt(note.split(":", -1)[0]);
-					int noteNumber = Integer.parseInt(note.split(":", -1)[2]);
-					int position   = Integer.parseInt(note.split(":", -1)[3]);
-					int duration   = Integer.parseInt(note.split(":", -1)[4]);
+					int noteNumber = Integer.parseInt(note.split(":", -1)[1]);
+					int position   = Integer.parseInt(note.split(":", -1)[2]);
+					int duration   = Integer.parseInt(note.split(":", -1)[3]);
 					pianoroll.setCurrentChannel(channel);
 					pianoroll.putNote(noteNumber, position, duration);
 
@@ -121,7 +122,6 @@ public class MainScene extends Scene {
 				for(Note note : notes) {
 					pw.println(
 						note.getNoteInformation().getChannel() + ":" +
-						note.getNoteInformation().getProgNumber() + ":" +
 						note.getNoteInformation().getNoteNumber() + ":" +
 						note.getNoteInformation().getPosition() + ":"+
 						note.getNoteInformation().getDuration()

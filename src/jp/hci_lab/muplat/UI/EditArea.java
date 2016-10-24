@@ -188,8 +188,40 @@ public class EditArea extends Group {
 		playLine.setTranslateY(move);
 	}
 
-	// ピアノロールの格子をクリックしてノートを置く際に呼ばれる
-	public void putNote(int x, int y, int w, int h) {
+	public void addNoteToUi(Note note) {
+		if(!notes.contains(note)) {
+			notes.add(note);
+			getChildren().add(note);
+		}
+	}
+
+	public void addNoteToEngine(Note note) {
+		parent.addNoteToEngine(note);
+	}
+
+	public void removeNoteFromUi(Note note) {
+		if(notes.contains(note)) {
+			notes.remove(note);
+			getChildren().remove(note);
+		}
+	}
+
+	public void removeNoteFromEngine(Note note) {
+		parent.removeNoteFromEngine(note);
+	}
+
+	public void clearNoteFromUi() {
+		for(Note note : notes) {
+			getChildren().remove(note);
+		}
+		notes.clear();
+	}
+
+	public void clearNoteFromEngine() {
+		parent.clearNoteFromEngine();
+	}
+
+	public void putNote(int x, int y, int w, int h, boolean canTone) {
 		int minX = 0;
 		int minY = 0;
 		int maxX = minX + MEASURE_WIDTH * measureCount;
@@ -200,14 +232,12 @@ public class EditArea extends Group {
 		double vScrollBarVal = parent.getVScrollBarValue();
 		int hMove = (int)(hIncPerUnit * hScrollBarVal);
 		int vMove = (int)(vIncPerUnit * vScrollBarVal);
-		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, true, this);
+		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, canTone, this);
 		note.setTranslateX(hMove);
 		note.setTranslateY(vMove);
-		notes.add(note);
-		getChildren().add(note);
-
-		// エンジンへノート追加
-		//parent.addNote(note);
+		note.setCanTone(true);
+		addNoteToUi(note);
+		addNoteToEngine(note);
 	}
 
 	// ファイルからノートを読み込んで置く際に呼ばれる
@@ -216,40 +246,7 @@ public class EditArea extends Group {
 		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - noteNumber);
 		int w = (BEAT_WIDTH / 4) * (duration / 240);
 		int h = NOTE_GRID_HEIGHT;
-		int minX = 0;
-		int minY = 0;
-		int maxX = minX + MEASURE_WIDTH * measureCount;
-		int maxY = minY + MEASURE_HEIGHT * octaveCount;
-		double hIncPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
-		double vIncPerUnit = -(MEASURE_HEIGHT * (octaveCount - SHOW_OCTAVE_COUNT)) / 100.0;
-		double hScrollBarVal = parent.getHScrollBarValue();
-		double vScrollBarVal = parent.getVScrollBarValue();
-		int hMove = (int)(hIncPerUnit * hScrollBarVal);
-		int vMove = (int)(vIncPerUnit * vScrollBarVal);
-		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, false, this);
-		note.setTranslateX(hMove);
-		note.setTranslateY(vMove);
-		note.setCanTone(true); // ノートの配置が完了したら発音許可フラグを真にしてやる
-		notes.add(note);
-		getChildren().add(note);
-
-		// エンジンへノート追加
-		//parent.addNote(note);
-	}
-
-	public void removeNote(Note note) {
-		notes.remove(note);
-		getChildren().remove(note);
-
-		// エンジンからノート削除
-		//parent.addNote(note);
-	}
-
-	public void removeAllNote() {
-		for(Note note : notes) {
-			getChildren().remove(note);
-		}
-		notes.clear();
+		putNote(x, y, w, h, false);
 	}
 
 	public void changeCurrentChannel(int currentChannel) {

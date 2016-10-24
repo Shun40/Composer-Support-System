@@ -18,7 +18,7 @@ public class UIController {
 	//private DAW daw;
 	private Sequencer sequencer;
 	private Sequence sequence;
-	private HashMap<Note, ArrayList<MidiEvent>> note2events;
+	private HashMap<Object, ArrayList<MidiEvent>> note2events;
 
 	public UIController() {
 		try {
@@ -30,20 +30,25 @@ public class UIController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		note2events = new HashMap<Note, ArrayList<MidiEvent>>();
+		note2events = new HashMap<Object, ArrayList<MidiEvent>>();
 	}
 
 	public void setBpm(int bpm) {
 		sequencer.setTempoInBPM((float)bpm);
 	}
 
-	public void addNote(Note note) {
+	public void addNoteToEngine(Note note) {
 		int channel     = note.getNoteInformation().getChannel();
 		int progNumber  = note.getNoteInformation().getProgNumber();
 		int noteNumber  = note.getNoteInformation().getNoteNumber();
 		int position    = note.getNoteInformation().getPosition() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
 		int duration    = note.getNoteInformation().getDuration() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
 		int velocity    = note.getNoteInformation().getVelocity();
+
+		// 既に登録済みのイベントが編集されて渡された場合
+		if(note2events.containsKey(note.hashCode())) {
+			removeNoteFromEngine(note); // 登録済みのイベントを一回消してから追加し直す
+		}
 		try {
 			// Program Change
 			ShortMessage progChange = new ShortMessage();
@@ -66,21 +71,21 @@ public class UIController {
 
 			ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
 			events.addAll(Arrays.asList(progChangeEvent, noteOnEvent, noteOffEvent));
-			note2events.put(note, events);
+			note2events.put(note.hashCode(), events);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void removeNote(Note note) {
-		ArrayList<MidiEvent> events = note2events.get(note);
+	public void removeNoteFromEngine(Note note) {
+		ArrayList<MidiEvent> events = note2events.get(note.hashCode());
 		for(MidiEvent event : events) {
 			sequence.getTracks()[0].remove(event);
 		}
-		note2events.remove(note);
+		note2events.remove(note.hashCode());
 	}
 
-	public void removeAllNote() {
+	public void clearNoteFromEngine() {
 		ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
 		for(int n = 0; n < sequence.getTracks()[0].size(); n++) {
 			events.add(sequence.getTracks()[0].get(n));

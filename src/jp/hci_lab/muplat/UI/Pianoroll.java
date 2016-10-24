@@ -152,6 +152,7 @@ public class Pianoroll extends Group {
 		setupBeforePlay();
 
 		// エンジンへの再生指示
+		parent.setBpm(bpm);
 		parent.play();
 
 		editArea.playAnimation(bpm);
@@ -164,13 +165,6 @@ public class Pianoroll extends Group {
 		playButton.setDisable(true);
 		editArea.setupBeforePlay();
 		hScrollBar.setValue(0.0);
-
-		// エンジンへのセットアップ
-		parent.setBpm(bpm);
-		parent.removeAllNote();
-		for(Note note : editArea.getNotes()) {
-			parent.addNote(note);
-		}
 	}
 
 	public void setupAfterPlay() {
@@ -187,16 +181,20 @@ public class Pianoroll extends Group {
 		editArea.putNote(noteNumber, position, duration);
 	}
 
-	public void addNote(Note note) {
-		parent.addNote(note);
+	public void addNoteToEngine(Note note) {
+		parent.addNoteToEngine(note);
 	}
 
-	public void removeNote(Note note) {
-		parent.removeNote(note);
+	public void removeNoteFromEngine(Note note) {
+		parent.removeNoteFromEngine(note);
 	}
 
-	public void removeAllNote() {
-		editArea.removeAllNote();
+	public void clearNoteFromUi() {
+		editArea.clearNoteFromUi();
+	}
+
+	public void clearNoteFromEngine() {
+		parent.clearNoteFromEngine();
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
@@ -218,5 +216,6 @@ public class Pianoroll extends Group {
 		this.currentChannel = currentChannel;
 		editArea.changeCurrentChannel(currentChannel);
 		keyboard.changeInstrument(currentChannel, PROG_NUMBERS[currentChannel - 1]);
+		instrumentSelector.setSelectedChannel(currentChannel);
 	}
 }

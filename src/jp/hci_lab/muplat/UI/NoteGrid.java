@@ -56,7 +56,7 @@ public class NoteGrid extends Group {
 
 	public void press(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
-			this.putNote(e);
+			putNote(e);
 		} else {
 		}
 	}
@@ -91,7 +91,7 @@ public class NoteGrid extends Group {
 			else if(width * 2 <= clickX && clickX < width * 3) putX = (int)frame.getX() + width * 2;
 			else if(width * 3 <= clickX && clickX < width * 4) putX = (int)frame.getX() + width * 3;
 		}
-		parent.putNote(putX, putY, width, height);
+		parent.putNote(putX, putY, width, height, true);
 	}
 
 	public void toneOff() {

@@ -31,4 +31,8 @@ public class UISynth {
 	public static void toneOff(int channel) {
 		UISynth.synth.getChannels()[channel - 1].allNotesOff();
 	}
+
+	public static void close() {
+		synth.close();
+	}
 }

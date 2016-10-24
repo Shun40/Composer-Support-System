@@ -89,7 +89,8 @@ public class Note extends Rectangle {
 			// 発音
 			toneOn(noteInformation.getChannel(), noteInformation.getProgNumber(), noteInformation.getNoteNumber(), noteInformation.getVelocity());
 		} else { // Right Click
-			removeNote();
+			parent.removeNoteFromUi(this);
+			parent.removeNoteFromEngine(this);
 		}
 	}
 
@@ -106,6 +107,8 @@ public class Note extends Rectangle {
 			verticalDrug(e);
 			horizontalDrug(e);
 			noteInformation.updateNoteInfo();
+			parent.addNoteToUi(this);
+			parent.addNoteToEngine(this);
 		}
 	}
 
@@ -148,10 +151,6 @@ public class Note extends Rectangle {
 			}
 			*/
 		}
-	}
-
-	public void removeNote() {
-		parent.removeNote(this);
 	}
 
 	public void updateView(int currentChannel) {
