@@ -17,7 +17,7 @@ public class Pianoroll extends Group {
 	private int measureCount;
 	private int octaveCount;
 	private int bpm;
-	private int currentChannel;
+	private int currentTrackNumber;
 	private MainScene parent;
 
 	private NoteResolutionSelector noteResolutionSelector;
@@ -36,7 +36,7 @@ public class Pianoroll extends Group {
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
 		this.bpm = bpm;
-		this.currentChannel = 1;
+		this.currentTrackNumber = 1;
 		this.parent = parent;
 		setupNoteResolutionSelector();
 		setupBpmLabel();
@@ -173,7 +173,7 @@ public class Pianoroll extends Group {
 		stopButton.setDisable(true);
 		playButton.setDisable(false);
 		editArea.setupAfterPlay();
-		editArea.changeCurrentChannel(currentChannel);
+		editArea.changeCurrentTrackNumber(currentTrackNumber);
 		hScrollBar.setValue(0.0);
 	}
 
@@ -211,11 +211,11 @@ public class Pianoroll extends Group {
 		bpmLabel.changeBpm(bpm);
 		parent.setBpm(bpm);
 	}
-	public int getCurrentChannel() { return currentChannel; }
-	public void setCurrentChannel(int currentChannel) {
-		this.currentChannel = currentChannel;
-		editArea.changeCurrentChannel(currentChannel);
-		keyboard.changeInstrument(currentChannel, PROG_NUMBERS[currentChannel - 1]);
-		instrumentSelector.setSelectedChannel(currentChannel);
+	public int getCurrentTrackNumber() { return currentTrackNumber; }
+	public void setCurrentTrackNumber(int currentTrackNumber) {
+		this.currentTrackNumber = currentTrackNumber;
+		editArea.changeCurrentTrackNumber(currentTrackNumber);
+		keyboard.changeInstrument(currentTrackNumber, PROG_NUMBERS[currentTrackNumber - 1]);
+		instrumentSelector.setSelectedTrackNumber(currentTrackNumber);
 	}
 }

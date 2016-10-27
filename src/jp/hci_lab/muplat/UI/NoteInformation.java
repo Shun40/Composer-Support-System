@@ -5,22 +5,22 @@ import static constants.UniversalConstants.*;
  * @author Shun Yamashita
  */
 public class NoteInformation {
-	private int channel; // MIDI Channel Number (1 ~ 16)
-	private int progNumber; // General MIDI Program Number (1 ~ 128)
+	private int trackNumber; // Track Number (1 ~ 16)
+	private int progNumber;  // General MIDI Program Number (1 ~ 128)
 	private int noteNumber;
-	private int position; // NoteOn Position
+	private int position;    // NoteOn Position
 	private int duration;
 	private int velocity;
 	private Note parent;
 
-	public NoteInformation(int channel, int progNumber, int noteNumber, int position, int duration, int velocity, Note parent) {
-		this.channel = channel;
-		this.progNumber = progNumber;
-		this.noteNumber = noteNumber;
-		this.position = position;
-		this.duration = duration;
-		this.velocity = velocity;
-		this.parent = parent;
+	public NoteInformation(int trackNumber, int progNumber, int noteNumber, int position, int duration, int velocity, Note parent) {
+		this.trackNumber = trackNumber;
+		this.progNumber  = progNumber;
+		this.noteNumber  = noteNumber;
+		this.position    = position;
+		this.duration    = duration;
+		this.velocity    = velocity;
+		this.parent      = parent;
 	}
 
 	public void updateNoteInfo() {
@@ -33,14 +33,14 @@ public class NoteInformation {
 		// 音高が変化したら再発音
 		if(oldNoteNumber != newNoteNumber) {
 			// 無発音
-			parent.toneOff(channel);
+			parent.toneOff(trackNumber);
 			// 発音
-			parent.toneOn(channel, progNumber, noteNumber, velocity);
+			parent.toneOn(trackNumber, progNumber, noteNumber, velocity);
 		}
 		noteNumber = newNoteNumber;
 	}
 
-	public int getChannel() { return  channel; }
+	public int getTrackNumber() { return  trackNumber; }
 	public int getProgNumber() { return  progNumber; }
 	public int getNoteNumber() { return noteNumber; }
 	public int getPosition() { return position; }

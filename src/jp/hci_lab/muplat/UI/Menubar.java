@@ -29,9 +29,10 @@ public class Menubar extends MenuBar {
 
 	public void setupFileMenu() {
 		Menu menu = new Menu("File");
-		MenuItem item1 = new MenuItem("Read");
-		MenuItem item2 = new MenuItem("Save");
-		MenuItem item3 = new MenuItem("Close");
+		MenuItem item1 = new MenuItem("Read MUP File");
+		MenuItem item2 = new MenuItem("Save MUP File");
+		MenuItem item3 = new MenuItem("Save MIDI FILE");
+		MenuItem item4 = new MenuItem("Close");
 		MenuItem separator = new SeparatorMenuItem();
 
 		item1.setOnAction(new EventHandler<ActionEvent>() {
@@ -46,11 +47,16 @@ public class Menubar extends MenuBar {
 		});
 		item3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
+				parent.saveMidiFile();
+			}
+		});
+		item4.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
 				Platform.exit();
 			}
 		});
 
-		menu.getItems().addAll(item1, item2, separator, item3);
+		menu.getItems().addAll(item1, item2, item3, separator, item4);
 		getMenus().addAll(menu);
 	}
 }

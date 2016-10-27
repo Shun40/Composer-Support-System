@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
-
-//import java.util.HashMap;
+import javax.sound.midi.Track;
 
 /**
  * UIとエンジンを仲介するコントローラのクラス
@@ -25,7 +25,9 @@ public class UIController {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
 			sequence = new Sequence(Sequence.PPQ, 480);
-			sequence.createTrack();
+			for(int t = 0; t < 16; t++) {
+				sequence.createTrack();
+			}
 			sequencer.setSequence(sequence);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -34,11 +36,21 @@ public class UIController {
 	}
 
 	public void setBpm(int bpm) {
-		sequencer.setTempoInBPM((float)bpm);
+		try {
+			MetaMessage bpmChange = new MetaMessage();
+			int l = 60 * 1000000 / bpm;
+			bpmChange.setMessage(0x51, new byte[]{ (byte)(l / 65536), (byte)(l % 65536 / 256), (byte)(l % 256) }, 3);
+			MidiEvent bpmChangeEvent = new MidiEvent(bpmChange, 0);
+			for(Track track : sequence.getTracks()) {
+				track.add(bpmChangeEvent);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void addNoteToEngine(Note note) {
-		int channel     = note.getNoteInformation().getChannel();
+		int trackNumber = note.getNoteInformation().getTrackNumber();
 		int progNumber  = note.getNoteInformation().getProgNumber();
 		int noteNumber  = note.getNoteInformation().getNoteNumber();
 		int position    = note.getNoteInformation().getPosition() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
@@ -52,22 +64,22 @@ public class UIController {
 		try {
 			// Program Change
 			ShortMessage progChange = new ShortMessage();
-			progChange.setMessage(ShortMessage.PROGRAM_CHANGE, channel - 1, progNumber - 1, 0);
+			progChange.setMessage(ShortMessage.PROGRAM_CHANGE, trackNumber - 1, progNumber - 1, 0);
 			MidiEvent progChangeEvent = new MidiEvent(progChange, position);
 
 			// NoteOn
 			ShortMessage noteOn = new ShortMessage();
-			noteOn.setMessage(ShortMessage.NOTE_ON, channel - 1, noteNumber, velocity);
+			noteOn.setMessage(ShortMessage.NOTE_ON, trackNumber - 1, noteNumber, velocity);
 			MidiEvent noteOnEvent = new MidiEvent(noteOn, position);
 
 			// NoteOff
 			ShortMessage noteOff = new ShortMessage();
-			noteOff.setMessage(ShortMessage.NOTE_OFF, channel - 1, noteNumber, 0);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, trackNumber - 1, noteNumber, 0);
 			MidiEvent noteOffEvent = new MidiEvent(noteOff, position + duration);
 
-			sequence.getTracks()[0].add(progChangeEvent);
-			sequence.getTracks()[0].add(noteOnEvent);
-			sequence.getTracks()[0].add(noteOffEvent);
+			sequence.getTracks()[trackNumber - 1].add(progChangeEvent);
+			sequence.getTracks()[trackNumber - 1].add(noteOnEvent);
+			sequence.getTracks()[trackNumber - 1].add(noteOffEvent);
 
 			ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
 			events.addAll(Arrays.asList(progChangeEvent, noteOnEvent, noteOffEvent));
@@ -78,20 +90,23 @@ public class UIController {
 	}
 
 	public void removeNoteFromEngine(Note note) {
+		int trackNumber = note.getNoteInformation().getTrackNumber();
 		ArrayList<MidiEvent> events = note2events.get(note.hashCode());
 		for(MidiEvent event : events) {
-			sequence.getTracks()[0].remove(event);
+			sequence.getTracks()[trackNumber - 1].remove(event);
 		}
 		note2events.remove(note.hashCode());
 	}
 
 	public void clearNoteFromEngine() {
-		ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
-		for(int n = 0; n < sequence.getTracks()[0].size(); n++) {
-			events.add(sequence.getTracks()[0].get(n));
-		}
-		for(MidiEvent event : events) {
-			sequence.getTracks()[0].remove(event);
+		for(Track track : sequence.getTracks()) {
+			ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
+			for(int n = 0; n < track.size(); n++) {
+				events.add(track.get(n));
+			}
+			for(MidiEvent event : events) {
+				track.remove(event);
+			}
 		}
 		note2events.clear();
 	}
@@ -114,6 +129,8 @@ public class UIController {
 	public void close() {
 		sequencer.close();
 	}
+
+	public Sequence getSequence() { return sequence; }
 
 	/*
 	public UIController() {

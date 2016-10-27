@@ -10,6 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
@@ -86,11 +89,11 @@ public class MainScene extends Scene {
 				pianoroll.clearNoteFromEngine();
 				String note = br.readLine();
 				while(note != null) {
-					int channel    = Integer.parseInt(note.split(":", -1)[0]);
-					int noteNumber = Integer.parseInt(note.split(":", -1)[1]);
-					int position   = Integer.parseInt(note.split(":", -1)[2]);
-					int duration   = Integer.parseInt(note.split(":", -1)[3]);
-					pianoroll.setCurrentChannel(channel);
+					int trackNumber = Integer.parseInt(note.split(":", -1)[0]);
+					int noteNumber  = Integer.parseInt(note.split(":", -1)[1]);
+					int position    = Integer.parseInt(note.split(":", -1)[2]);
+					int duration    = Integer.parseInt(note.split(":", -1)[3]);
+					pianoroll.setCurrentTrackNumber(trackNumber);
 					pianoroll.putNote(noteNumber, position, duration);
 
 					note = br.readLine();
@@ -121,7 +124,7 @@ public class MainScene extends Scene {
 				pw.println(bpm);
 				for(Note note : notes) {
 					pw.println(
-						note.getNoteInformation().getChannel() + ":" +
+						note.getNoteInformation().getTrackNumber() + ":" +
 						note.getNoteInformation().getNoteNumber() + ":" +
 						note.getNoteInformation().getPosition() + ":"+
 						note.getNoteInformation().getDuration()
@@ -130,6 +133,27 @@ public class MainScene extends Scene {
 				pw.close();
 			} catch(Exception e) {
 				System.out.println(e);
+			}
+		}
+	}
+
+	// 本当はエンジン側で保存処理をやるべきだが, とりあえずGUI側で簡易な保存処理を実装
+	public void saveMidiFile() {
+		Sequence sequence = uiController.getSequence();
+
+		final FileChooser fc = new FileChooser();
+		fc.setTitle("Save");
+		fc.setInitialFileName((new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".mid");
+		fc.getExtensionFilters().addAll(
+			new ExtensionFilter("MIDI Files", "*.mid"),
+			new ExtensionFilter("All Files", "+.+")
+		);
+		File saveFile = fc.showSaveDialog(null);
+		if(saveFile != null) {
+			try {
+				MidiSystem.write(sequence, 1, saveFile); // タイプはマルチトラックフォーマットの1を指定
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

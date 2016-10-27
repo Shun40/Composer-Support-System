@@ -249,9 +249,9 @@ public class EditArea extends Group {
 		putNote(x, y, w, h, false);
 	}
 
-	public void changeCurrentChannel(int currentChannel) {
+	public void changeCurrentTrackNumber(int currentTrackNumber) {
 		for(Note note : notes) {
-			note.updateView(currentChannel);
+			note.updateView(currentTrackNumber);
 		}
 	}
 
@@ -311,7 +311,7 @@ public class EditArea extends Group {
 		playTimeline.stop();
 	}
 
-	public int getCurrentChannel() { return parent.getCurrentChannel(); }
+	public int getCurrentTrackNumber() { return parent.getCurrentTrackNumber(); }
 	public int getResolution() { return parent.getResolution(); }
 
 	public ArrayList<Note> getNotes() { return notes; }

@@ -37,20 +37,20 @@ public class Note extends Rectangle {
 	}
 
 	public void setupNoteInformation() {
-		int channel     = parent.getCurrentChannel();
-		int progNumber  = PROG_NUMBERS[channel - 1];
+		int trackNumber = parent.getCurrentTrackNumber();
+		int progNumber  = PROG_NUMBERS[trackNumber - 1];
 		int noteNumber  = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
 		int position    = (int)(240 * ((getX() - 0.5) / 10)); // 240 is number of tick of 1/16 musical note
 		int duration    = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
 		int velocity    = 100;
-		this.noteInformation = new NoteInformation(channel, progNumber, noteNumber, position, duration, velocity, this);
+		this.noteInformation = new NoteInformation(trackNumber, progNumber, noteNumber, position, duration, velocity, this);
 		// 発音
-		toneOn(channel, progNumber, noteNumber, velocity);
+		toneOn(trackNumber, progNumber, noteNumber, velocity);
 	}
 
 	public void setupColor() {
-		int channel = parent.getCurrentChannel();
-		Stop[] stops = new Stop[] { new Stop(0.0, INSTRUMENTS_DARK_COLORS[channel - 1]), new Stop(1.0, INSTRUMENTS_LIGHT_COLORS[channel - 1]) };
+		int trackNumber = parent.getCurrentTrackNumber();
+		Stop[] stops = new Stop[] { new Stop(0.0, INSTRUMENTS_DARK_COLORS[trackNumber - 1]), new Stop(1.0, INSTRUMENTS_LIGHT_COLORS[trackNumber - 1]) };
 		LinearGradient grad = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
 		setFill(grad);
 		setStyle(DEFAULT_STYLE);
@@ -87,7 +87,7 @@ public class Note extends Rectangle {
 				pressedPos = "right";
 			}
 			// 発音
-			toneOn(noteInformation.getChannel(), noteInformation.getProgNumber(), noteInformation.getNoteNumber(), noteInformation.getVelocity());
+			toneOn(noteInformation.getTrackNumber(), noteInformation.getProgNumber(), noteInformation.getNoteNumber(), noteInformation.getVelocity());
 		} else { // Right Click
 			parent.removeNoteFromUi(this);
 			parent.removeNoteFromEngine(this);
@@ -97,7 +97,7 @@ public class Note extends Rectangle {
 	public void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			// 無発音
-			toneOff(noteInformation.getChannel());
+			toneOff(noteInformation.getTrackNumber());
 		} else {
 		}
 	}
@@ -153,9 +153,9 @@ public class Note extends Rectangle {
 		}
 	}
 
-	public void updateView(int currentChannel) {
-		int channel = noteInformation.getChannel();
-		if(channel == currentChannel) {
+	public void updateView(int currentTracNumber) {
+		int trackNumber = noteInformation.getTrackNumber();
+		if(trackNumber == currentTracNumber) {
 			toFront();
 			setOpacity(1.0);
 			setDisable(false);
@@ -165,14 +165,14 @@ public class Note extends Rectangle {
 		}
 	}
 
-	public void toneOn(int channel, int progNumber, int noteNumber, int velocity) {
+	public void toneOn(int trackNumber, int progNumber, int noteNumber, int velocity) {
 		if(!canTone) return;
-		UISynth.changeProgram(channel, progNumber);
-		UISynth.toneOn(channel, noteNumber, velocity);
+		UISynth.changeInstrument(trackNumber, progNumber);
+		UISynth.toneOn(trackNumber, noteNumber, velocity);
 	}
 
-	public void toneOff(int channel) {
-		UISynth.toneOff(channel);
+	public void toneOff(int trackNumber) {
+		UISynth.toneOff(trackNumber);
 	}
 
 	public NoteInformation getNoteInformation() { return noteInformation; }

@@ -45,11 +45,11 @@ public class InstrumentSelector extends Group {
 
 	public void setupEventListener() {
 		toggleGroup.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle oldToggle, Toggle newToggle) -> {
-			parent.setCurrentChannel((int)toggleGroup.getSelectedToggle().getUserData());
+			parent.setCurrentTrackNumber((int)toggleGroup.getSelectedToggle().getUserData());
 		});
 	}
 
-	public void setSelectedChannel(int selectedChannel) {
-		toggleGroup.selectToggle(radioButtons[selectedChannel - 1]);
+	public void setSelectedTrackNumber(int selectedTrackNumber) {
+		toggleGroup.selectToggle(radioButtons[selectedTrackNumber - 1]);
 	}
 }
