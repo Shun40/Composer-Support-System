@@ -31,7 +31,7 @@ public class NoteResolutionSelector extends ComboBox<String> {
 
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
-			(ObservableValue<? extends String> observ, String oldVal, String newVal)->{
+			(ObservableValue<? extends String> ov, String oldVal, String newVal)->{
 				parent.changedNoteResolution(values.get(newVal));
 			}
 		);

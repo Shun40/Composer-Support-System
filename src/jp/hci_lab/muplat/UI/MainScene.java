@@ -48,16 +48,24 @@ public class MainScene extends Scene {
 		uiController.setBpm(bpm);
 	}
 
-	public void addNoteToEngine(Note note) {
-		uiController.addNoteToEngine(note);
+	public void addNoteToEngine(NoteBlock noteBlock) {
+		uiController.addNoteToEngine(noteBlock);
 	}
 
-	public void removeNoteFromEngine(Note note) {
-		uiController.removeNoteFromEngine(note);
+	public void removeNoteFromEngine(NoteBlock noteBlock) {
+		uiController.removeNoteFromEngine(noteBlock);
 	}
 
 	public void clearNoteFromEngine() {
 		uiController.clearNoteFromEngine();
+	}
+
+	public void setTrackMute(int track, boolean mute) {
+		uiController.setTrackMute(track, mute);
+	}
+
+	public void setTrackSolo(int track, boolean solo) {
+		uiController.setTrackSolo(track, solo);
 	}
 
 	public void play() {
@@ -87,16 +95,16 @@ public class MainScene extends Scene {
 				pianoroll.setBpm(Integer.parseInt(br.readLine()));
 				pianoroll.clearNoteFromUi();
 				pianoroll.clearNoteFromEngine();
-				String note = br.readLine();
-				while(note != null) {
-					int trackNumber = Integer.parseInt(note.split(":", -1)[0]);
-					int noteNumber  = Integer.parseInt(note.split(":", -1)[1]);
-					int position    = Integer.parseInt(note.split(":", -1)[2]);
-					int duration    = Integer.parseInt(note.split(":", -1)[3]);
-					pianoroll.setCurrentTrackNumber(trackNumber);
-					pianoroll.putNote(noteNumber, position, duration);
+				String noteInformation = br.readLine();
+				while(noteInformation != null) {
+					int track    = Integer.parseInt(noteInformation.split(":", -1)[0]);
+					int note     = Integer.parseInt(noteInformation.split(":", -1)[1]);
+					int position = Integer.parseInt(noteInformation.split(":", -1)[2]);
+					int duration = Integer.parseInt(noteInformation.split(":", -1)[3]);
+					pianoroll.setCurrentTrack(track);
+					pianoroll.putNote(note, position, duration);
 
-					note = br.readLine();
+					noteInformation = br.readLine();
 				}
 				br.close();
 			} catch(Exception e) {
@@ -108,7 +116,7 @@ public class MainScene extends Scene {
 	// 本当はエンジン側で保存処理をやるべきだが, とりあえずGUI側で簡易な保存処理を実装
 	public void save() {
 		int bpm = pianoroll.getBpm();
-		ArrayList<Note> notes = pianoroll.getNotes();
+		ArrayList<NoteBlock> noteBlocks = pianoroll.getNoteBlocks();
 
 		final FileChooser fc = new FileChooser();
 		fc.setTitle("Save");
@@ -122,12 +130,12 @@ public class MainScene extends Scene {
 			try {
 				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(saveFile)));
 				pw.println(bpm);
-				for(Note note : notes) {
+				for(NoteBlock noteBlock : noteBlocks) {
 					pw.println(
-						note.getNoteInformation().getTrackNumber() + ":" +
-						note.getNoteInformation().getNoteNumber() + ":" +
-						note.getNoteInformation().getPosition() + ":"+
-						note.getNoteInformation().getDuration()
+						noteBlock.getNoteInformation().getTrack() + ":" +
+						noteBlock.getNoteInformation().getNote() + ":" +
+						noteBlock.getNoteInformation().getPosition() + ":"+
+						noteBlock.getNoteInformation().getDuration()
 					);
 				}
 				pw.close();

@@ -12,8 +12,8 @@ import javafx.scene.paint.Color;
 public class UniversalConstants {
 	private UniversalConstants() {};
 
-	public static int[] CHANNEL_NUMBERS = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	public static int[] PROG_NUMBERS = { 82, 1, 5, 26, 28, 31, 49, 81, 34, 1 };
+	public static int[] TRACK_NUMBERS = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	public static int[] PROGRAM_NUMBERS = { 82, 1, 5, 26, 28, 31, 49, 81, 34, 1 };
 	public static String[] INSTRUMENTS = {
 		"Synth (Melody)",
 		"A.Piano",

@@ -20,16 +20,16 @@ public class UISynth {
 		}
 	}
 
-	public static void changeInstrument(int trackNumber, int progNumber) {
-		synth.getChannels()[trackNumber - 1].programChange(progNumber - 1);
+	public static void changeInstrument(int track, int program) {
+		synth.getChannels()[track - 1].programChange(program - 1);
 	}
 
-	public static void toneOn(int trackNumber, int noteNumber, int velocity) {
-		synth.getChannels()[trackNumber - 1].noteOn(noteNumber, velocity);
+	public static void toneOn(int track, int note, int velocity) {
+		synth.getChannels()[track - 1].noteOn(note, velocity);
 	}
 
-	public static void toneOff(int trackNumber) {
-		synth.getChannels()[trackNumber - 1].allNotesOff();
+	public static void toneOff(int track) {
+		synth.getChannels()[track - 1].allNotesOff();
 	}
 
 	public static void close() {

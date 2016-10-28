@@ -49,53 +49,55 @@ public class UIController {
 		}
 	}
 
-	public void addNoteToEngine(Note note) {
-		int trackNumber = note.getNoteInformation().getTrackNumber();
-		int progNumber  = note.getNoteInformation().getProgNumber();
-		int noteNumber  = note.getNoteInformation().getNoteNumber();
-		int position    = note.getNoteInformation().getPosition() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
-		int duration    = note.getNoteInformation().getDuration() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
-		int velocity    = note.getNoteInformation().getVelocity();
+	public void addNoteToEngine(NoteBlock noteBlock) {
+		NoteInformation noteInformation = noteBlock.getNoteInformation();
+		int track    = noteInformation.getTrack();
+		int program  = noteInformation.getProgram();
+		int note     = noteInformation.getNote();
+		int position = noteInformation.getPosition() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
+		int duration = noteInformation.getDuration() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
+		int velocity = noteInformation.getVelocity();
 
 		// 既に登録済みのイベントが編集されて渡された場合
-		if(note2events.containsKey(note.hashCode())) {
-			removeNoteFromEngine(note); // 登録済みのイベントを一回消してから追加し直す
+		if(note2events.containsKey(noteBlock.hashCode())) {
+			removeNoteFromEngine(noteBlock); // 登録済みのイベントを一回消してから追加し直す
 		}
 		try {
 			// Program Change
-			ShortMessage progChange = new ShortMessage();
-			progChange.setMessage(ShortMessage.PROGRAM_CHANGE, trackNumber - 1, progNumber - 1, 0);
-			MidiEvent progChangeEvent = new MidiEvent(progChange, position);
+			ShortMessage programChange = new ShortMessage();
+			programChange.setMessage(ShortMessage.PROGRAM_CHANGE, track - 1, program - 1, 0);
+			MidiEvent programChangeEvent = new MidiEvent(programChange, position);
 
 			// NoteOn
 			ShortMessage noteOn = new ShortMessage();
-			noteOn.setMessage(ShortMessage.NOTE_ON, trackNumber - 1, noteNumber, velocity);
+			noteOn.setMessage(ShortMessage.NOTE_ON, track - 1, note, velocity);
 			MidiEvent noteOnEvent = new MidiEvent(noteOn, position);
 
 			// NoteOff
 			ShortMessage noteOff = new ShortMessage();
-			noteOff.setMessage(ShortMessage.NOTE_OFF, trackNumber - 1, noteNumber, 0);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, track - 1, note, 0);
 			MidiEvent noteOffEvent = new MidiEvent(noteOff, position + duration);
 
-			sequence.getTracks()[trackNumber - 1].add(progChangeEvent);
-			sequence.getTracks()[trackNumber - 1].add(noteOnEvent);
-			sequence.getTracks()[trackNumber - 1].add(noteOffEvent);
+			sequence.getTracks()[track - 1].add(programChangeEvent);
+			sequence.getTracks()[track - 1].add(noteOnEvent);
+			sequence.getTracks()[track - 1].add(noteOffEvent);
 
 			ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
-			events.addAll(Arrays.asList(progChangeEvent, noteOnEvent, noteOffEvent));
-			note2events.put(note.hashCode(), events);
+			events.addAll(Arrays.asList(programChangeEvent, noteOnEvent, noteOffEvent));
+			note2events.put(noteBlock.hashCode(), events);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void removeNoteFromEngine(Note note) {
-		int trackNumber = note.getNoteInformation().getTrackNumber();
-		ArrayList<MidiEvent> events = note2events.get(note.hashCode());
+	public void removeNoteFromEngine(NoteBlock noteBlock) {
+		NoteInformation noteInformation = noteBlock.getNoteInformation();
+		int track = noteInformation.getTrack();
+		ArrayList<MidiEvent> events = note2events.get(noteBlock.hashCode());
 		for(MidiEvent event : events) {
-			sequence.getTracks()[trackNumber - 1].remove(event);
+			sequence.getTracks()[track - 1].remove(event);
 		}
-		note2events.remove(note.hashCode());
+		note2events.remove(noteBlock.hashCode());
 	}
 
 	public void clearNoteFromEngine() {
@@ -109,6 +111,14 @@ public class UIController {
 			}
 		}
 		note2events.clear();
+	}
+
+	public void setTrackMute(int track, boolean mute) {
+		sequencer.setTrackMute(track - 1, mute);
+	}
+
+	public void setTrackSolo(int track, boolean solo) {
+		sequencer.setTrackSolo(track - 1, solo);
 	}
 
 	public void play() {

@@ -17,7 +17,7 @@ public class Pianoroll extends Group {
 	private int measureCount;
 	private int octaveCount;
 	private int bpm;
-	private int currentTrackNumber;
+	private int currentTrack;
 	private MainScene parent;
 
 	private NoteResolutionSelector noteResolutionSelector;
@@ -30,13 +30,15 @@ public class Pianoroll extends Group {
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
 	private InstrumentSelector instrumentSelector;
+	private TrackMuteSelector trackMuteSelector;
+	private TrackSoloSelector trackSoloSelector;
 
 	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
 		this.bpm = bpm;
-		this.currentTrackNumber = 1;
+		this.currentTrack = 1;
 		this.parent = parent;
 		setupNoteResolutionSelector();
 		setupBpmLabel();
@@ -48,6 +50,8 @@ public class Pianoroll extends Group {
 		setupHScrollBar();
 		setupVScrollBar();
 		setupInstrumentSelector();
+		setupMuteTrackSelector();
+		setupSoloTrackSelector();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -117,6 +121,16 @@ public class Pianoroll extends Group {
 		getChildren().add(instrumentSelector);
 	}
 
+	public void setupMuteTrackSelector() {
+		trackMuteSelector = new TrackMuteSelector(TRACK_MUTE_SELECTOR_X, TRACK_MUTE_SELECTOR_Y, this);
+		getChildren().add(trackMuteSelector);
+	}
+
+	public void setupSoloTrackSelector() {
+		trackSoloSelector = new TrackSoloSelector(TRACK_SOLO_SELECTOR_X, TRACK_SOLO_SELECTOR_Y, this);
+		getChildren().add(trackSoloSelector);
+	}
+
 	public void hTranslate() {
 		double incPerUnit = -(MEASURE_WIDTH * (measureCount - SHOW_MEASURE_COUNT)) / 100.0;
 		double hScrollBarVal = hScrollBar.getValue();
@@ -173,20 +187,20 @@ public class Pianoroll extends Group {
 		stopButton.setDisable(true);
 		playButton.setDisable(false);
 		editArea.setupAfterPlay();
-		editArea.changeCurrentTrackNumber(currentTrackNumber);
+		editArea.changeCurrentTrack(currentTrack);
 		hScrollBar.setValue(0.0);
 	}
 
-	public void putNote(int noteNumber, int position, int duration) {
-		editArea.putNote(noteNumber, position, duration);
+	public void putNote(int note, int position, int duration) {
+		editArea.putNote(note, position, duration);
 	}
 
-	public void addNoteToEngine(Note note) {
-		parent.addNoteToEngine(note);
+	public void addNoteToEngine(NoteBlock noteBlock) {
+		parent.addNoteToEngine(noteBlock);
 	}
 
-	public void removeNoteFromEngine(Note note) {
-		parent.removeNoteFromEngine(note);
+	public void removeNoteFromEngine(NoteBlock noteBlock) {
+		parent.removeNoteFromEngine(noteBlock);
 	}
 
 	public void clearNoteFromUi() {
@@ -198,7 +212,7 @@ public class Pianoroll extends Group {
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
-	public ArrayList<Note> getNotes() { return editArea.getNotes(); }
+	public ArrayList<NoteBlock> getNoteBlocks() { return editArea.getNoteBlocks(); }
 	public double getHScrollBarValue() { return hScrollBar.getValue(); }
 	public double getVScrollBarValue() { return vScrollBar.getValue(); }
 	public DoubleProperty getHScrollBarValueProperty() { return hScrollBar.valueProperty(); }
@@ -211,11 +225,13 @@ public class Pianoroll extends Group {
 		bpmLabel.changeBpm(bpm);
 		parent.setBpm(bpm);
 	}
-	public int getCurrentTrackNumber() { return currentTrackNumber; }
-	public void setCurrentTrackNumber(int currentTrackNumber) {
-		this.currentTrackNumber = currentTrackNumber;
-		editArea.changeCurrentTrackNumber(currentTrackNumber);
-		keyboard.changeInstrument(currentTrackNumber, PROG_NUMBERS[currentTrackNumber - 1]);
-		instrumentSelector.setSelectedTrackNumber(currentTrackNumber);
+	public int getCurrentTrack() { return currentTrack; }
+	public void setCurrentTrack(int currentTrack) {
+		this.currentTrack = currentTrack;
+		editArea.changeCurrentTrack(currentTrack);
+		keyboard.changeInstrument(currentTrack, PROGRAM_NUMBERS[currentTrack - 1]);
+		instrumentSelector.setSelectedTrack(currentTrack);
 	}
+	public void setTrackMute(int track, boolean mute) { parent.setTrackMute(track, mute); }
+	public void setTrackSolo(int track, boolean solo) { parent.setTrackSolo(track, solo); }
 }

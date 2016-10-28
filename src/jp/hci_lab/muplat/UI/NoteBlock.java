@@ -10,10 +10,10 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 
 /**
- * ノートのクラス
+ * ノートのブロック（四角形）のクラス
  * @author Shun Yamashita
  */
-public class Note extends Rectangle {
+public class NoteBlock extends Rectangle {
 	private NoteInformation noteInformation;
 	private float minX;
 	private float maxX;
@@ -23,7 +23,7 @@ public class Note extends Rectangle {
 	private boolean canTone; // 発音許可フラグ
 	private EditArea parent;
 
-	public Note(int x, int y, int width, int height, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
+	public NoteBlock(int x, int y, int width, int height, int minX, int maxX, int minY, int maxY, boolean canTone, EditArea parent) {
 		super(x + 0.5, y + 0.5, width, height);
 		this.minX = minX + 0.5f;
 		this.maxX = maxX + 0.5f;
@@ -37,8 +37,8 @@ public class Note extends Rectangle {
 	}
 
 	public void setupNoteInformation() {
-		int trackNumber = parent.getCurrentTrackNumber();
-		int progNumber  = PROG_NUMBERS[trackNumber - 1];
+		int trackNumber = parent.getCurrentTrack();
+		int progNumber  = PROGRAM_NUMBERS[trackNumber - 1];
 		int noteNumber  = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
 		int position    = (int)(240 * ((getX() - 0.5) / 10)); // 240 is number of tick of 1/16 musical note
 		int duration    = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
@@ -49,7 +49,7 @@ public class Note extends Rectangle {
 	}
 
 	public void setupColor() {
-		int trackNumber = parent.getCurrentTrackNumber();
+		int trackNumber = parent.getCurrentTrack();
 		Stop[] stops = new Stop[] { new Stop(0.0, INSTRUMENTS_DARK_COLORS[trackNumber - 1]), new Stop(1.0, INSTRUMENTS_LIGHT_COLORS[trackNumber - 1]) };
 		LinearGradient grad = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
 		setFill(grad);
@@ -59,17 +59,17 @@ public class Note extends Rectangle {
 	public void setupEventListener() {
 		setOnMousePressed(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
-				Note.this.press(e);
+				NoteBlock.this.press(e);
 			}
 		});
 		setOnMouseReleased(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
-				Note.this.release(e);
+				NoteBlock.this.release(e);
 			}
 		});
 		setOnMouseDragged(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
-				Note.this.drag(e);
+				NoteBlock.this.drag(e);
 			}
 		});
 	}
@@ -87,7 +87,7 @@ public class Note extends Rectangle {
 				pressedPos = "right";
 			}
 			// 発音
-			toneOn(noteInformation.getTrackNumber(), noteInformation.getProgNumber(), noteInformation.getNoteNumber(), noteInformation.getVelocity());
+			toneOn(noteInformation.getTrack(), noteInformation.getProgram(), noteInformation.getNote(), noteInformation.getVelocity());
 		} else { // Right Click
 			parent.removeNoteFromUi(this);
 			parent.removeNoteFromEngine(this);
@@ -97,7 +97,7 @@ public class Note extends Rectangle {
 	public void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			// 無発音
-			toneOff(noteInformation.getTrackNumber());
+			toneOff(noteInformation.getTrack());
 		} else {
 		}
 	}
@@ -153,9 +153,9 @@ public class Note extends Rectangle {
 		}
 	}
 
-	public void updateView(int currentTracNumber) {
-		int trackNumber = noteInformation.getTrackNumber();
-		if(trackNumber == currentTracNumber) {
+	public void updateView(int currentTrack) {
+		int track = noteInformation.getTrack();
+		if(track == currentTrack) {
 			toFront();
 			setOpacity(1.0);
 			setDisable(false);
@@ -165,14 +165,14 @@ public class Note extends Rectangle {
 		}
 	}
 
-	public void toneOn(int trackNumber, int progNumber, int noteNumber, int velocity) {
+	public void toneOn(int track, int program, int note, int velocity) {
 		if(!canTone) return;
-		UISynth.changeInstrument(trackNumber, progNumber);
-		UISynth.toneOn(trackNumber, noteNumber, velocity);
+		UISynth.changeInstrument(track, program);
+		UISynth.toneOn(track, note, velocity);
 	}
 
-	public void toneOff(int trackNumber) {
-		UISynth.toneOff(trackNumber);
+	public void toneOff(int track) {
+		UISynth.toneOff(track);
 	}
 
 	public NoteInformation getNoteInformation() { return noteInformation; }

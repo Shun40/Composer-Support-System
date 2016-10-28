@@ -86,14 +86,14 @@ public class Keyboard extends Group{
 		}
 	}
 
-	public void changeInstrument(int trackNumber, int progNumber) {
+	public void changeInstrument(int track, int program) {
 		for(Key whiteKey : whiteKeys) {
-			whiteKey.setTrackNumber(trackNumber);
-			whiteKey.setProgNumber(progNumber);
+			whiteKey.setTrack(track);
+			whiteKey.setProgram(program);
 		}
 		for(Key blackKey : blackKeys) {
-			blackKey.setTrackNumber(trackNumber);
-			blackKey.setProgNumber(progNumber);
+			blackKey.setTrack(track);
+			blackKey.setProgram(program);
 		}
 	}
 }

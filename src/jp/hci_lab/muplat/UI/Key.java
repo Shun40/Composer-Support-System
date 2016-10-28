@@ -14,9 +14,9 @@ import javafx.scene.text.Font;
  * @author Shun Yamashita
  */
 public class Key extends Group {
-	private int trackNumber;
-	private int progNumber;
-	private int noteNumber;
+	private int track;
+	private int program;
+	private int note;
 	private String position;
 	private String normalColor;
 	private String shadowColor;
@@ -24,9 +24,9 @@ public class Key extends Group {
 
 	public Key(String interval, int octave, int x, int y, int width, int height) {
 		super();
-		this.trackNumber = 1;
-		this.progNumber = PROG_NUMBERS[trackNumber - 1];
-		this.noteNumber = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
+		this.track = 1;
+		this.program = PROGRAM_NUMBERS[track - 1];
+		this.note = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
 		this.position = interval + Integer.toString(octave);
 		setupColor(interval);
 		setupFrame(x, y, width, height);
@@ -88,14 +88,14 @@ public class Key extends Group {
 	}
 
 	public void toneOn() {
-		UISynth.synth.getChannels()[trackNumber - 1].programChange(progNumber - 1);
-		UISynth.synth.getChannels()[trackNumber - 1].noteOn(noteNumber, 100);
+		UISynth.synth.getChannels()[track - 1].programChange(program - 1);
+		UISynth.synth.getChannels()[track - 1].noteOn(note, 100);
 	}
 
 	public void toneOff() {
-		UISynth.synth.getChannels()[trackNumber - 1].allNotesOff();
+		UISynth.synth.getChannels()[track - 1].allNotesOff();
 	}
 
-	public void setTrackNumber(int trackNumber) { this.trackNumber = trackNumber; }
-	public void setProgNumber(int progNumber) { this.progNumber = progNumber; }
+	public void setTrack(int track) { this.track = track; }
+	public void setProgram(int program) { this.program = program; }
 }

@@ -24,7 +24,7 @@ import javafx.util.Duration;
 public class EditArea extends Group {
 	private int measureCount;
 	private int octaveCount;
-	private ArrayList<Note> notes;
+	private ArrayList<NoteBlock> noteBlocks;
 	private Timeline playTimeline;
 	private NoteGrid[][] noteGrids;
 	private Line[] vFrameLines;
@@ -36,7 +36,7 @@ public class EditArea extends Group {
 		super();
 		this.measureCount = measureCount;
 		this.octaveCount = octaveCount;
-		this.notes = new ArrayList<Note>();
+		this.noteBlocks = new ArrayList<NoteBlock>();
 		this.parent = parent;
 		setClip(new Rectangle(MEASURE_WIDTH * SHOW_MEASURE_COUNT + 0.5, MEASURE_HEIGHT * SHOW_OCTAVE_COUNT + 0.5)); // 実際に表示する領域サイズ
 		setupPoint(x, y);
@@ -153,8 +153,8 @@ public class EditArea extends Group {
 	}
 
 	public void translateX(int move) {
-		for(Note note : notes) {
-			note.setTranslateX(move);
+		for(NoteBlock noteBlock : noteBlocks) {
+			noteBlock.setTranslateX(move);
 		}
 		for(NoteGrid[] array : noteGrids) {
 			for(NoteGrid element : array) {
@@ -171,8 +171,8 @@ public class EditArea extends Group {
 	}
 
 	public void translateY(int move) {
-		for(Note note : notes) {
-			note.setTranslateY(move);
+		for(NoteBlock noteBlock : noteBlocks) {
+			noteBlock.setTranslateY(move);
 		}
 		for(NoteGrid[] array : noteGrids) {
 			for(NoteGrid element : array) {
@@ -188,33 +188,33 @@ public class EditArea extends Group {
 		playLine.setTranslateY(move);
 	}
 
-	public void addNoteToUi(Note note) {
-		if(!notes.contains(note)) {
-			notes.add(note);
-			getChildren().add(note);
+	public void addNoteToUi(NoteBlock noteBlock) {
+		if(!noteBlocks.contains(noteBlock)) {
+			noteBlocks.add(noteBlock);
+			getChildren().add(noteBlock);
 		}
 	}
 
-	public void addNoteToEngine(Note note) {
-		parent.addNoteToEngine(note);
+	public void addNoteToEngine(NoteBlock noteBlock) {
+		parent.addNoteToEngine(noteBlock);
 	}
 
-	public void removeNoteFromUi(Note note) {
-		if(notes.contains(note)) {
-			notes.remove(note);
-			getChildren().remove(note);
+	public void removeNoteFromUi(NoteBlock noteBlock) {
+		if(noteBlocks.contains(noteBlock)) {
+			noteBlocks.remove(noteBlock);
+			getChildren().remove(noteBlock);
 		}
 	}
 
-	public void removeNoteFromEngine(Note note) {
-		parent.removeNoteFromEngine(note);
+	public void removeNoteFromEngine(NoteBlock noteBlock) {
+		parent.removeNoteFromEngine(noteBlock);
 	}
 
 	public void clearNoteFromUi() {
-		for(Note note : notes) {
-			getChildren().remove(note);
+		for(NoteBlock noteBlock : noteBlocks) {
+			getChildren().remove(noteBlock);
 		}
-		notes.clear();
+		noteBlocks.clear();
 	}
 
 	public void clearNoteFromEngine() {
@@ -232,32 +232,32 @@ public class EditArea extends Group {
 		double vScrollBarVal = parent.getVScrollBarValue();
 		int hMove = (int)(hIncPerUnit * hScrollBarVal);
 		int vMove = (int)(vIncPerUnit * vScrollBarVal);
-		Note note = new Note(x, y, w, h, minX, maxX, minY, maxY, canTone, this);
-		note.setTranslateX(hMove);
-		note.setTranslateY(vMove);
-		note.setCanTone(true);
-		addNoteToUi(note);
-		addNoteToEngine(note);
+		NoteBlock noteBlock = new NoteBlock(x, y, w, h, minX, maxX, minY, maxY, canTone, this);
+		noteBlock.setTranslateX(hMove);
+		noteBlock.setTranslateY(vMove);
+		noteBlock.setCanTone(true);
+		addNoteToUi(noteBlock);
+		addNoteToEngine(noteBlock);
 	}
 
 	// ファイルからノートを読み込んで置く際に呼ばれる
-	public void putNote(int noteNumber, int position, int duration) {
+	public void putNote(int note, int position, int duration) {
 		int x = (BEAT_WIDTH / 4) * (position / 240);
-		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - noteNumber);
+		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - note);
 		int w = (BEAT_WIDTH / 4) * (duration / 240);
 		int h = NOTE_GRID_HEIGHT;
 		putNote(x, y, w, h, false);
 	}
 
-	public void changeCurrentTrackNumber(int currentTrackNumber) {
-		for(Note note : notes) {
-			note.updateView(currentTrackNumber);
+	public void changeCurrentTrack(int currentTrack) {
+		for(NoteBlock noteBlock : noteBlocks) {
+			noteBlock.updateView(currentTrack);
 		}
 	}
 
 	public void setupBeforePlay() {
-		for(Note note : notes) {
-			note.setDisable(true);
+		for(NoteBlock noteBlock : noteBlocks) {
+			noteBlock.setDisable(true);
 		}
 		for(NoteGrid[] array : noteGrids) {
 			for(NoteGrid element : array) {
@@ -268,8 +268,8 @@ public class EditArea extends Group {
 	}
 
 	public void setupAfterPlay() {
-		for(Note note : notes) {
-			note.setDisable(false);
+		for(NoteBlock noteBlock : noteBlocks) {
+			noteBlock.setDisable(false);
 		}
 		for(NoteGrid[] array : noteGrids) {
 			for(NoteGrid element : array) {
@@ -311,10 +311,10 @@ public class EditArea extends Group {
 		playTimeline.stop();
 	}
 
-	public int getCurrentTrackNumber() { return parent.getCurrentTrackNumber(); }
+	public int getCurrentTrack() { return parent.getCurrentTrack(); }
 	public int getResolution() { return parent.getResolution(); }
 
-	public ArrayList<Note> getNotes() { return notes; }
+	public ArrayList<NoteBlock> getNoteBlocks() { return noteBlocks; }
 	public Timeline getPlayTimeline() { return playTimeline; }
 	public int getOctaveCount() { return octaveCount; }
 }
