@@ -59,7 +59,7 @@ public class UniversalConstants {
 	public static final String[] BLACK_KEY_INTERVALS = {"A#", "G#", "F#", "D#", "C#"};
 
 	public static final int DEFAULT_BPM = 120; // BPM値(デフォルト値)
-	public static final int DEFAULT_MEASURE = 32; // 小節数
+	public static final int DEFAULT_MEASURE = 8; // 小節数
 	public static final int DEFAULT_OCTAVE = 6; // オクターブ数
 	public static final int MAX_OCTAVE = 6; // オクターブの最高値
 	public static final int SHOW_MEASURE_COUNT = 4; // ピアノロール上に表示する小節数

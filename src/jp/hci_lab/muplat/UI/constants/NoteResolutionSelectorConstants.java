@@ -6,7 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * SnapResolutionSelectorクラスで使用する定数クラス
+ * NoteResolutionSelectorクラスで使用する定数クラス
  * @author Shun Yamashita
  */
 public class NoteResolutionSelectorConstants {
