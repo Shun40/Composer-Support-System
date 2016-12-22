@@ -31,4 +31,8 @@ public class PatternArea extends Group {
 		predictionButton = new PredictionButton(0, 140, this);
 		getChildren().add(predictionButton);
 	}
+
+	public void prediction() {
+		parent.prediction();
+	}
 }

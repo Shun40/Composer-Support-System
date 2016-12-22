@@ -80,6 +80,10 @@ public class MainScene extends Scene {
 		uiController.close();
 	}
 
+	public void prediction(ArrayList<NoteInformation> noteInformations) {
+		uiController.prediction(noteInformations);
+	}
+
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装
 	public void read() {
 		final FileChooser fc = new FileChooser();

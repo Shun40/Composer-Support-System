@@ -140,6 +140,11 @@ public class UIController {
 		sequencer.close();
 	}
 
+	public void prediction(ArrayList<NoteInformation> noteInformations) {
+		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
+		melodyAnalyzer.analyze(noteInformations);
+	}
+
 	public Sequence getSequence() { return sequence; }
 
 	/*

@@ -218,6 +218,23 @@ public class Pianoroll extends Group {
 		parent.clearNoteFromEngine();
 	}
 
+	/*
+	 * メロディとアレンジの予測変換を行う
+	 */
+	public void prediction() {
+		ArrayList<NoteInformation> noteInformations = new ArrayList<NoteInformation>();
+		int targetMeasure = 1;
+		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
+			NoteInformation noteInformation = noteBlock.getNoteInformation();
+			int track = noteInformation.getTrack();
+			int measure = noteInformation.getPosition() / (960 * 4) + 1;
+			if(track == 1 && measure == targetMeasure) {
+				noteInformations.add(noteInformation);
+			}
+		}
+		parent.prediction(noteInformations);
+	}
+
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
 	public ArrayList<NoteBlock> getNoteBlocks() { return editArea.getNoteBlocks(); }
 	public double getHScrollBarValue() { return hScrollBar.getValue(); }

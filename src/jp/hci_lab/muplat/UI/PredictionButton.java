@@ -24,7 +24,7 @@ public class PredictionButton extends Button {
 	public void setupEventListener() {
 		setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				System.out.println("Prediction");
+				parent.prediction();
 			}
 		});
 	}
