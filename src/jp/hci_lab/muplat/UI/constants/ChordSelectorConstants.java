@@ -11,6 +11,7 @@ public class ChordSelectorConstants {
 	private ChordSelectorConstants() {};
 
 	public static final ObservableList<String> chords = FXCollections.observableArrayList(
+		"N.C.",
 		"C",
 		"Dm",
 		"Em",
@@ -19,5 +20,5 @@ public class ChordSelectorConstants {
 		"Am",
 		"Bdim"
 	);
-	public static final String initValue = "";
+	public static final String initValue = "N.C.";
 }

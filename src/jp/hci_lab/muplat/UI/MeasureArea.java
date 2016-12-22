@@ -9,7 +9,7 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 
 /**
- * 小節番号の表示領域(小節番号ラベルや小節線が置かれた領域)のクラス
+ * 小節の表示領域(小節番号ラベルやコード選択ボタンが置かれた領域)のクラス
  * @author Shun Yamashita
  */
 

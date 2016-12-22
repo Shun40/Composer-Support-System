@@ -32,6 +32,7 @@ public class Pianoroll extends Group {
 	private InstrumentSelector instrumentSelector;
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
+	private PatternArea patternArea;
 
 	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
@@ -52,6 +53,7 @@ public class Pianoroll extends Group {
 		setupInstrumentSelector();
 		setupMuteTrackSelector();
 		setupSoloTrackSelector();
+		setupPatternArea();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -129,6 +131,11 @@ public class Pianoroll extends Group {
 	public void setupSoloTrackSelector() {
 		trackSoloSelector = new TrackSoloSelector(TRACK_SOLO_SELECTOR_X, TRACK_SOLO_SELECTOR_Y, this);
 		getChildren().add(trackSoloSelector);
+	}
+
+	public void setupPatternArea() {
+		patternArea = new PatternArea(PATTERN_AREA_X, PATTERN_AREA_Y, this);
+		getChildren().add(patternArea);
 	}
 
 	public void hTranslate() {
