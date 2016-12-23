@@ -80,8 +80,8 @@ public class MainScene extends Scene {
 		uiController.close();
 	}
 
-	public void prediction(ArrayList<NoteInformation> noteInformations) {
-		uiController.prediction(noteInformations);
+	public ArrangePattern prediction(PredictionInformation predictionInformation) {
+		return uiController.prediction(predictionInformation);
 	}
 
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装

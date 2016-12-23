@@ -33,6 +33,18 @@ public class PatternArea extends Group {
 	}
 
 	public void prediction() {
-		parent.prediction();
+		patternSelector.addList(parent.prediction());
+	}
+
+	public void arrange(ArrangePattern pattern) {
+		for(NoteInformation noteInformation : pattern.getDrumPattern()) {
+			int track    = noteInformation.getTrack();
+			int note     = noteInformation.getNote();
+			int position = noteInformation.getPosition();
+			int duration = noteInformation.getDuration();
+			parent.setCurrentTrack(track);
+			parent.putNote(note, position, duration);
+		}
+		parent.setCurrentTrack(1);
 	}
 }

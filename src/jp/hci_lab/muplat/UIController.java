@@ -140,9 +140,14 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public void prediction(ArrayList<NoteInformation> noteInformations) {
-		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
-		melodyAnalyzer.analyze(noteInformations);
+	public ArrangePattern prediction(PredictionInformation predictionInformation) {
+		ArrangePattern arrangePattern = new ArrangePattern("P1");
+		DrumPatternMaker drumPatternMaker = new DrumPatternMaker();
+		DrumPatternParameter drumPatternParameter = predictionInformation.getDrumPatternParameter();
+		drumPatternMaker.makeKickAndSnare(arrangePattern.getDrumPattern(), drumPatternParameter);
+		drumPatternMaker.makeHihat(arrangePattern.getDrumPattern(), drumPatternParameter);
+
+		return arrangePattern;
 	}
 
 	public Sequence getSequence() { return sequence; }

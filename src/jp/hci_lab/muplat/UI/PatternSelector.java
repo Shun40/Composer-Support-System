@@ -3,14 +3,16 @@ import static constants.PatternAreaConstants.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.util.Callback;
 
 /**
  * パターンを指定するリストビューのクラス
  * @author Shun Yamashita
  */
-public class PatternSelector extends ListView<String> {
-	private ObservableList<String> patterns;
+public class PatternSelector extends ListView<ArrangePattern> {
+	private ObservableList<ArrangePattern> patterns;
 	private PatternArea parent;
 
 	public PatternSelector(int x, int y, PatternArea parent) {
@@ -34,15 +36,37 @@ public class PatternSelector extends ListView<String> {
 
 	public void setupList() {
 		patterns = FXCollections.observableArrayList();
-		patterns.addAll("P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10");
 		setItems(patterns);
+		setCellFactory(new Callback<ListView<ArrangePattern>, ListCell<ArrangePattern>>() {
+			@Override
+			public ListCell<ArrangePattern> call(ListView<ArrangePattern> arg0) {
+				return new CustomCell();
+			}
+		});
 	}
 
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
-			(ObservableValue<? extends String> ov, String oldVal, String newVal)->{
-				System.out.println(newVal);
+			(ObservableValue<? extends ArrangePattern> ov, ArrangePattern oldVal, ArrangePattern newVal)->{
+				parent.arrange(newVal);
 			}
 		);
+	}
+
+	public void addList(ArrangePattern arrangePattern) {
+		patterns.add(arrangePattern);
+	}
+
+	/*
+	 * ListView<ArrangePattern>表示用セルのクラス
+	 */
+	private static class CustomCell extends ListCell<ArrangePattern> {
+		@Override
+		protected void updateItem(ArrangePattern me, boolean empty) {
+			super.updateItem(me, empty);
+			if(!empty) {
+				setText(me.getPatternName());
+			}
+		}
 	}
 }
