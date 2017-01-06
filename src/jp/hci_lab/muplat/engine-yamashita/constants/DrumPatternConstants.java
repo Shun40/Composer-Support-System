@@ -8,9 +8,6 @@ public class DrumPatternConstants {
 	// キック
 	public static final int KICK_NOTE = 36;
 
-	// サイドスティック
-	public static final int STICK_NOTE = 37;
-
 	// スネア
 	public static final int SNARE_NOTE = 38;
 

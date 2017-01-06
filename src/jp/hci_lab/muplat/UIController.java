@@ -140,14 +140,19 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public ArrangePattern prediction(PredictionInformation predictionInformation) {
-		ArrangePattern arrangePattern = new ArrangePattern("P1");
-		DrumPatternMaker drumPatternMaker = new DrumPatternMaker();
+	public ArrayList<ArrangePattern> prediction(PredictionInformation predictionInformation) {
+		ArrayList<ArrangePattern> arrangePatterns = new ArrayList<ArrangePattern>();
+		DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
 		DrumPatternParameter drumPatternParameter = predictionInformation.getDrumPatternParameter();
-		drumPatternMaker.makeKickAndSnare(arrangePattern.getDrumPattern(), drumPatternParameter);
-		drumPatternMaker.makeHihat(arrangePattern.getDrumPattern(), drumPatternParameter);
+		ArrayList<DrumPattern> drumPatterns = drumPatternAnalyzer.getDrumPattern(drumPatternParameter);
 
-		return arrangePattern;
+		for(int n = 0; n < 20; n++) {
+			ArrangePattern arrangePattern = new ArrangePattern("P" + (n + 1));
+			arrangePattern.setDrumPattern(drumPatterns.get(n));
+			arrangePatterns.add(arrangePattern);
+		}
+
+		return arrangePatterns;
 	}
 
 	public Sequence getSequence() { return sequence; }

@@ -80,7 +80,7 @@ public class MainScene extends Scene {
 		uiController.close();
 	}
 
-	public ArrangePattern prediction(PredictionInformation predictionInformation) {
+	public ArrayList<ArrangePattern> prediction(PredictionInformation predictionInformation) {
 		return uiController.prediction(predictionInformation);
 	}
 

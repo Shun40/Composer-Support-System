@@ -221,7 +221,7 @@ public class Pianoroll extends Group {
 	/*
 	 * メロディとアレンジの予測変換を行う
 	 */
-	public ArrangePattern prediction() {
+	public ArrayList<ArrangePattern> prediction() {
 		ArrayList<NoteInformation> originalMelody = new ArrayList<NoteInformation>();
 		int targetMeasure = 1;
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
@@ -232,7 +232,7 @@ public class Pianoroll extends Group {
 				originalMelody.add(noteInformation);
 			}
 		}
-		DrumPatternParameter drumPatternParameter = new DrumPatternParameter(0.5, 0.75, 0, 0);
+		DrumPatternParameter drumPatternParameter = new DrumPatternParameter(0.5, 0.75, 0);
 		PredictionInformation predictionInformation = new PredictionInformation(originalMelody, drumPatternParameter);
 
 		return parent.prediction(predictionInformation);

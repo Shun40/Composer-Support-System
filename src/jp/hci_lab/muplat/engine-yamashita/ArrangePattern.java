@@ -13,4 +13,5 @@ public class ArrangePattern {
 
 	public String getPatternName() { return patternName; }
 	public DrumPattern getDrumPattern() { return drumPattern; }
+	public void setDrumPattern(DrumPattern drumPattern) { this.drumPattern = drumPattern; }
 }

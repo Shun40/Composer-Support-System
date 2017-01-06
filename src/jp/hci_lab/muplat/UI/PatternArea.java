@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import javafx.scene.Group;
 
 /**
@@ -33,7 +35,10 @@ public class PatternArea extends Group {
 	}
 
 	public void prediction() {
-		patternSelector.addList(parent.prediction());
+		ArrayList<ArrangePattern> patterns = parent.prediction();
+		for(ArrangePattern pattern : patterns) {
+			patternSelector.addList(pattern);
+		}
 	}
 
 	public void arrange(ArrangePattern pattern) {
