@@ -2,11 +2,13 @@ package engine_yamashita;
 
 import java.util.ArrayList;
 
+import gui.NoteInformation;
+
 public class DrumPatternAnalyzer {
 	public DrumPatternAnalyzer() {
 	}
 
-	public ArrayList<DrumPattern> getDrumPattern(DrumPatternParameter queryParameter) {
+	public ArrayList<DrumPattern> getBaseDrumPattern(DrumPatternParameter queryParameter) {
 		KickAndSnarePatternPreset kickAndSnarePatternPreset = new KickAndSnarePatternPreset();
 		HihatPatternPreset hihatPatternPreset = new HihatPatternPreset();
 		ArrayList<DrumPattern> patternsForClimax = new ArrayList<DrumPattern>(kickAndSnarePatternPreset);
@@ -29,11 +31,6 @@ public class DrumPatternAnalyzer {
 			}
 		}
 
-		System.out.println("Query climax : " + queryParameter.getClimax());
-		for(DrumPattern pattern : patternsForClimax) {
-			System.out.println(pattern.getName() + " : " + pattern.getClimax());
-		}
-
 		// 疾走感が最も近い値を持つ順にパターンをソート
 		for(int n = 0; n < patternsForSpeed.size(); n++) {
 			for(int m = n; m < patternsForSpeed.size(); m++) {
@@ -47,11 +44,6 @@ public class DrumPatternAnalyzer {
 					patternsForSpeed.set(m, temp);
 				}
 			}
-		}
-
-		System.out.println("Query speed : " + queryParameter.getSpeed());
-		for(DrumPattern pattern : patternsForSpeed) {
-			System.out.println(pattern.getName() + " : " + pattern.getSpeed());
 		}
 
 		for(int n = 0; n < patternsForClimax.size(); n++) {
@@ -72,15 +64,46 @@ public class DrumPatternAnalyzer {
 		}
 		for(Tuple pair : pairs) {
 			DrumPattern _pattern = new DrumPattern();
-			_pattern.addAll(pair.getP1());
-			_pattern.addAll(pair.getP2());
 			_pattern.setClimax(pair.getP1().getClimax());
 			_pattern.setSpeed(pair.getP2().getSpeed());
 			_pattern.setDiffQueryClimax(pair.getP1().getDiffQueryClimax());
 			_pattern.setDiffQuerySpeed(pair.getP2().getDiffQuerySpeed());
+			_pattern.setKicks(pair.getP1().getKicks());
+			_pattern.setSnares(pair.getP1().getSnares());
+			_pattern.setHihats(pair.getP2().getHihats());
+			_pattern.setRcymbals(pair.getP2().getRcymbals());
 			patterns.add(_pattern);
 		}
 
+		return patterns;
+	}
+
+	public ArrayList<DrumPattern> getRhythmicalDrumPattern(DrumPatternParameter queryParameter, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<NoteInformation> melody, ArrayList<Double> accentScores) {
+		ArrayList<DrumPattern> patterns = new ArrayList<DrumPattern>(baseDrumPatterns);
+		double rhythm = queryParameter.getRhythm();
+
+		if(accentScores == null) return baseDrumPatterns; // メロディがない場合はベースのドラムパターンをそのまま返す
+
+		for(int n = 0; n < patterns.size(); n++) {
+			DrumPattern basePattern = patterns.get(n);
+			for(int m = 0; m < accentScores.size(); m++) {
+				double accentScore = accentScores.get(m) * rhythm;
+				int position = melody.get(m).getPosition();
+				// メロディのアクセント位置にキックを置く
+				if(0.25 <= accentScore) {
+					basePattern.removeKick(position);
+					basePattern.addKick(position, 100);
+				}
+				// メロディのアクセント位置にシンバルを置く
+				if(0.5 <= accentScore) {
+					// ハイハットとライドシンバルはクラッシュシンバルと同時には鳴らさない
+					basePattern.removeCloseHihat(position);
+					basePattern.removeOpenHihat(position);
+					basePattern.removeRideCymbal(position);
+					basePattern.addCrashCymbal2(position, 100);
+				}
+			}
+		}
 		return patterns;
 	}
 

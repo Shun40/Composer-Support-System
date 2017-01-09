@@ -35,8 +35,11 @@ public class DrumPatternConstants {
 	// オープンハイハット
 	public static final int O_HIHAT_NOTE = 46;
 
-	// クラッシュシンバル
-	public static final int C_CYMBAL_NOTE = 49;
+	// クラッシュシンバル1
+	public static final int C_CYMBAL_1_NOTE = 49;
+
+	// クラッシュシンバル2
+	public static final int C_CYMBAL_2_NOTE = 57;
 
 	// ライドシンバル
 	public static final int R_CYMBAL_NOTE = 51;

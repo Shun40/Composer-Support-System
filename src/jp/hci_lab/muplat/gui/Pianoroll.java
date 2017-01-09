@@ -253,7 +253,7 @@ public class Pianoroll extends Group {
 		PredictionInformation predictionInformation = new PredictionInformation(originalMelody, drumPatternParameter);
 
 		// 予測変換
-		return parent.prediction(predictionInformation);
+		return parent.prediction(originalMelody, predictionInformation);
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }

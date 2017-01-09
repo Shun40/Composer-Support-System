@@ -46,7 +46,7 @@ public class PatternArea extends Group {
 
 	public void arrange(ArrangePattern pattern) {
 		parent.removeNoteInMeasure(1, 10);
-		for(NoteInformation noteInformation : pattern.getDrumPattern()) {
+		for(NoteInformation noteInformation : pattern.getDrumPattern().getDrumPatternNotes()) {
 			int track    = noteInformation.getTrack();
 			int note     = noteInformation.getNote();
 			int position = noteInformation.getPosition();

@@ -67,7 +67,7 @@ public class KickAndSnarePatternPreset extends ArrayList<DrumPattern> {
 		add(preset7);
 
 		DrumPattern preset8 = new DrumPattern();
-		preset8.addKick(DrumPattern.calcPosition(1, 2), 100);
+		preset8.addKick(DrumPattern.calcPosition(1, 3), 100);
 		preset8.addKick(DrumPattern.calcPosition(2, 1), 100);
 		preset8.addKick(DrumPattern.calcPosition(3, 1), 100);
 		preset8.addKick(DrumPattern.calcPosition(3, 3), 100);

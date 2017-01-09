@@ -15,6 +15,7 @@ import engine_yamashita.ArrangePattern;
 import engine_yamashita.DrumPattern;
 import engine_yamashita.DrumPatternAnalyzer;
 import engine_yamashita.DrumPatternParameter;
+import engine_yamashita.MelodyAnalyzer;
 import engine_yamashita.PredictionInformation;
 import gui.NoteBlock;
 import gui.NoteInformation;
@@ -149,15 +150,21 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public ArrayList<ArrangePattern> prediction(PredictionInformation predictionInformation) {
+	public ArrayList<ArrangePattern> prediction(ArrayList<NoteInformation> melody, PredictionInformation predictionInformation) {
 		ArrayList<ArrangePattern> arrangePatterns = new ArrayList<ArrangePattern>();
+		// メロディ分析
+		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
+		ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(melody);
+
+		// ドラムパターン分析と生成
 		DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
 		DrumPatternParameter drumPatternParameter = predictionInformation.getDrumPatternParameter();
-		ArrayList<DrumPattern> drumPatterns = drumPatternAnalyzer.getDrumPattern(drumPatternParameter);
+		ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPattern(drumPatternParameter);
+		ArrayList<DrumPattern> rhythmicalDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPattern(drumPatternParameter, baseDrumPatterns, melody, accentScores);
 
 		for(int n = 0; n < 20; n++) {
-			ArrangePattern arrangePattern = new ArrangePattern("P" + (n + 1));
-			arrangePattern.setDrumPattern(drumPatterns.get(n));
+			ArrangePattern arrangePattern = new ArrangePattern("Pattern" + (n + 1));
+			arrangePattern.setDrumPattern(rhythmicalDrumPatterns.get(n));
 			arrangePatterns.add(arrangePattern);
 		}
 
