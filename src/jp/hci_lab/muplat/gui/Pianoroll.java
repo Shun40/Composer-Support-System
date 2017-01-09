@@ -34,6 +34,7 @@ public class Pianoroll extends Group {
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
 	private InstrumentSelector instrumentSelector;
+	private ParameterSelector parameterSelector;
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
@@ -55,8 +56,9 @@ public class Pianoroll extends Group {
 		setupHScrollBar();
 		setupVScrollBar();
 		setupInstrumentSelector();
-		setupMuteTrackSelector();
-		setupSoloTrackSelector();
+		setupParameterSelector();
+		//setupMuteTrackSelector();
+		//setupSoloTrackSelector();
 		setupPatternArea();
 	}
 
@@ -123,8 +125,13 @@ public class Pianoroll extends Group {
 	}
 
 	public void setupInstrumentSelector() {
-		instrumentSelector = new InstrumentSelector(INSTRUMENTS_SELECTOR_X, INSTRUMENTS_SELECTOR_Y, this);
+		instrumentSelector = new InstrumentSelector(INSTRUMENT_SELECTOR_X, INSTRUMENT_SELECTOR_Y, this);
 		getChildren().add(instrumentSelector);
+	}
+
+	public void setupParameterSelector() {
+		parameterSelector = new ParameterSelector(PARAMETER_SELECTOR_X, PARAMETER_SELECTOR_Y, this);
+		getChildren().add(parameterSelector);
 	}
 
 	public void setupMuteTrackSelector() {
@@ -236,7 +243,11 @@ public class Pianoroll extends Group {
 				originalMelody.add(noteInformation);
 			}
 		}
-		DrumPatternParameter drumPatternParameter = new DrumPatternParameter(0.5, 0.75, 0);
+
+		// パラメータ値取得
+		DrumPatternParameter drumPatternParameter = parameterSelector.getParameter();
+
+		// 予測変換
 		PredictionInformation predictionInformation = new PredictionInformation(originalMelody, drumPatternParameter);
 
 		return parent.prediction(predictionInformation);

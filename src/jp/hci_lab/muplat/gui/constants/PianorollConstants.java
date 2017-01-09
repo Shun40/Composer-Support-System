@@ -28,9 +28,12 @@ public class PianorollConstants {
 	// Keyboard
 	public static final int KEYBOARD_X = 10;
 	public static final int KEYBOARD_Y = 120;
-	// InstrumentsSelector
-	public static final int INSTRUMENTS_SELECTOR_X = 790;
-	public static final int INSTRUMENTS_SELECTOR_Y = 120;
+	// InstrumentSelector
+	public static final int INSTRUMENT_SELECTOR_X = 790;
+	public static final int INSTRUMENT_SELECTOR_Y = 120;
+	// ParameterSelector
+	public static final int PARAMETER_SELECTOR_X = 930;
+	public static final int PARAMETER_SELECTOR_Y = 120;
 	// TrackMuteSelector
 	public static final int TRACK_MUTE_SELECTOR_X = 970;
 	public static final int TRACK_MUTE_SELECTOR_Y = 120;

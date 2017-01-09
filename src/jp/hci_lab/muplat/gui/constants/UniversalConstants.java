@@ -15,12 +15,12 @@ public class UniversalConstants {
 	public static int[] TRACK_NUMBERS = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	public static int[] PROGRAM_NUMBERS = { 82, 1, 5, 26, 28, 31, 49, 81, 34, 1 };
 	public static String[] INSTRUMENTS = {
-		"Synth (Melody)",
+		"Synth",
 		"A.Piano",
 		"E.Piano",
 		"A.Guitar",
-		"E.Guitar (Clean)",
-		"E.Guitar (Distortion)",
+		"E.Guitar (C)",
+		"E.Guitar (D)",
 		"Strings",
 		"Synth",
 		"E.Bass",
@@ -49,6 +49,11 @@ public class UniversalConstants {
 			Color.LIGHTGREEN, // track 8
 			Color.LIGHTBLUE,  // track 9
 			Color.KHAKI,      // track 10
+	};
+	public static final String[] PARAMETERS = {
+		"Climax",
+		"Speed",
+		"Rhythm"
 	};
 	public static final HashMap<String, Integer> MIDI_NUMBERS = new HashMap<String, Integer>() {
 		{put("C", 0);} {put("C#", 1);} {put("D", 2);} {put("D#", 3);} {put("E", 4);}
