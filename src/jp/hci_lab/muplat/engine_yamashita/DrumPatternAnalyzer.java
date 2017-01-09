@@ -8,7 +8,8 @@ public class DrumPatternAnalyzer {
 	public DrumPatternAnalyzer() {
 	}
 
-	public ArrayList<DrumPattern> getBaseDrumPattern(ArrangeParameter queryParameter) {
+	public ArrayList<DrumPattern> getBaseDrumPatterns(ArrangeInformation arrangeInformation) {
+		ArrangeParameter arrangeParameter = arrangeInformation.getArrangeParameter();
 		KickAndSnarePatternPreset kickAndSnarePatternPreset = new KickAndSnarePatternPreset();
 		HihatPatternPreset hihatPatternPreset = new HihatPatternPreset();
 		ArrayList<DrumPattern> patternsForClimax = new ArrayList<DrumPattern>(kickAndSnarePatternPreset);
@@ -19,8 +20,8 @@ public class DrumPatternAnalyzer {
 		// 盛り上がり度が最も近い値を持つ順にパターンをソート
 		for(int n = 0; n < patternsForClimax.size(); n++) {
 			for(int m = n; m < patternsForClimax.size(); m++) {
-				double climaxDiffN = Math.abs(patternsForClimax.get(n).getClimax() - queryParameter.getClimax());
-				double climaxDiffM = Math.abs(patternsForClimax.get(m).getClimax() - queryParameter.getClimax());
+				double climaxDiffN = Math.abs(patternsForClimax.get(n).getClimax() - arrangeParameter.getClimax());
+				double climaxDiffM = Math.abs(patternsForClimax.get(m).getClimax() - arrangeParameter.getClimax());
 				patternsForClimax.get(n).setDiffQueryClimax(climaxDiffN);
 				patternsForClimax.get(m).setDiffQueryClimax(climaxDiffM);
 				if(climaxDiffN > climaxDiffM) {
@@ -34,8 +35,8 @@ public class DrumPatternAnalyzer {
 		// 疾走感が最も近い値を持つ順にパターンをソート
 		for(int n = 0; n < patternsForSpeed.size(); n++) {
 			for(int m = n; m < patternsForSpeed.size(); m++) {
-				double speedDiffN = Math.abs(patternsForSpeed.get(n).getSpeed() - queryParameter.getSpeed());
-				double speedDiffM = Math.abs(patternsForSpeed.get(m).getSpeed() - queryParameter.getSpeed());
+				double speedDiffN = Math.abs(patternsForSpeed.get(n).getSpeed() - arrangeParameter.getSpeed());
+				double speedDiffM = Math.abs(patternsForSpeed.get(m).getSpeed() - arrangeParameter.getSpeed());
 				patternsForSpeed.get(n).setDiffQuerySpeed(speedDiffN);
 				patternsForSpeed.get(m).setDiffQuerySpeed(speedDiffM);
 				if(speedDiffN > speedDiffM) {
@@ -78,9 +79,11 @@ public class DrumPatternAnalyzer {
 		return patterns;
 	}
 
-	public ArrayList<DrumPattern> getRhythmicalDrumPattern(ArrangeParameter queryParameter, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<NoteInformation> melody, ArrayList<Double> accentScores) {
+	public ArrayList<DrumPattern> getRhythmicalDrumPatterns(ArrangeInformation arrangeInformation, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<Double> accentScores) {
 		ArrayList<DrumPattern> patterns = new ArrayList<DrumPattern>(baseDrumPatterns);
-		double rhythm = queryParameter.getRhythm();
+		ArrayList<NoteInformation> melody = arrangeInformation.getMelody();
+		ArrangeParameter arrangeParameter = arrangeInformation.getArrangeParameter();
+		double rhythm = arrangeParameter.getRhythm();
 
 		if(accentScores == null) return baseDrumPatterns; // メロディがない場合はベースのドラムパターンをそのまま返す
 

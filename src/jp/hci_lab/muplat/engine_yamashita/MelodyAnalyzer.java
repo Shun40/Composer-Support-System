@@ -15,10 +15,10 @@ public class MelodyAnalyzer {
 
 	}
 
-	public ArrayList<Double> getAccentScores(ArrayList<NoteInformation> melody) {
+	public ArrayList<Double> getAccentScores(ArrangeInformation arrangeInformation) {
 		ArrayList<Double> accentScores = new ArrayList<Double>();
 		// 元の配列に影響を与えないようディープコピー
-		ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(melody);
+		ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(arrangeInformation.getMelody());
 
 		if(_melody.size() <= 0) {
 			return null;

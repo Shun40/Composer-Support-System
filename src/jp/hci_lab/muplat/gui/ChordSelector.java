@@ -27,6 +27,7 @@ public class ChordSelector extends ComboBox<String> {
 		setItems(chords);
 		setValue(initValue);
 		setEditable(false);
+		setChord(initValue, measure, beat);
 	}
 
 	public void setupPoint(int x, int y) {
@@ -37,8 +38,12 @@ public class ChordSelector extends ComboBox<String> {
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends String> ov, String oldVal, String newVal)->{
-				parent.setChord(newVal, measure, beat);
+				setChord(newVal, measure, beat);
 			}
 		);
+	}
+
+	public void setChord(String chord, int measure, int beat) {
+		parent.setChord(chord, measure, beat);
 	}
 }

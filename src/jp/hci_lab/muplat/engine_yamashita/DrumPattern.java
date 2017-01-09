@@ -24,7 +24,6 @@ public class DrumPattern {
 	private ArrayList<NoteInformation> rcymbals;
 
 	public DrumPattern() {
-		super();
 		name = "";
 		climax = 0.0;
 		speed = 0.0;

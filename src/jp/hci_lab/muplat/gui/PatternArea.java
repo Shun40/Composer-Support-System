@@ -46,8 +46,29 @@ public class PatternArea extends Group {
 
 	public void arrange(ArrangePattern pattern) {
 		int targetMeasure = parent.getArrangeTargetMeasure();
-		parent.removeNoteInMeasure(targetMeasure, 10);
-		for(NoteInformation noteInformation : pattern.getDrumPattern().getDrumPatternNotes()) {
+		parent.removeNoteInMeasure(targetMeasure, 6); // ディストーションギタートラックのノートを消去
+		parent.removeNoteInMeasure(targetMeasure, 9); // ベーストラックのノートを消去
+		parent.removeNoteInMeasure(targetMeasure, 10); // ドラムストラックのノートを消去
+		ArrayList<NoteInformation> distGuitarPatternNotes = pattern.getDistGuitarPattern().getDistGuitarPatternNotes();
+		ArrayList<NoteInformation> bassPatternNotes = pattern.getBassPattern().getBassPatternNotes();
+		ArrayList<NoteInformation> drumPatternNotes = pattern.getDrumPattern().getDrumPatternNotes();
+		for(NoteInformation noteInformation : distGuitarPatternNotes) {
+			int track    = noteInformation.getTrack();
+			int note     = noteInformation.getNote();
+			int position = noteInformation.getPosition() + (960 * 4) * (targetMeasure - 1);
+			int duration = noteInformation.getDuration();
+			parent.setCurrentTrack(track);
+			parent.putNote(note, position, duration);
+		}
+		for(NoteInformation noteInformation : bassPatternNotes) {
+			int track    = noteInformation.getTrack();
+			int note     = noteInformation.getNote();
+			int position = noteInformation.getPosition() + (960 * 4) * (targetMeasure - 1);
+			int duration = noteInformation.getDuration();
+			parent.setCurrentTrack(track);
+			parent.putNote(note, position, duration);
+		}
+		for(NoteInformation noteInformation : drumPatternNotes) {
 			int track    = noteInformation.getTrack();
 			int note     = noteInformation.getNote();
 			int position = noteInformation.getPosition() + (960 * 4) * (targetMeasure - 1);
