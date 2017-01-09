@@ -69,7 +69,6 @@ public class ParameterSelector extends Group {
 	public void setupEventListener() {
 		for(Slider slider : sliders) {
 			slider.valueProperty().addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
-				System.out.println(PARAMETERS[(int)slider.getUserData()] + " : " + newVal);
 			});
 		}
 	}

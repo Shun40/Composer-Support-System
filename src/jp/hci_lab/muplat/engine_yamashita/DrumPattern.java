@@ -47,7 +47,6 @@ public class DrumPattern {
 	}
 
 	public void addKick(int position, int velocity) {
-		System.out.println(kicks.size());
 		NoteInformation kick = new NoteInformation(10, 1, KICK_NOTE, position, DRUM_DURATION, velocity, null);
 		kicks.set(calcIndex(position), kick);
 	}
@@ -177,12 +176,12 @@ public class DrumPattern {
 		return drumPattern;
 	}
 
-	public static int calcPosition(int beat, int position) {
-		return 960 * (beat - 1) + (960 / 4) * (position - 1);
+	public static int calcPosition(int beat, int subPosition) {
+		return 960 * (beat - 1) + (960 / 4) * (subPosition - 1);
 	}
 
 	public static int calcIndex(int position) {
-		return (4 - 1) * (position / 960) + (position % 960 / 240);
+		return 4 * (position / 960) + (position % 960 / 240);
 	}
 
 	public String getName() { return name; }

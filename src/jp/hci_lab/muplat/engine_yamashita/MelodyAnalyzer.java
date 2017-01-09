@@ -27,22 +27,6 @@ public class MelodyAnalyzer {
 			ArrayList<Boolean> longAccents = getLongAccents(_melody);
 			ArrayList<Boolean> isolationAccents = getIsolationAccents(_melody);
 
-			/*
-			System.out.println("Silhouette Accents");
-			for(int n = 0; n < _melody.size(); n++) {
-				System.out.println(silhouetteAccents.get(n));
-			}
-			System.out.println("Long Accents");
-			for(int n = 0; n < _melody.size(); n++) {
-				System.out.println(longAccents.get(n));
-			}
-			System.out.println("Isolation Accents");
-			for(int n = 0; n < _melody.size(); n++) {
-				System.out.println(isolationAccents.get(n));
-			}
-			*/
-
-			System.out.println("Accents");
 			for(int n = 0; n < _melody.size(); n++) {
 				double accentScore = 0.0;
 				if(silhouetteAccents.get(n)) accentScore += 0.25;
@@ -50,7 +34,6 @@ public class MelodyAnalyzer {
 				if(isolationAccents.get(n)) accentScore += 0.25;
 				accentScore /= 1.0;
 				accentScores.add(accentScore);
-				System.out.println("Note[" + (n + 1) + "] : " + accentScore);
 			}
 			return accentScores;
 		}

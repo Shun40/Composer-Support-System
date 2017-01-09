@@ -238,7 +238,7 @@ public class Pianoroll extends Group {
 	 */
 	public ArrayList<ArrangePattern> prediction() {
 		ArrayList<NoteInformation> originalMelody = new ArrayList<NoteInformation>();
-		int targetMeasure = 1;
+		int targetMeasure = getArrangeTargetMeasure();
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
 			NoteInformation noteInformation = noteBlock.getNoteInformation();
 			int track = noteInformation.getTrack();
@@ -279,4 +279,5 @@ public class Pianoroll extends Group {
 	}
 	public void setTrackMute(int track, boolean mute) { parent.setTrackMute(track, mute); }
 	public void setTrackSolo(int track, boolean solo) { parent.setTrackSolo(track, solo); }
+	public int getArrangeTargetMeasure() { return measureArea.getArrangeTarget(); }
 }

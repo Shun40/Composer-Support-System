@@ -88,7 +88,7 @@ public class DrumPatternAnalyzer {
 			DrumPattern basePattern = patterns.get(n);
 			for(int m = 0; m < accentScores.size(); m++) {
 				double accentScore = accentScores.get(m) * rhythm;
-				int position = melody.get(m).getPosition();
+				int position = melody.get(m).getPosition() % (960 * 4);
 				// メロディのアクセント位置にキックを置く
 				if(0.25 <= accentScore) {
 					basePattern.removeKick(position);

@@ -45,11 +45,12 @@ public class PatternArea extends Group {
 	}
 
 	public void arrange(ArrangePattern pattern) {
-		parent.removeNoteInMeasure(1, 10);
+		int targetMeasure = parent.getArrangeTargetMeasure();
+		parent.removeNoteInMeasure(targetMeasure, 10);
 		for(NoteInformation noteInformation : pattern.getDrumPattern().getDrumPatternNotes()) {
 			int track    = noteInformation.getTrack();
 			int note     = noteInformation.getNote();
-			int position = noteInformation.getPosition();
+			int position = noteInformation.getPosition() + (960 * 4) * (targetMeasure - 1);
 			int duration = noteInformation.getDuration();
 			parent.setCurrentTrack(track);
 			parent.putNote(note, position, duration);
