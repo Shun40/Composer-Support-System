@@ -4,9 +4,9 @@ import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
+import engine_yamashita.ArrangeInformation;
+import engine_yamashita.ArrangeParameter;
 import engine_yamashita.ArrangePattern;
-import engine_yamashita.DrumPatternParameter;
-import engine_yamashita.PredictionInformation;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -237,23 +237,25 @@ public class Pianoroll extends Group {
 	 * メロディとアレンジの予測変換を行う
 	 */
 	public ArrayList<ArrangePattern> prediction() {
-		ArrayList<NoteInformation> originalMelody = new ArrayList<NoteInformation>();
+		// アレンジに必要な情報を取得
 		int targetMeasure = getArrangeTargetMeasure();
+		ArrayList<NoteInformation> melody = new ArrayList<NoteInformation>();
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
 			NoteInformation noteInformation = noteBlock.getNoteInformation();
 			int track = noteInformation.getTrack();
 			int measure = noteInformation.getPosition() / (960 * 4) + 1;
 			if(track == 1 && measure == targetMeasure) {
-				originalMelody.add(noteInformation);
+				melody.add(noteInformation);
 			}
 		}
-
-		// パラメータ値取得
-		DrumPatternParameter drumPatternParameter = parameterSelector.getParameter();
-		PredictionInformation predictionInformation = new PredictionInformation(originalMelody, drumPatternParameter);
+		ArrayList<String> chordProgression = new ArrayList<String>();
+		chordProgression.add(measureArea.getChord(targetMeasure, 1));
+		chordProgression.add(measureArea.getChord(targetMeasure, 2));
+		ArrangeParameter arrangeParameter = parameterSelector.getParameter();
+		ArrangeInformation arrangeInformation = new ArrangeInformation(melody, chordProgression, arrangeParameter);
 
 		// 予測変換
-		return parent.prediction(originalMelody, predictionInformation);
+		return parent.prediction(arrangeInformation);
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }

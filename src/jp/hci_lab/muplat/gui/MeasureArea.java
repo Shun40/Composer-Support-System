@@ -184,10 +184,10 @@ public class MeasureArea extends Group {
 		return (int)toggleGroup.getSelectedToggle().getUserData();
 	}
 
-	public String getChord(int measure, int beat) {
-		return chords[(measure - 1) * 2 + (beat - 1)];
+	public String getChord(int measure, int count) {
+		return chords[(measure - 1) * 2 + (count - 1)];
 	}
-	public void setChord(String chord, int measure, int beat) {
-		this.chords[(measure - 1) * 2 + (beat - 1)] = chord;
+	public void setChord(String chord, int measure, int count) {
+		this.chords[(measure - 1) * 2 + (count - 1)] = chord;
 	}
 }

@@ -1,15 +1,15 @@
 package engine_yamashita;
 
 /**
- * ドラムパターンを決める際に必要なパラメータのクラス
+ * アレンジを決める際に必要なパラメータのクラス
  * @author Shun Yamashita
  */
-public class DrumPatternParameter {
+public class ArrangeParameter {
 	private double climax; // 盛り上がり度
 	private double speed;  // 疾走感
 	private double rhythm; // リズミカル度
 
-	public DrumPatternParameter(double climax, double speed, double rhythm) {
+	public ArrangeParameter(double climax, double speed, double rhythm) {
 		this.climax = climax;
 		this.speed  = speed;
 		this.rhythm = rhythm;

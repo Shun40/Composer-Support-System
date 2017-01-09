@@ -11,12 +11,12 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+import engine_yamashita.ArrangeInformation;
+import engine_yamashita.ArrangeParameter;
 import engine_yamashita.ArrangePattern;
 import engine_yamashita.DrumPattern;
 import engine_yamashita.DrumPatternAnalyzer;
-import engine_yamashita.DrumPatternParameter;
 import engine_yamashita.MelodyAnalyzer;
-import engine_yamashita.PredictionInformation;
 import gui.NoteBlock;
 import gui.NoteInformation;
 
@@ -150,17 +150,20 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public ArrayList<ArrangePattern> prediction(ArrayList<NoteInformation> melody, PredictionInformation predictionInformation) {
+	public ArrayList<ArrangePattern> prediction(ArrangeInformation arrangeInformation) {
 		ArrayList<ArrangePattern> arrangePatterns = new ArrayList<ArrangePattern>();
+		ArrayList<NoteInformation> melody = arrangeInformation.getMelody();
+		ArrayList<String> chordProgression = arrangeInformation.getChordProgression();
+		ArrangeParameter arrangeParameter = arrangeInformation.getArrangeParameter();
+
 		// メロディ分析
 		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
 		ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(melody);
 
 		// ドラムパターン分析と生成
 		DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
-		DrumPatternParameter drumPatternParameter = predictionInformation.getDrumPatternParameter();
-		ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPattern(drumPatternParameter);
-		ArrayList<DrumPattern> rhythmicalDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPattern(drumPatternParameter, baseDrumPatterns, melody, accentScores);
+		ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPattern(arrangeParameter);
+		ArrayList<DrumPattern> rhythmicalDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPattern(arrangeParameter, baseDrumPatterns, melody, accentScores);
 
 		for(int n = 0; n < 20; n++) {
 			ArrangePattern arrangePattern = new ArrangePattern("Pattern" + (n + 1));

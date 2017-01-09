@@ -2,7 +2,7 @@ package gui;
 
 import static gui.constants.UniversalConstants.*;
 
-import engine_yamashita.DrumPatternParameter;
+import engine_yamashita.ArrangeParameter;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -73,10 +73,10 @@ public class ParameterSelector extends Group {
 		}
 	}
 
-	public DrumPatternParameter getParameter() {
+	public ArrangeParameter getParameter() {
 		double climax = sliders[0].getValue();
 		double speed = sliders[1].getValue();
 		double rhythm = sliders[2].getValue();
-		return new DrumPatternParameter(climax, speed, rhythm);
+		return new ArrangeParameter(climax, speed, rhythm);
 	}
 }

@@ -8,7 +8,7 @@ public class DrumPatternAnalyzer {
 	public DrumPatternAnalyzer() {
 	}
 
-	public ArrayList<DrumPattern> getBaseDrumPattern(DrumPatternParameter queryParameter) {
+	public ArrayList<DrumPattern> getBaseDrumPattern(ArrangeParameter queryParameter) {
 		KickAndSnarePatternPreset kickAndSnarePatternPreset = new KickAndSnarePatternPreset();
 		HihatPatternPreset hihatPatternPreset = new HihatPatternPreset();
 		ArrayList<DrumPattern> patternsForClimax = new ArrayList<DrumPattern>(kickAndSnarePatternPreset);
@@ -78,7 +78,7 @@ public class DrumPatternAnalyzer {
 		return patterns;
 	}
 
-	public ArrayList<DrumPattern> getRhythmicalDrumPattern(DrumPatternParameter queryParameter, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<NoteInformation> melody, ArrayList<Double> accentScores) {
+	public ArrayList<DrumPattern> getRhythmicalDrumPattern(ArrangeParameter queryParameter, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<NoteInformation> melody, ArrayList<Double> accentScores) {
 		ArrayList<DrumPattern> patterns = new ArrayList<DrumPattern>(baseDrumPatterns);
 		double rhythm = queryParameter.getRhythm();
 
