@@ -213,6 +213,10 @@ public class Pianoroll extends Group {
 		editArea.putNote(note, position, duration);
 	}
 
+	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
+		editArea.removeNoteInMeasure(targetMeasure, targetTrack);
+	}
+
 	public void addNoteToEngine(NoteBlock noteBlock) {
 		parent.addNoteToEngine(noteBlock);
 	}
@@ -246,10 +250,9 @@ public class Pianoroll extends Group {
 
 		// パラメータ値取得
 		DrumPatternParameter drumPatternParameter = parameterSelector.getParameter();
-
-		// 予測変換
 		PredictionInformation predictionInformation = new PredictionInformation(originalMelody, drumPatternParameter);
 
+		// 予測変換
 		return parent.prediction(predictionInformation);
 	}
 

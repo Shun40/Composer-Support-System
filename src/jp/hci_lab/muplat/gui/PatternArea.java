@@ -37,6 +37,7 @@ public class PatternArea extends Group {
 	}
 
 	public void prediction() {
+		patternSelector.getItems().clear(); // 一度リストの中身を空にする
 		ArrayList<ArrangePattern> patterns = parent.prediction();
 		for(ArrangePattern pattern : patterns) {
 			patternSelector.addList(pattern);
@@ -44,6 +45,7 @@ public class PatternArea extends Group {
 	}
 
 	public void arrange(ArrangePattern pattern) {
+		parent.removeNoteInMeasure(1, 10);
 		for(NoteInformation noteInformation : pattern.getDrumPattern()) {
 			int track    = noteInformation.getTrack();
 			int note     = noteInformation.getNote();

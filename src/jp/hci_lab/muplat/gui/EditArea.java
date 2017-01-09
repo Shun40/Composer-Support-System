@@ -250,6 +250,20 @@ public class EditArea extends Group {
 		putNote(x, y, w, h, false);
 	}
 
+	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
+		ArrayList<NoteBlock> removeNoteBlocks = new ArrayList<NoteBlock>();
+		for(NoteBlock noteBlock : noteBlocks) {
+			if((noteBlock.getNoteInformation().getPosition() / (960 * 4)) + 1 == targetMeasure
+				&& noteBlock.getNoteInformation().getTrack() == targetTrack) {
+				removeNoteBlocks.add(noteBlock);
+			}
+		}
+		for(NoteBlock noteBlock : removeNoteBlocks) {
+			removeNoteFromEngine(noteBlock);
+			removeNoteFromUi(noteBlock);
+		}
+	}
+
 	public void changeCurrentTrack(int currentTrack) {
 		for(NoteBlock noteBlock : noteBlocks) {
 			noteBlock.updateView(currentTrack);
