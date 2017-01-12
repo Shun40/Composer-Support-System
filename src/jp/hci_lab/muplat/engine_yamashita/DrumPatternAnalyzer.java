@@ -81,7 +81,7 @@ public class DrumPatternAnalyzer {
 
 	public ArrayList<DrumPattern> getRhythmicalDrumPatterns(ArrangeInformation arrangeInformation, ArrayList<DrumPattern> baseDrumPatterns, ArrayList<Double> accentScores) {
 		ArrayList<DrumPattern> patterns = new ArrayList<DrumPattern>(baseDrumPatterns);
-		ArrayList<NoteInformation> melody = arrangeInformation.getMelody();
+		ArrayList<NoteInformation> melody = arrangeInformation.getCurrentMelody();
 		ArrangeParameter arrangeParameter = arrangeInformation.getArrangeParameter();
 		double rhythm = arrangeParameter.getRhythm();
 

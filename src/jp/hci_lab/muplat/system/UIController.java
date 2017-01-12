@@ -19,7 +19,7 @@ import engine_yamashita.DistGuitarPattern;
 import engine_yamashita.DistGuitarPatternAnalyzer;
 import engine_yamashita.DrumPattern;
 import engine_yamashita.DrumPatternAnalyzer;
-import engine_yamashita.MelodyAnalyzer;
+import engine_yamashita.melody.MelodyAnalyzer;
 import gui.NoteBlock;
 import gui.NoteInformation;
 
@@ -159,6 +159,7 @@ public class UIController {
 		// メロディ分析
 		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
 		ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(arrangeInformation);
+		melodyAnalyzer.getPredictedMelodies(arrangeInformation);
 
 		// ドラムパターン生成
 		DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();

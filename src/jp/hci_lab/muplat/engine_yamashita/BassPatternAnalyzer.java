@@ -8,7 +8,7 @@ public class BassPatternAnalyzer {
 
 	public ArrayList<BassPattern> getBassPatterns(ArrangeInformation arrangeInformation, ArrayList<DrumPattern> drumPatterns, ArrayList<Double> accentScores) {
 		ArrayList<BassPattern> patterns = new ArrayList<BassPattern>();
-		ArrayList<String> chordProgression = arrangeInformation.getChordProgression();
+		ArrayList<String> chordProgression = arrangeInformation.getCurrentChordProgression();
 
 		for(int n = 0; n < drumPatterns.size(); n++) {
 			BassPattern pattern = new BassPattern();

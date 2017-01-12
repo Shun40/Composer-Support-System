@@ -239,20 +239,36 @@ public class Pianoroll extends Group {
 	public ArrayList<ArrangePattern> prediction() {
 		// アレンジに必要な情報を取得
 		int targetMeasure = getArrangeTargetMeasure();
-		ArrayList<NoteInformation> melody = new ArrayList<NoteInformation>();
+		ArrayList<NoteInformation> currentMelody = new ArrayList<NoteInformation>();
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
 			NoteInformation noteInformation = noteBlock.getNoteInformation();
 			int track = noteInformation.getTrack();
 			int measure = noteInformation.getPosition() / (960 * 4) + 1;
 			if(track == 1 && measure == targetMeasure) {
-				melody.add(noteInformation);
+				currentMelody.add(noteInformation);
 			}
 		}
-		ArrayList<String> chordProgression = new ArrayList<String>();
-		chordProgression.add(measureArea.getChord(targetMeasure, 1));
-		chordProgression.add(measureArea.getChord(targetMeasure, 2));
+		ArrayList<NoteInformation> previousMelody = new ArrayList<NoteInformation>();
+		if(targetMeasure > 1) {
+			for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
+				NoteInformation noteInformation = noteBlock.getNoteInformation();
+				int track = noteInformation.getTrack();
+				int measure = noteInformation.getPosition() / (960 * 4) + 1;
+				if(track == 1 && measure == targetMeasure - 1) {
+					previousMelody.add(noteInformation);
+				}
+			}
+		}
+		ArrayList<String> currentChordProgression = new ArrayList<String>();
+		currentChordProgression.add(measureArea.getChord(targetMeasure, 1));
+		currentChordProgression.add(measureArea.getChord(targetMeasure, 2));
+		ArrayList<String> previousChordProgression = new ArrayList<String>();
+		if(targetMeasure > 1) {
+			previousChordProgression.add(measureArea.getChord(targetMeasure - 1, 1));
+			previousChordProgression.add(measureArea.getChord(targetMeasure - 1, 2));
+		}
 		ArrangeParameter arrangeParameter = parameterSelector.getParameter();
-		ArrangeInformation arrangeInformation = new ArrangeInformation(melody, chordProgression, arrangeParameter);
+		ArrangeInformation arrangeInformation = new ArrangeInformation(currentMelody, previousMelody, currentChordProgression, previousChordProgression, arrangeParameter);
 
 		// 予測変換
 		return parent.prediction(arrangeInformation);

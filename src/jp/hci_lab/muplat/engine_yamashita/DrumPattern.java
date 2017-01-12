@@ -54,6 +54,10 @@ public class DrumPattern {
 		kicks.set(calcIndex(position), null);
 	}
 
+	public void clearKick() {
+		kicks = new ArrayList<NoteInformation>();
+	}
+
 	public void addSnare(int position, int velocity) {
 		NoteInformation snare = new NoteInformation(10, 1, SNARE_NOTE, position, DRUM_DURATION, velocity, null);
 		snares.set(calcIndex(position), snare);
@@ -61,6 +65,10 @@ public class DrumPattern {
 
 	public void removeSnare(int position) {
 		snares.set(calcIndex(position), null);
+	}
+
+	public void clearSnare() {
+		snares = new ArrayList<NoteInformation>();
 	}
 
 	public void addLowTom2(int position, int velocity) {
@@ -117,6 +125,10 @@ public class DrumPattern {
 		toms.set(calcIndex(position), null);
 	}
 
+	public void clearTom() {
+		toms = new ArrayList<NoteInformation>();
+	}
+
 	public void addCloseHihat(int position, int velocity) {
 		NoteInformation hihat = new NoteInformation(10, 1, C_HIHAT_NOTE, position, DRUM_DURATION, velocity, null);
 		hihats.set(calcIndex(position), hihat);
@@ -133,6 +145,10 @@ public class DrumPattern {
 
 	public void removeOpenHihat(int position) {
 		hihats.set(calcIndex(position), null);
+	}
+
+	public void clearHihat() {
+		hihats = new ArrayList<NoteInformation>();
 	}
 
 	public void addCrashCymbal1(int position, int velocity) {
@@ -153,6 +169,10 @@ public class DrumPattern {
 		ccymbals.set(calcIndex(position), null);
 	}
 
+	public void clearCrashCymbal() {
+		ccymbals = new ArrayList<NoteInformation>();
+	}
+
 	public void addRideCymbal(int position, int velocity) {
 		NoteInformation cymbal = new NoteInformation(10, 1, R_CYMBAL_NOTE, position, DRUM_DURATION, velocity, null);
 		rcymbals.set(calcIndex(position), cymbal);
@@ -160,6 +180,10 @@ public class DrumPattern {
 
 	public void removeRideCymbal(int position) {
 		rcymbals.set(calcIndex(position), null);
+	}
+
+	public void clearRideCymbal() {
+		rcymbals = new ArrayList<NoteInformation>();
 	}
 
 	public ArrayList<NoteInformation> getDrumPatternNotes() {

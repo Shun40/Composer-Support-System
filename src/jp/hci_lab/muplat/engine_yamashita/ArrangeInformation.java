@@ -5,17 +5,27 @@ import java.util.ArrayList;
 import gui.NoteInformation;
 
 public class ArrangeInformation {
-	private ArrayList<NoteInformation> melody;
-	private ArrayList<String> chordProgression;
+	private ArrayList<NoteInformation> currentMelody;
+	private ArrayList<NoteInformation> previousMelody;
+	private ArrayList<String> currentChordProgression;
+	private ArrayList<String> previousChordProgression;
 	private ArrangeParameter arrangeParameter;
 
-	public ArrangeInformation(ArrayList<NoteInformation> melody, ArrayList<String> chordProgression, ArrangeParameter arrangeParameter) {
-		this.melody = melody;
-		this.chordProgression = chordProgression;
+	public ArrangeInformation(
+			ArrayList<NoteInformation> currentMelody,
+			ArrayList<NoteInformation> previousMelody,
+			ArrayList<String> currentChordProgression,
+			ArrayList<String> previousChordProgression,
+			ArrangeParameter arrangeParameter) {
+		this.currentMelody = currentMelody;
+		this.previousMelody = previousMelody;
+		this.currentChordProgression = currentChordProgression;
 		this.arrangeParameter = arrangeParameter;
 	}
 
-	public ArrayList<NoteInformation> getMelody() { return melody; }
-	public ArrayList<String> getChordProgression() { return chordProgression; }
+	public ArrayList<NoteInformation> getCurrentMelody() { return currentMelody; }
+	public ArrayList<NoteInformation> getPreviousMelody() { return previousMelody; }
+	public ArrayList<String> getCurrentChordProgression() { return currentChordProgression; }
+	public ArrayList<String> getPreviousChordProgression() { return previousChordProgression; }
 	public ArrangeParameter getArrangeParameter() { return arrangeParameter; }
 }
