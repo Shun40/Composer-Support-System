@@ -1,10 +1,10 @@
-package engine_yamashita.melody;
+package engine_yamashita.melody.reference;
 
-public class MelodyRhythmTuple {
+public class RhythmPatternData {
 	private int position;
 	private int duration;
 
-	public MelodyRhythmTuple(int position, int duration) {
+	public RhythmPatternData(int position, int duration) {
 		this.position = position;
 		this.duration = duration;
 	}

@@ -5,6 +5,16 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import engine_yamashita.ArrangeInformation;
+import engine_yamashita.melody.generation.MelodyLabel;
+import engine_yamashita.melody.generation.MelodyMaker;
+import engine_yamashita.melody.reference.PitchPattern;
+import engine_yamashita.melody.reference.PitchPatternData;
+import engine_yamashita.melody.reference.PitchPatternDictionary;
+import engine_yamashita.melody.reference.PitchPatternDictionaryRecord;
+import engine_yamashita.melody.reference.RhythmPattern;
+import engine_yamashita.melody.reference.RhythmPatternData;
+import engine_yamashita.melody.reference.RhythmPatternDictionary;
+import engine_yamashita.melody.reference.RhythmPatternDictionaryRecord;
 import gui.NoteInformation;
 
 /**
@@ -20,77 +30,80 @@ public class MelodyAnalyzer {
 		ArrayList<NoteInformation> currentMelody = arrangeInformation.getCurrentMelody();
 		ArrayList<NoteInformation> previousMelody = arrangeInformation.getPreviousMelody();
 
-		MelodyRhythmDictionary melodyRhythmDictionary = new MelodyRhythmDictionary();
-		MelodyRhythm currentMelodyRhythm = getRhythm(currentMelody);
-		MelodyRhythm previousMelodyRhythm = getRhythm(previousMelody);
+		RhythmPatternDictionary rhythmPatternDictionary = new RhythmPatternDictionary();
+		RhythmPattern currentMelodyRhythmPattern = getRhythmPattern(currentMelody);
+		RhythmPattern previousMelodyRhythmPattern = getRhythmPattern(previousMelody);
+		RhythmPatternDictionaryRecord bestMelodyRhythmPatternDictionaryRecord = null;
 
-		MelodyPitchDictionary melodyPitchDictionary = new MelodyPitchDictionary();
+		PitchPatternDictionary pitchPatternDictionary = new PitchPatternDictionary();
+		PitchPattern currentMelodyPitchPattern = getPitchPattern(previousMelody, currentMelody);
+		PitchPattern previousMelodyPitchPattern = getPitchPattern(null, previousMelody);
+		PitchPatternDictionaryRecord bestMelodyPitchPatternDictionaryRecord = null;
 
-		for(int n = 0; n < melodyRhythmDictionary.size(); n++) {
-			MelodyRhythm target = null;
-			MelodyRhythm pattern = null;
-			target = previousMelodyRhythm;
-			pattern = melodyRhythmDictionary.get(n).getContext();
-			//System.out.println(melodyRhythmDictionary.get(n).getName() + " : " + calcMelodyRhythmSimilarity(target, pattern));
-			target = currentMelodyRhythm;
-			pattern = melodyRhythmDictionary.get(n).getWord();
-			//System.out.println(melodyRhythmDictionary.get(n).getName() + " : " + calcMelodyRhythmSimilarity(target, pattern));
-		}
-
-		ArrayList<Integer> target = new ArrayList<Integer>();
-		for(NoteInformation note : currentMelody) {
-			target.add(note.getNote());
-		}
-		int lowest = getLowest(previousMelody).getNote();
-		int highest = getHighest(previousMelody).getNote();
-		int mid = lowest + ((highest - lowest) / 2);
-		for(int i = 0; i < 3; i++) { // first
-			for(int j = 0; j < 3; j++) { // second
-				for(int k = 0; k < 3; k++) { // third
-					for(int l = 0; l < 3; l++) { // fourth
-						ArrayList<Integer> pattern = new ArrayList<Integer>();
-						switch(i) {
-						case 0: System.out.print("L(" + lowest + ")"); pattern.add(lowest); break;
-						case 1: System.out.print("M(" + mid + ")"); pattern.add(mid); break;
-						case 2: System.out.print("H(" + highest + ")"); pattern.add(highest); break;
-						}
-						switch(j) {
-						case 0: System.out.print("L(" + lowest + ")"); pattern.add(lowest); break;
-						case 1: System.out.print("M(" + mid + ")"); pattern.add(mid); break;
-						case 2: System.out.print("H(" + highest + ")"); pattern.add(highest); break;
-						}
-						switch(k) {
-						case 0: System.out.print("L(" + lowest + ")"); pattern.add(lowest); break;
-						case 1: System.out.print("M(" + mid + ")"); pattern.add(mid); break;
-						case 2: System.out.print("H(" + highest + ")"); pattern.add(highest); break;
-						}
-						switch(l) {
-						case 0: System.out.print("L(" + lowest + ")"); pattern.add(lowest); break;
-						case 1: System.out.print("M(" + mid + ")"); pattern.add(mid); break;
-						case 2: System.out.print("H(" + highest + ")"); pattern.add(highest); break;
-						}
-						System.out.println(" : " + calcMelodyPitchSimilarity(target, pattern));
-					}
-				}
+		double rhythmPatternMax = 0.0;
+		double rhythmPatternContextSimilarity = 0.0;
+		double rhythmPatternWordSimilarity = 0.0;
+		for(int n = 0; n < rhythmPatternDictionary.size(); n++) {
+			RhythmPattern target = previousMelodyRhythmPattern;
+			RhythmPattern pattern = rhythmPatternDictionary.get(n).getContext();
+			rhythmPatternContextSimilarity = calcRhythmPatternSimilarity(target, pattern);
+			target = currentMelodyRhythmPattern;
+			pattern = rhythmPatternDictionary.get(n).getWord();
+			rhythmPatternWordSimilarity = calcRhythmPatternSimilarity(target, pattern);
+			System.out.println(rhythmPatternDictionary.get(n).getName() + " : " + rhythmPatternContextSimilarity);
+			System.out.println(rhythmPatternDictionary.get(n).getName() + " : " + rhythmPatternWordSimilarity);
+			if(rhythmPatternMax <= rhythmPatternContextSimilarity + rhythmPatternWordSimilarity) {
+				rhythmPatternMax = rhythmPatternContextSimilarity + rhythmPatternWordSimilarity;
+				bestMelodyRhythmPatternDictionaryRecord = rhythmPatternDictionary.get(n);
 			}
 		}
+		System.out.println(bestMelodyRhythmPatternDictionaryRecord.getName());
+		System.out.println();
+
+		double pitchPatternMax = 0.0;
+		double pitchPatternContextSimilarity = 0.0;
+		double pitchPatternWordSimilarity = 0.0;
+		for(int n = 0; n < pitchPatternDictionary.size(); n++) {
+			PitchPattern target = previousMelodyPitchPattern;
+			PitchPattern pattern = pitchPatternDictionary.get(n).getContext();
+			pitchPatternContextSimilarity = calcPitchPatternSimilarity(target, pattern);
+			target = currentMelodyPitchPattern;;
+			pattern = pitchPatternDictionary.get(n).getWord();
+			pitchPatternWordSimilarity = calcPitchPatternSimilarity(target, pattern);
+			System.out.println(pitchPatternDictionary.get(n).getName() + " : " + pitchPatternContextSimilarity);
+			System.out.println(pitchPatternDictionary.get(n).getName() + " : " + pitchPatternWordSimilarity);
+			if(pitchPatternMax <= pitchPatternContextSimilarity + pitchPatternWordSimilarity) {
+				pitchPatternMax = pitchPatternContextSimilarity + pitchPatternWordSimilarity;
+				bestMelodyPitchPatternDictionaryRecord = pitchPatternDictionary.get(n);
+			}
+		}
+		System.out.println(bestMelodyPitchPatternDictionaryRecord.getName());
+		System.out.println();
+
+		MelodyMaker melodyMaker = new MelodyMaker();
+		RhythmPattern bestRhythmPatternWord = bestMelodyRhythmPatternDictionaryRecord.getWord();
+		PitchPattern bestPitchPatternWord = bestMelodyPitchPatternDictionaryRecord.getWord();
+		RhythmPattern bestRhythmPatternContext = bestMelodyRhythmPatternDictionaryRecord.getContext();
+		PitchPattern bestPitchPatternContext = bestMelodyPitchPatternDictionaryRecord.getContext();
+		ArrayList<String> chordProgression = arrangeInformation.getCurrentChordProgression();
+		ArrayList<MelodyLabel> melodyLabels = melodyMaker.makeMelody(bestRhythmPatternWord, bestPitchPatternWord, bestRhythmPatternContext, bestPitchPatternContext, chordProgression);
 
 		return predictiedMelodies;
 	}
 
-	public MelodyRhythm getRhythm(ArrayList<NoteInformation> melody) {
-		MelodyRhythm melodyRhythm = new MelodyRhythm();
+	public RhythmPattern getRhythmPattern(ArrayList<NoteInformation> melody) {
+		RhythmPattern rhythmPattern = new RhythmPattern();
 		for(NoteInformation note : melody) {
 			int position = note.getPosition() % (960 * 4);
 			int duration = note.getDuration();
-			melodyRhythm.addRhythm(position, duration);
+			rhythmPattern.addRhythm(position, duration);
 		}
-		return melodyRhythm;
+		return rhythmPattern;
 	}
 
-	public double calcMelodyRhythmSimilarity(MelodyRhythm target, MelodyRhythm pattern) {
-		ArrayList<MelodyRhythmTuple> targetRhythms = target.getRhythms();
-		ArrayList<MelodyRhythmTuple> patternRhythms = pattern.getRhythms();
+	public double calcRhythmPatternSimilarity(RhythmPattern target, RhythmPattern pattern) {
+		ArrayList<RhythmPatternData> targetRhythms = target.getRhythms();
+		ArrayList<RhythmPatternData> patternRhythms = pattern.getRhythms();
 		int targetSize = targetRhythms.size();
 		int patternSize = patternRhythms.size();
 
@@ -101,11 +114,13 @@ public class MelodyAnalyzer {
 
 		// 総当りで距離計算
 		for(int i = 0; i < targetSize; i++) {
-			MelodyRhythmTuple target_i = targetRhythms.get(i);
+			RhythmPatternData target_i = targetRhythms.get(i);
 			for(int j = 0; j < patternSize; j++) {
-				MelodyRhythmTuple pattern_j = patternRhythms.get(j);
-				// positionとdurationのユークリッド距離を計算
-				miss[i][j] = Math.sqrt(Math.pow(target_i.getPosition() - pattern_j.getPosition(), 2) + Math.pow(target_i.getDuration() - pattern_j.getDuration(), 2));
+				RhythmPatternData pattern_j = patternRhythms.get(j);
+				// リズムパターン要素のユークリッド距離を計算
+				double diffPosition = Math.pow(target_i.getPosition() - pattern_j.getPosition(), 2);
+				double diffDuration = Math.pow(target_i.getDuration() - pattern_j.getDuration(), 2);
+				miss[i][j] = Math.sqrt(diffPosition + diffDuration);
 			}
 		}
 
@@ -140,9 +155,43 @@ public class MelodyAnalyzer {
 		return 1.0 - (cost[targetSize - 1][patternSize - 1] / costMax);
 	}
 
-	public double calcMelodyPitchSimilarity(ArrayList<Integer> target, ArrayList<Integer> pattern) {
-		int targetSize = target.size();
-		int patternSize = pattern.size();
+	public PitchPattern getPitchPattern(ArrayList<NoteInformation> previousMelody, ArrayList<NoteInformation> currentMelody) {
+		PitchPattern pitchPattern = new PitchPattern();
+		for(int n = 0; n < currentMelody.size(); n++) {
+			int previousNotePitch = 0;
+			int currentNotePitch = currentMelody.get(n).getNote();
+			if(n == 0) {
+				if(previousMelody == null || previousMelody.size() <= 0) {
+					pitchPattern.addPitch(0, 0, currentNotePitch);
+				} else {
+					previousNotePitch = previousMelody.get(previousMelody.size() - 1).getNote();
+					if(previousNotePitch == currentNotePitch) {
+						pitchPattern.addPitch(0, 0, currentNotePitch);
+					} else if(previousNotePitch > currentNotePitch) {
+						pitchPattern.addPitch(-1, Math.abs(previousNotePitch - currentNotePitch), currentNotePitch);
+					} else {
+						pitchPattern.addPitch(1, Math.abs(previousNotePitch - currentNotePitch), currentNotePitch);
+					}
+				}
+			} else {
+				previousNotePitch = currentMelody.get(n - 1).getNote();
+				if(previousNotePitch == currentNotePitch) {
+					pitchPattern.addPitch(0, 0, currentNotePitch);
+				} else if(previousNotePitch > currentNotePitch) {
+					pitchPattern.addPitch(-1, Math.abs(previousNotePitch - currentNotePitch), currentNotePitch);
+				} else {
+					pitchPattern.addPitch(1, Math.abs(previousNotePitch - currentNotePitch), currentNotePitch);
+				}
+			}
+		}
+		return pitchPattern;
+	}
+
+	public double calcPitchPatternSimilarity(PitchPattern target, PitchPattern pattern) {
+		ArrayList<PitchPatternData> targetPitches = target.getPitches();
+		ArrayList<PitchPatternData> patternPitches = pattern.getPitches();
+		int targetSize = targetPitches.size();
+		int patternSize = patternPitches.size();
 
 		if(targetSize == 0 || patternSize == 0) return 0.0;
 
@@ -151,11 +200,14 @@ public class MelodyAnalyzer {
 
 		// 総当りで距離計算
 		for(int i = 0; i < targetSize; i++) {
-			int target_i = target.get(i);
+			PitchPatternData target_i = targetPitches.get(i);
 			for(int j = 0; j < patternSize; j++) {
-				int pattern_j = pattern.get(j);
-				// 音高のユークリッド距離を計算
-				miss[i][j] = Math.sqrt(Math.pow(target_i - pattern_j, 2));
+				PitchPatternData pattern_j = patternPitches.get(j);
+				// 音高パターン要素のユークリッド距離を計算
+				double diffVariation = Math.pow(target_i.getVariation() - pattern_j.getVariation(), 2);
+				double diffDifference = Math.pow(target_i.getDifference() - pattern_j.getDifference(), 2);
+				double diffPlace = Math.pow(target_i.getPlace() - pattern_j.getPlace(), 2);
+				miss[i][j] = Math.sqrt(diffVariation + diffDifference);
 			}
 		}
 
