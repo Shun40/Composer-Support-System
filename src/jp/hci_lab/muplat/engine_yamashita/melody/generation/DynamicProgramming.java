@@ -8,7 +8,6 @@ public class DynamicProgramming {
 	private ChordAppearanceProbability chordAppearanceProbability;
 	private RangeTransitionProbability rangeTransitionProbability;
 	private JumpTransitionProbability jumpTransitionProbability;
-	private PitchPatternWeight pitchPatternWeight;
 	private int minPitch;
 	private int maxPitch;
 	private int numPitch;
@@ -18,7 +17,6 @@ public class DynamicProgramming {
 		chordAppearanceProbability = new ChordAppearanceProbability();
 		rangeTransitionProbability = new RangeTransitionProbability();
 		jumpTransitionProbability = new JumpTransitionProbability();
-		pitchPatternWeight = new PitchPatternWeight();
 		minPitch = rangeAppearanceProbability.getMinPitch();
 		maxPitch = rangeAppearanceProbability.getMaxPitch();
 		numPitch = (maxPitch - minPitch) + 1;
@@ -34,11 +32,15 @@ public class DynamicProgramming {
 		double[][] delta = new double[N+1][numPitch];
 		int[][] psi = new int[N+1][numPitch];
 		for(int j = 0; j < numPitch; j++) {
-			delta[0][j] =
-					rangeAppearanceProbability.getProbability(j)
-					* chordAppearanceProbability.getProbability(melodyLabels.get(0).getChord(), j)
-					* pitchPatternWeight.getAppearanceWeight(melodyLabels.get(0).getPitchPatternData().getPlace(), j);
-			psi[0][j] = 0;
+			// 対象小節の(ユーザによって与えられた)直前音高を固定する
+			// そのために直前音高と一致しない音高の出現確率を0として経路上に出現しないようにする
+			if(j == melodyLabels.get(0).getPitch() - minPitch) {
+				delta[0][j] = 1.0;
+				psi[0][j] = j;
+			} else {
+				delta[0][j] = 0.0;
+				psi[0][j] = 0;
+			}
 		}
 		// Step.2 再帰計算
 		for(int i = 1; i <= N; i++) {
@@ -50,23 +52,23 @@ public class DynamicProgramming {
 					// 遷移確率計算
 					double a = rangeTransitionProbability.getProbability(j, k) * jumpTransitionProbability.getProbability(j, k);
 					// 音高概形による遷移制約
-					int variation = melodyLabels.get(i).getPitchPatternData().getVariation();
-					int difference = melodyLabels.get(i).getPitchPatternData().getDifference();
+					int variation = melodyLabels.get(i).getVariation();
+					int difference = melodyLabels.get(i).getDifference();
 					if(variation == 0) {
 						if(j != k) a *= 0.0; // 音高の下降および上昇を禁止
 					}
 					if(variation == -1) {
 						if(j <= k) a *= 0.0; // 音高の保持および上昇を禁止
 						else {
-							if(difference <= 4 && Math.abs(j - k) > 4) a *= 0.0;
-							if(difference > 4 && Math.abs(j - k) <= 4) a *= 0.0;
+							if(difference <= 2 && Math.abs(j - k) > 2) a *= 0.0;
+							if(difference > 2 && Math.abs(j - k) <= 2) a *= 0.0;
 						}
 					}
 					if(variation == 1) {
 						if(j >= k) a *= 0.0; // 音高の保持および下降を禁止
 						else {
-							if(difference <= 4 && Math.abs(j - k) > 4) a *= 0.0;
-							if(difference > 4 && Math.abs(j - k) <= 4) a *= 0.0;
+							if(difference <= 2 && Math.abs(j - k) > 2) a *= 0.0;
+							if(difference > 2 && Math.abs(j - k) <= 2) a *= 0.0;
 						}
 					}
 
@@ -79,14 +81,12 @@ public class DynamicProgramming {
 				// 出現確率計算
 				double b =
 						rangeAppearanceProbability.getProbability(k)
-						* chordAppearanceProbability.getProbability(melodyLabels.get(i).getChord(), k)
-						* pitchPatternWeight.getAppearanceWeight(melodyLabels.get(i).getPitchPatternData().getPlace(), k);
+						* chordAppearanceProbability.getProbability(melodyLabels.get(i).getChord(), k);
 				delta[i][k] = max_j * b;
 				psi[i][k] = argmax_j;
 			}
 		}
 		// Step.3 再帰計算の終了
-		//double P = 0.0;
 		double score = 0.0;
 		double max_k = 0.0;
 		int argmax_k = 0;
@@ -97,7 +97,6 @@ public class DynamicProgramming {
 				argmax_k = k;
 			}
 		}
-		//P = max_k;
 		X[N] = argmax_k;
 		// Step.4 バックトラック
 		for(int i = N; i > 0; i--) {

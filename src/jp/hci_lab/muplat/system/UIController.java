@@ -13,12 +13,7 @@ import javax.sound.midi.Track;
 
 import engine_yamashita.ArrangeInformation;
 import engine_yamashita.ArrangePattern;
-import engine_yamashita.BassPattern;
-import engine_yamashita.BassPatternAnalyzer;
-import engine_yamashita.DistGuitarPattern;
-import engine_yamashita.DistGuitarPatternAnalyzer;
-import engine_yamashita.DrumPattern;
-import engine_yamashita.DrumPatternAnalyzer;
+import engine_yamashita._MelodyPattern;
 import engine_yamashita.melody.MelodyAnalyzer;
 import gui.NoteBlock;
 import gui.NoteInformation;
@@ -158,27 +153,29 @@ public class UIController {
 
 		// メロディ分析
 		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
-		ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(arrangeInformation);
-		melodyAnalyzer.getPredictedMelodies(arrangeInformation);
+		ArrayList<_MelodyPattern> melodyPatterns = melodyAnalyzer.getMelodyPatterns(arrangeInformation);
+		//ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(arrangeInformation);
+		//melodyAnalyzer.getMelodyPatterns(arrangeInformation);
 
 		// ドラムパターン生成
-		DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
-		ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPatterns(arrangeInformation);
-		ArrayList<DrumPattern> advancedDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPatterns(arrangeInformation, baseDrumPatterns, accentScores);
+		//DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
+		//ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPatterns(arrangeInformation);
+		//ArrayList<DrumPattern> advancedDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPatterns(arrangeInformation, baseDrumPatterns, accentScores);
 
 		// ベースパターン生成
-		BassPatternAnalyzer bassPatternAnalyzer = new BassPatternAnalyzer();
-		ArrayList<BassPattern> bassPatterns = bassPatternAnalyzer.getBassPatterns(arrangeInformation, advancedDrumPatterns, accentScores);
+		//BassPatternAnalyzer bassPatternAnalyzer = new BassPatternAnalyzer();
+		//ArrayList<BassPattern> bassPatterns = bassPatternAnalyzer.getBassPatterns(arrangeInformation, null, accentScores);
 
 		// ディストーションギターパターン生成
-		DistGuitarPatternAnalyzer distGuitarPatternAnalyzer = new DistGuitarPatternAnalyzer();
-		ArrayList<DistGuitarPattern> distGuitarPatterns = distGuitarPatternAnalyzer.getDistGuitarPatterns(arrangeInformation, advancedDrumPatterns, accentScores);
+		//DistGuitarPatternAnalyzer distGuitarPatternAnalyzer = new DistGuitarPatternAnalyzer();
+		//ArrayList<DistGuitarPattern> distGuitarPatterns = distGuitarPatternAnalyzer.getDistGuitarPatterns(arrangeInformation, null, accentScores);
 
-		for(int n = 0; n < 20; n++) {
-			ArrangePattern arrangePattern = new ArrangePattern("Pattern" + (n + 1));
-			arrangePattern.setDistGuitarPattern(distGuitarPatterns.get(n));
-			arrangePattern.setBassPattern(bassPatterns.get(n));
-			arrangePattern.setDrumPattern(advancedDrumPatterns.get(n));
+		for(int n = 0; n < melodyPatterns.size(); n++) {
+			ArrangePattern arrangePattern = new ArrangePattern(melodyPatterns.get(n).getName());
+			arrangePattern.setMelodyPattern(melodyPatterns.get(n));
+			//arrangePattern.setDistGuitarPattern(distGuitarPatterns.get(n));
+			//arrangePattern.setBassPattern(bassPatterns.get(n));
+			//arrangePattern.setDrumPattern(advancedDrumPatterns.get(n));
 			arrangePatterns.add(arrangePattern);
 		}
 

@@ -2,36 +2,35 @@ package engine_yamashita.melody.generation;
 
 import java.util.ArrayList;
 
-import engine_yamashita.melody.reference.PitchPattern;
-import engine_yamashita.melody.reference.PitchPatternData;
-import engine_yamashita.melody.reference.RhythmPattern;
-import engine_yamashita.melody.reference.RhythmPatternData;
+import engine_yamashita.melody.reference.MelodyPattern;
+import gui.NoteInformation;
 
 public class MelodyMaker {
 	public MelodyMaker() {
 	}
 
-	public ArrayList<MelodyLabel> makeMelody(RhythmPattern rhythmPatternWord, PitchPattern pitchPatternWord, RhythmPattern rhythmPatternContext, PitchPattern pitchPatternContext, ArrayList<String> chordProgression) {
+	public ArrayList<MelodyLabel> makeMelody(MelodyPattern context, MelodyPattern word, ArrayList<String> chordProgression, NoteInformation justBeforeNote) {
 		ArrayList<MelodyLabel> melodyLabels = new ArrayList<MelodyLabel>();
-		ArrayList<RhythmPatternData> rhythms = rhythmPatternWord.getRhythms();
-		ArrayList<PitchPatternData> pitches = pitchPatternWord.getPitches();
-		int v = pitchPatternContext.getPitches().get(pitchPatternContext.getPitches().size() - 1).getVariation();
-		int d = pitchPatternContext.getPitches().get(pitchPatternContext.getPitches().size() - 1).getDifference();
-		int p = pitchPatternContext.getPitches().get(pitchPatternContext.getPitches().size() - 1).getPlace();
-		melodyLabels.add(new MelodyLabel(-1, chordProgression.get(0), 0, 0, new PitchPatternData(v, d, p)));
-		float index = pitches.size() / rhythms.size();
-		for(int l = 0; l < rhythms.size(); l++) {
-			int pitch = -1;
-			String chord = "N.C.";
-			int position = rhythms.get(l).getPosition();
-			int duration = rhythms.get(l).getDuration();
+
+		// 直前音符の情報
+		int pitch = justBeforeNote.getNote();
+		String chord = chordProgression.get(0);
+		int variation = context.get(context.size() - 1).getVariation();
+		int difference = context.get(context.size() - 1).getDifference();
+		int position = justBeforeNote.getPosition();
+		int duration = justBeforeNote.getDuration();
+		melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
+
+		for(int i = 0; i < word.size(); i++) {
+			pitch = -1;
+			variation = word.get(i).getVariation();
+			difference = word.get(i).getDifference();
+			position = word.get(i).getPosition();
+			duration = word.get(i).getDuration();
 			if(position / (960 * 2) == 0) chord = chordProgression.get(0); // 960でOKか要確認
 			if(position / (960 * 2) == 1) chord = chordProgression.get(1); // 960でOKか要確認
-			int variation = pitches.get((int)(l*index)).getVariation();
-			int difference = pitches.get((int)(l*index)).getDifference();
-			int place = pitches.get((int)(l*index)).getPlace();
-			System.out.println(pitch + ", " + chord + ", " + position + ", " + duration + ", " + variation + ", " + difference + ", " + place);
-			melodyLabels.add(new MelodyLabel(pitch, chord, position, duration, new PitchPatternData(variation, difference, place)));
+			System.out.println(pitch + ", " + chord + ", " + variation + ", " + difference + ", " + position + ", " + duration);
+			melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
 		}
 
 		DynamicProgramming dynamicProgramming = new DynamicProgramming();

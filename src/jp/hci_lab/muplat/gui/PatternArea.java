@@ -46,12 +46,23 @@ public class PatternArea extends Group {
 
 	public void arrange(ArrangePattern pattern) {
 		int targetMeasure = parent.getArrangeTargetMeasure();
-		parent.removeNoteInMeasure(targetMeasure, 6); // ディストーションギタートラックのノートを消去
-		parent.removeNoteInMeasure(targetMeasure, 9); // ベーストラックのノートを消去
-		parent.removeNoteInMeasure(targetMeasure, 10); // ドラムストラックのノートを消去
-		ArrayList<NoteInformation> distGuitarPatternNotes = pattern.getDistGuitarPattern().getDistGuitarPatternNotes();
-		ArrayList<NoteInformation> bassPatternNotes = pattern.getBassPattern().getBassPatternNotes();
-		ArrayList<NoteInformation> drumPatternNotes = pattern.getDrumPattern().getDrumPatternNotes();
+		parent.removeNoteInMeasure(targetMeasure, 1); // メロディトラックのノートを消去
+		//parent.removeNoteInMeasure(targetMeasure, 6); // ディストーションギタートラックのノートを消去
+		//parent.removeNoteInMeasure(targetMeasure, 9); // ベーストラックのノートを消去
+		//parent.removeNoteInMeasure(targetMeasure, 10); // ドラムストラックのノートを消去
+		ArrayList<NoteInformation> melodyNotes = pattern.getMelodyPattern();
+		//ArrayList<NoteInformation> distGuitarPatternNotes = pattern.getDistGuitarPattern().getDistGuitarPatternNotes();
+		//ArrayList<NoteInformation> bassPatternNotes = pattern.getBassPattern().getBassPatternNotes();
+		//ArrayList<NoteInformation> drumPatternNotes = pattern.getDrumPattern().getDrumPatternNotes();
+		for(NoteInformation noteInformation : melodyNotes) {
+			int track    = noteInformation.getTrack();
+			int note     = noteInformation.getNote();
+			int position = noteInformation.getPosition() * 2 + (960 * 4) * (targetMeasure - 1);
+			int duration = noteInformation.getDuration() * 2;
+			parent.setCurrentTrack(track);
+			parent.putNote(note, position, duration);
+		}
+		/*
 		for(NoteInformation noteInformation : distGuitarPatternNotes) {
 			int track    = noteInformation.getTrack();
 			int note     = noteInformation.getNote();
@@ -76,6 +87,7 @@ public class PatternArea extends Group {
 			parent.setCurrentTrack(track);
 			parent.putNote(note, position, duration);
 		}
+		*/
 		parent.setCurrentTrack(1);
 	}
 }
