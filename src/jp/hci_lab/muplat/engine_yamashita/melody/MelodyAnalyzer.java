@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import engine_yamashita.ArrangeInformation;
-import engine_yamashita._MelodyPattern;
+import engine_yamashita.Melody;
 import engine_yamashita.melody.generation.MelodyLabel;
 import engine_yamashita.melody.generation.MelodyMaker;
 import engine_yamashita.melody.reference.MelodyPattern;
@@ -21,8 +21,8 @@ public class MelodyAnalyzer {
 	public MelodyAnalyzer() {
 	}
 
-	public ArrayList<_MelodyPattern> getMelodyPatterns(ArrangeInformation arrangeInformation) {
-		ArrayList<_MelodyPattern> melodyPatterns = new ArrayList<_MelodyPattern>();
+	public ArrayList<Melody> getMelodies(ArrangeInformation arrangeInformation) {
+		ArrayList<Melody> melodies = new ArrayList<Melody>();
 		ArrayList<NoteInformation> currentMelody = arrangeInformation.getCurrentMelody();   // 現在小節のメロディ
 		ArrayList<NoteInformation> previousMelody = arrangeInformation.getPreviousMelody(); // 1小節前のメロディ
 
@@ -97,7 +97,7 @@ public class MelodyAnalyzer {
 		// メロディを整形
 		for(int m = 0; m < melodyLabels.size(); m++) {
 			String name = melodyPatternDictionary.get(rank[m]).getName();
-			_MelodyPattern melodyPattern = new _MelodyPattern(name);
+			Melody melody = new Melody(name);
 			for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
 				int track = 1;
 				int program = 0;
@@ -105,12 +105,12 @@ public class MelodyAnalyzer {
 				int position = melodyLabels.get(m).get(n).getPosition();
 				int duration = melodyLabels.get(m).get(n).getDuration();
 				int velocity = 100;
-				melodyPattern.add(new NoteInformation(track, program, pitch, position, duration, velocity, null));
+				melody.add(new NoteInformation(track, program, pitch, position, duration, velocity, null));
 			}
-			melodyPatterns.add(melodyPattern);
+			melodies.add(melody);
 		}
 
-		return melodyPatterns;
+		return melodies;
 	}
 
 	public MelodyPattern getMelodyPattern(ArrayList<NoteInformation> previousMelody, ArrayList<NoteInformation> currentMelody) {

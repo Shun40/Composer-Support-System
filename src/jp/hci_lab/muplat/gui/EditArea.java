@@ -264,6 +264,29 @@ public class EditArea extends Group {
 		}
 	}
 
+	public void removeNoteIn2Beat(int targetMeasure, int targetBeat1, int targetBeat2, int targetTrack) {
+		ArrayList<NoteBlock> removeNoteBlocks = new ArrayList<NoteBlock>();
+		for(NoteBlock noteBlock : noteBlocks) {
+			if((noteBlock.getNoteInformation().getPosition() / (960 * 4)) + 1 == targetMeasure
+				&& noteBlock.getNoteInformation().getTrack() == targetTrack) {
+				System.out.println(targetMeasure);
+				System.out.println(targetBeat1);
+				System.out.println(targetBeat2);
+				if(((noteBlock.getNoteInformation().getPosition() % (960 * 4)) / 960 + 1) == targetBeat1){
+					removeNoteBlocks.add(noteBlock);
+				}
+				if(((noteBlock.getNoteInformation().getPosition() % (960 * 4)) / 960 + 1) == targetBeat2) {
+					System.out.println(targetBeat2);
+					removeNoteBlocks.add(noteBlock);
+				}
+			}
+		}
+		for(NoteBlock noteBlock : removeNoteBlocks) {
+			removeNoteFromEngine(noteBlock);
+			removeNoteFromUi(noteBlock);
+		}
+	}
+
 	public void changeCurrentTrack(int currentTrack) {
 		for(NoteBlock noteBlock : noteBlocks) {
 			noteBlock.updateView(currentTrack);

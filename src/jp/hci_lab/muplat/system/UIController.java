@@ -11,9 +11,11 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+import engine_yamashita.Accompaniment;
+import engine_yamashita.AccompanimentMaker;
 import engine_yamashita.ArrangeInformation;
 import engine_yamashita.ArrangePattern;
-import engine_yamashita._MelodyPattern;
+import engine_yamashita.Melody;
 import engine_yamashita.melody.MelodyAnalyzer;
 import gui.NoteBlock;
 import gui.NoteInformation;
@@ -153,33 +155,25 @@ public class UIController {
 
 		// メロディ分析
 		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
-		ArrayList<_MelodyPattern> melodyPatterns = melodyAnalyzer.getMelodyPatterns(arrangeInformation);
-		//ArrayList<Double> accentScores = melodyAnalyzer.getAccentScores(arrangeInformation);
-		//melodyAnalyzer.getMelodyPatterns(arrangeInformation);
+		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(arrangeInformation);
 
-		// ドラムパターン生成
-		//DrumPatternAnalyzer drumPatternAnalyzer = new DrumPatternAnalyzer();
-		//ArrayList<DrumPattern> baseDrumPatterns = drumPatternAnalyzer.getBaseDrumPatterns(arrangeInformation);
-		//ArrayList<DrumPattern> advancedDrumPatterns = drumPatternAnalyzer.getRhythmicalDrumPatterns(arrangeInformation, baseDrumPatterns, accentScores);
-
-		// ベースパターン生成
-		//BassPatternAnalyzer bassPatternAnalyzer = new BassPatternAnalyzer();
-		//ArrayList<BassPattern> bassPatterns = bassPatternAnalyzer.getBassPatterns(arrangeInformation, null, accentScores);
-
-		// ディストーションギターパターン生成
-		//DistGuitarPatternAnalyzer distGuitarPatternAnalyzer = new DistGuitarPatternAnalyzer();
-		//ArrayList<DistGuitarPattern> distGuitarPatterns = distGuitarPatternAnalyzer.getDistGuitarPatterns(arrangeInformation, null, accentScores);
-
-		for(int n = 0; n < melodyPatterns.size(); n++) {
-			ArrangePattern arrangePattern = new ArrangePattern(melodyPatterns.get(n).getName());
-			arrangePattern.setMelodyPattern(melodyPatterns.get(n));
-			//arrangePattern.setDistGuitarPattern(distGuitarPatterns.get(n));
-			//arrangePattern.setBassPattern(bassPatterns.get(n));
-			//arrangePattern.setDrumPattern(advancedDrumPatterns.get(n));
+		for(int n = 0; n < melodies.size(); n++) {
+			ArrangePattern arrangePattern = new ArrangePattern(melodies.get(n).getName());
+			arrangePattern.setMelody(melodies.get(n));
 			arrangePatterns.add(arrangePattern);
 		}
 
 		return arrangePatterns;
+	}
+
+	public Accompaniment makeAccompaniment(String chord) {
+		Accompaniment accompaniment = new Accompaniment();
+		AccompanimentMaker accompanimentMaker = new AccompanimentMaker();
+		accompaniment.setPianoPart(accompanimentMaker.makePianoPart(chord));
+		accompaniment.setBassPart(accompanimentMaker.makeBassPart(chord));
+		accompaniment.setDrumPart(accompanimentMaker.makeDrumPart());
+
+		return accompaniment;
 	}
 
 	public Sequence getSequence() { return sequence; }

@@ -29,11 +29,13 @@ public class MeasureArea extends Group {
 	private RadioButton[] arrangeTargetButtons;
 	private ChordSelector[] chordSelectors;
 	private Line[] vFrameLines;
+	private Pianoroll parent;
 
-	public MeasureArea(int measureCount, int x, int y) {
+	public MeasureArea(int measureCount, int x, int y, Pianoroll parent) {
 		super();
 		this.measureCount = measureCount;
 		this.toggleGroup = new ToggleGroup();
+		this.parent = parent;
 		setClip(new Rectangle(MEASURE_WIDTH * SHOW_MEASURE_COUNT + 0.5, 64 + 0.5)); // 実際に表示する領域サイズ
 		setupPoint(x, y);
 		setupChords();
@@ -182,6 +184,10 @@ public class MeasureArea extends Group {
 
 	public int getArrangeTarget() {
 		return (int)toggleGroup.getSelectedToggle().getUserData();
+	}
+
+	public void makeAccompaniment(String chord, int measure, int count) {
+		parent.makeAccompaniment(chord, measure, count);
 	}
 
 	public String getChord(int measure, int count) {

@@ -14,6 +14,7 @@ import java.util.Date;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
+import engine_yamashita.Accompaniment;
 import engine_yamashita.ArrangeInformation;
 import engine_yamashita.ArrangePattern;
 import javafx.scene.Group;
@@ -86,6 +87,10 @@ public class MainScene extends Scene {
 
 	public ArrayList<ArrangePattern> prediction(ArrangeInformation arrangeInformation) {
 		return uiController.prediction(arrangeInformation);
+	}
+
+	public Accompaniment makeAccompaniment(String chord) {
+		return uiController.makeAccompaniment(chord);
 	}
 
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装

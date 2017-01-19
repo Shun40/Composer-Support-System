@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import gui.NoteInformation;
 
-public class _MelodyPattern extends ArrayList<NoteInformation> {
+public class Melody extends ArrayList<NoteInformation> {
 	private String name;
 
-	public _MelodyPattern(String name) {
+	public Melody(String name) {
 		super();
 		this.name = name;
 	}

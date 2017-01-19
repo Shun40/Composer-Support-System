@@ -11,12 +11,14 @@ import javafx.scene.control.ComboBox;
 public class ChordSelector extends ComboBox<String> {
 	private int measure;
 	private int beat;
+	private boolean setupFinished;
 	private MeasureArea parent;
 
 	public ChordSelector(int measure, int beat, int x, int y, MeasureArea parent) {
 		super();
 		this.measure = measure;
 		this.beat = beat;
+		this.setupFinished = false;
 		this.parent = parent;
 		setupComboBox();
 		setupPoint(x, y);
@@ -41,9 +43,13 @@ public class ChordSelector extends ComboBox<String> {
 				setChord(newVal, measure, beat);
 			}
 		);
+		setupFinished = true;
 	}
 
 	public void setChord(String chord, int measure, int beat) {
 		parent.setChord(chord, measure, beat);
+		if(setupFinished) {
+			parent.makeAccompaniment(chord, measure, beat);
+		}
 	}
 }

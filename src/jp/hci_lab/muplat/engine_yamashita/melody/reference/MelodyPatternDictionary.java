@@ -85,6 +85,56 @@ public class MelodyPatternDictionary extends ArrayList<MelodyPatternDictionaryRe
 		p2_8.add(1, 1, 480, 480);
 		p2_8.add(1, 2, 960, 480);
 		p2_8.add(1, 2, 1440, 480);
+		// 「天体観測」サビ8小節
+		MelodyPattern p3_1 = new MelodyPattern();
+		p3_1.add(1, 7, 0, 240);
+		p3_1.add(0, 0, 240, 240);
+		p3_1.add(0, 0, 480, 240);
+		p3_1.add(0, 0, 720, 240);
+		p3_1.add(0, 0, 960, 240);
+		p3_1.add(0, 0, 1200, 240);
+		p3_1.add(0, 0, 1440, 240);
+		p3_1.add(-1, 2, 1680, 240);
+		MelodyPattern p3_2 = new MelodyPattern();
+		p3_2.add(1, 2, 0, 480);
+		p3_2.add(1, 2, 480, 480);
+		p3_2.add(-1, 4, 960, 960);
+		MelodyPattern p3_3 = new MelodyPattern();
+		p3_3.add(1, 2, 0, 480);
+		p3_3.add(0, 0, 480, 480);
+		p3_3.add(0, 0, 960, 480);
+		p3_3.add(0, 0, 1440, 240);
+		p3_3.add(-1, 2, 1680, 240);
+		MelodyPattern p3_4 = new MelodyPattern();
+		p3_4.add(1, 2, 0, 480);
+		p3_4.add(1, 2, 480, 480);
+		p3_4.add(-1, 4, 960, 960);
+		MelodyPattern p3_5 = new MelodyPattern();
+		p3_5.add(0, 0, 0, 240);
+		p3_5.add(-1, 1, 240, 240);
+		p3_5.add(-1, 2, 480, 240);
+		p3_5.add(1, 2, 720, 240);
+		p3_5.add(1, 1, 960, 480);
+		p3_5.add(0, 0, 1440, 240);
+		p3_5.add(-1, 1, 1680, 240);
+		MelodyPattern p3_6 = new MelodyPattern();
+		p3_6.add(-1, 2, 0, 240);
+		p3_6.add(1, 2, 240, 240);
+		p3_6.add(1, 1, 480, 480);
+		p3_6.add(-1, 3, 960, 240);
+		p3_6.add(1, 3, 1200, 480);
+		p3_6.add(1, 4, 1680, 720);
+		MelodyPattern p3_7 = new MelodyPattern();
+		p3_7.add(1, 1, 480, 480);
+		p3_7.add(-1, 1, 960, 240);
+		p3_7.add(-1, 2, 1200, 240);
+		p3_7.add(-1, 2, 1440, 240);
+		p3_7.add(0, 0, 1680, 240);
+		MelodyPattern p3_8 = new MelodyPattern();
+		p3_8.add(1, 2, 0, 240);
+		p3_8.add(-1, 7, 240, 240);
+		p3_8.add(0, 0, 480, 240);
+		p3_8.add(0, 0, 720, 1200);
 
 		// よく出そうなパターンの順に登録 (とりあえず既存楽曲数曲を分析して出てきたパターンを登録しておく)
 		add(new MelodyPatternDictionaryRecord("「メルト」サビ, (1->)2", p1_1, p1_2, 0));
@@ -103,5 +153,13 @@ public class MelodyPatternDictionary extends ArrayList<MelodyPatternDictionaryRe
 		add(new MelodyPatternDictionaryRecord("「シルエット」サビ, (6->)7", p2_6, p2_7, 0));
 		add(new MelodyPatternDictionaryRecord("「シルエット」サビ, (7->)8", p2_7, p2_8, 0));
 		add(new MelodyPatternDictionaryRecord("「シルエット」サビ, (8->)1", p2_8, p2_1, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (1->)2", p3_1, p3_2, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (2->)3", p3_2, p3_3, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (3->)4", p3_3, p3_4, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (4->)5", p3_4, p3_5, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (5->)6", p3_5, p3_6, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (6->)7", p3_6, p3_7, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (7->)8", p3_7, p3_8, 0));
+		add(new MelodyPatternDictionaryRecord("「天体観測」サビ, (8->)1", p3_8, p3_1, 0));
 	}
 }
