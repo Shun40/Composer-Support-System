@@ -197,7 +197,7 @@ public class EditArea extends Group {
 	}
 
 	public void addNoteToEngine(NoteBlock noteBlock) {
-		parent.addNoteToEngine(noteBlock);
+		parent.addNoteToEngine(noteBlock.getNote());
 	}
 
 	public void removeNoteFromUi(NoteBlock noteBlock) {
@@ -208,7 +208,7 @@ public class EditArea extends Group {
 	}
 
 	public void removeNoteFromEngine(NoteBlock noteBlock) {
-		parent.removeNoteFromEngine(noteBlock);
+		parent.removeNoteFromEngine(noteBlock.getNote());
 	}
 
 	public void clearNoteFromUi() {
@@ -243,9 +243,9 @@ public class EditArea extends Group {
 
 	// ファイルからノートを読み込んで置く際に呼ばれる
 	public void putNote(int note, int position, int duration) {
-		int x = (BEAT_WIDTH / 4) * (position / 240);
+		int x = (BEAT_WIDTH / 4) * (position / (PPQ / 4));
 		int y = NOTE_GRID_HEIGHT * (((MAX_OCTAVE + 2) * 12 - 1) - note);
-		int w = (BEAT_WIDTH / 4) * (duration / 240);
+		int w = (BEAT_WIDTH / 4) * (duration / (PPQ / 4));
 		int h = NOTE_GRID_HEIGHT;
 		putNote(x, y, w, h, false);
 	}
@@ -253,8 +253,8 @@ public class EditArea extends Group {
 	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
 		ArrayList<NoteBlock> removeNoteBlocks = new ArrayList<NoteBlock>();
 		for(NoteBlock noteBlock : noteBlocks) {
-			if((noteBlock.getNoteInformation().getPosition() / (960 * 4)) + 1 == targetMeasure
-				&& noteBlock.getNoteInformation().getTrack() == targetTrack) {
+			if((noteBlock.getNote().getPosition() / (PPQ * 4)) + 1 == targetMeasure
+				&& noteBlock.getNote().getTrack() == targetTrack) {
 				removeNoteBlocks.add(noteBlock);
 			}
 		}
@@ -267,15 +267,15 @@ public class EditArea extends Group {
 	public void removeNoteIn2Beat(int targetMeasure, int targetBeat1, int targetBeat2, int targetTrack) {
 		ArrayList<NoteBlock> removeNoteBlocks = new ArrayList<NoteBlock>();
 		for(NoteBlock noteBlock : noteBlocks) {
-			if((noteBlock.getNoteInformation().getPosition() / (960 * 4)) + 1 == targetMeasure
-				&& noteBlock.getNoteInformation().getTrack() == targetTrack) {
+			if((noteBlock.getNote().getPosition() / (PPQ * 4)) + 1 == targetMeasure
+				&& noteBlock.getNote().getTrack() == targetTrack) {
 				System.out.println(targetMeasure);
 				System.out.println(targetBeat1);
 				System.out.println(targetBeat2);
-				if(((noteBlock.getNoteInformation().getPosition() % (960 * 4)) / 960 + 1) == targetBeat1){
+				if(((noteBlock.getNote().getPosition() % (PPQ * 4)) / PPQ + 1) == targetBeat1){
 					removeNoteBlocks.add(noteBlock);
 				}
-				if(((noteBlock.getNoteInformation().getPosition() % (960 * 4)) / 960 + 1) == targetBeat2) {
+				if(((noteBlock.getNote().getPosition() % (PPQ * 4)) / PPQ + 1) == targetBeat2) {
 					System.out.println(targetBeat2);
 					removeNoteBlocks.add(noteBlock);
 				}

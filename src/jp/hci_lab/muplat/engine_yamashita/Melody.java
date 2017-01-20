@@ -2,9 +2,9 @@ package engine_yamashita;
 
 import java.util.ArrayList;
 
-import gui.NoteInformation;
+import gui.Note;
 
-public class Melody extends ArrayList<NoteInformation> {
+public class Melody extends ArrayList<Note> {
 	private String name;
 
 	public Melody(String name) {

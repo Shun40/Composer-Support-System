@@ -25,8 +25,8 @@ public class UISynth {
 		synth.getChannels()[track - 1].programChange(program - 1);
 	}
 
-	public static void toneOn(int track, int note, int velocity) {
-		synth.getChannels()[track - 1].noteOn(note, velocity);
+	public static void toneOn(int track, int pitch, int velocity) {
+		synth.getChannels()[track - 1].noteOn(pitch, velocity);
 	}
 
 	public static void toneOff(int track) {

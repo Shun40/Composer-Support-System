@@ -53,12 +53,12 @@ public class MainScene extends Scene {
 		uiController.setBpm(bpm);
 	}
 
-	public void addNoteToEngine(NoteBlock noteBlock) {
-		uiController.addNoteToEngine(noteBlock);
+	public void addNoteToEngine(Note note) {
+		uiController.addNoteToEngine(note);
 	}
 
-	public void removeNoteFromEngine(NoteBlock noteBlock) {
-		uiController.removeNoteFromEngine(noteBlock);
+	public void removeNoteFromEngine(Note note) {
+		uiController.removeNoteFromEngine(note);
 	}
 
 	public void clearNoteFromEngine() {
@@ -108,16 +108,16 @@ public class MainScene extends Scene {
 				pianoroll.setBpm(Integer.parseInt(br.readLine()));
 				pianoroll.clearNoteFromUi();
 				pianoroll.clearNoteFromEngine();
-				String noteInformation = br.readLine();
-				while(noteInformation != null) {
-					int track    = Integer.parseInt(noteInformation.split(":", -1)[0]);
-					int note     = Integer.parseInt(noteInformation.split(":", -1)[1]);
-					int position = Integer.parseInt(noteInformation.split(":", -1)[2]);
-					int duration = Integer.parseInt(noteInformation.split(":", -1)[3]);
+				String note = br.readLine();
+				while(note != null) {
+					int track    = Integer.parseInt(note.split(":", -1)[0]);
+					int pitch    = Integer.parseInt(note.split(":", -1)[1]);
+					int position = Integer.parseInt(note.split(":", -1)[2]);
+					int duration = Integer.parseInt(note.split(":", -1)[3]);
 					pianoroll.setCurrentTrack(track);
-					pianoroll.putNote(note, position, duration);
+					pianoroll.putNote(pitch, position, duration);
 
-					noteInformation = br.readLine();
+					note = br.readLine();
 				}
 				br.close();
 			} catch(Exception e) {
@@ -145,10 +145,10 @@ public class MainScene extends Scene {
 				pw.println(bpm);
 				for(NoteBlock noteBlock : noteBlocks) {
 					pw.println(
-						noteBlock.getNoteInformation().getTrack() + ":" +
-						noteBlock.getNoteInformation().getNote() + ":" +
-						noteBlock.getNoteInformation().getPosition() + ":"+
-						noteBlock.getNoteInformation().getDuration()
+						noteBlock.getNote().getTrack() + ":" +
+						noteBlock.getNote().getPitch() + ":" +
+						noteBlock.getNote().getPosition() + ":"+
+						noteBlock.getNote().getDuration()
 					);
 				}
 				pw.close();

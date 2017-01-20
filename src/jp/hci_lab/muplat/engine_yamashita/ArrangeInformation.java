@@ -2,18 +2,18 @@ package engine_yamashita;
 
 import java.util.ArrayList;
 
-import gui.NoteInformation;
+import gui.Note;
 
 public class ArrangeInformation {
-	private ArrayList<NoteInformation> currentMelody;
-	private ArrayList<NoteInformation> previousMelody;
+	private ArrayList<Note> currentMelody;
+	private ArrayList<Note> previousMelody;
 	private ArrayList<String> currentChordProgression;
 	private ArrayList<String> previousChordProgression;
 	private ArrangeParameter arrangeParameter;
 
 	public ArrangeInformation(
-			ArrayList<NoteInformation> currentMelody,
-			ArrayList<NoteInformation> previousMelody,
+			ArrayList<Note> currentMelody,
+			ArrayList<Note> previousMelody,
 			ArrayList<String> currentChordProgression,
 			ArrayList<String> previousChordProgression,
 			ArrangeParameter arrangeParameter) {
@@ -23,8 +23,8 @@ public class ArrangeInformation {
 		this.arrangeParameter = arrangeParameter;
 	}
 
-	public ArrayList<NoteInformation> getCurrentMelody() { return currentMelody; }
-	public ArrayList<NoteInformation> getPreviousMelody() { return previousMelody; }
+	public ArrayList<Note> getCurrentMelody() { return currentMelody; }
+	public ArrayList<Note> getPreviousMelody() { return previousMelody; }
 	public ArrayList<String> getCurrentChordProgression() { return currentChordProgression; }
 	public ArrayList<String> getPreviousChordProgression() { return previousChordProgression; }
 	public ArrangeParameter getArrangeParameter() { return arrangeParameter; }

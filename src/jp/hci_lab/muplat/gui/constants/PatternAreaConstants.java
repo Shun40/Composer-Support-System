@@ -8,6 +8,6 @@ public class PatternAreaConstants {
 	private PatternAreaConstants() {};
 
 	// PatternSelector
-	public static final int PATTERN_SELECTOR_WIDTH = 280;
-	public static final int PATTERN_SELECTOR_HEIGHT = 100;
+	public static final int PATTERN_SELECTOR_WIDTH = 300;
+	public static final int PATTERN_SELECTOR_HEIGHT = 450;
 }

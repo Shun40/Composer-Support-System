@@ -17,8 +17,7 @@ import engine_yamashita.ArrangeInformation;
 import engine_yamashita.ArrangePattern;
 import engine_yamashita.Melody;
 import engine_yamashita.melody.MelodyAnalyzer;
-import gui.NoteBlock;
-import gui.NoteInformation;
+import gui.Note;
 
 /**
  * UIとエンジンを仲介するコントローラのクラス
@@ -59,18 +58,17 @@ public class UIController {
 		}
 	}
 
-	public void addNoteToEngine(NoteBlock noteBlock) {
-		NoteInformation noteInformation = noteBlock.getNoteInformation();
-		int track    = noteInformation.getTrack();
-		int program  = noteInformation.getProgram();
-		int note     = noteInformation.getNote();
-		int position = noteInformation.getPosition() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
-		int duration = noteInformation.getDuration() / 2; // 4分音符 = 960 tickで計算しているため1/2しておく
-		int velocity = noteInformation.getVelocity();
+	public void addNoteToEngine(Note note) {
+		int track    = note.getTrack();
+		int program  = note.getProgram();
+		int pitch    = note.getPitch();
+		int position = note.getPosition();
+		int duration = note.getDuration();
+		int velocity = note.getVelocity();
 
 		// 既に登録済みのイベントが編集されて渡された場合
-		if(note2events.containsKey(noteBlock.hashCode())) {
-			removeNoteFromEngine(noteBlock); // 登録済みのイベントを一回消してから追加し直す
+		if(note2events.containsKey(note.hashCode())) {
+			removeNoteFromEngine(note); // 登録済みのイベントを一回消してから追加し直す
 		}
 		try {
 			// Program Change
@@ -80,12 +78,12 @@ public class UIController {
 
 			// NoteOn
 			ShortMessage noteOn = new ShortMessage();
-			noteOn.setMessage(ShortMessage.NOTE_ON, track - 1, note, velocity);
+			noteOn.setMessage(ShortMessage.NOTE_ON, track - 1, pitch, velocity);
 			MidiEvent noteOnEvent = new MidiEvent(noteOn, position);
 
 			// NoteOff
 			ShortMessage noteOff = new ShortMessage();
-			noteOff.setMessage(ShortMessage.NOTE_OFF, track - 1, note, 0);
+			noteOff.setMessage(ShortMessage.NOTE_OFF, track - 1, pitch, 0);
 			MidiEvent noteOffEvent = new MidiEvent(noteOff, position + duration);
 
 			sequence.getTracks()[track - 1].add(programChangeEvent);
@@ -94,20 +92,19 @@ public class UIController {
 
 			ArrayList<MidiEvent> events = new ArrayList<MidiEvent>();
 			events.addAll(Arrays.asList(programChangeEvent, noteOnEvent, noteOffEvent));
-			note2events.put(noteBlock.hashCode(), events);
+			note2events.put(note.hashCode(), events);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void removeNoteFromEngine(NoteBlock noteBlock) {
-		NoteInformation noteInformation = noteBlock.getNoteInformation();
-		int track = noteInformation.getTrack();
-		ArrayList<MidiEvent> events = note2events.get(noteBlock.hashCode());
+	public void removeNoteFromEngine(Note note) {
+		int track = note.getTrack();
+		ArrayList<MidiEvent> events = note2events.get(note.hashCode());
 		for(MidiEvent event : events) {
 			sequence.getTracks()[track - 1].remove(event);
 		}
-		note2events.remove(noteBlock.hashCode());
+		note2events.remove(note.hashCode());
 	}
 
 	public void clearNoteFromEngine() {

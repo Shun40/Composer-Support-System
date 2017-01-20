@@ -1,4 +1,7 @@
 package gui;
+
+import static gui.constants.UniversalConstants.*;
+
 import java.util.ArrayList;
 
 import engine_yamashita.ArrangePattern;
@@ -27,12 +30,12 @@ public class PatternArea extends Group {
 	}
 
 	public void setupPatternSelector() {
-		patternSelector = new PatternSelector(0, 32, this);
+		patternSelector = new PatternSelector(0, 26, this);
 		getChildren().add(patternSelector);
 	}
 
 	public void setupPredictionButton() {
-		predictionButton = new PredictionButton(0, 140, this);
+		predictionButton = new PredictionButton(0, 0, this);
 		getChildren().add(predictionButton);
 	}
 
@@ -47,14 +50,14 @@ public class PatternArea extends Group {
 	public void arrange(ArrangePattern pattern) {
 		int targetMeasure = parent.getArrangeTargetMeasure();
 		parent.removeNoteInMeasure(targetMeasure, 1); // メロディトラックのノートを消去
-		ArrayList<NoteInformation> melody = pattern.getMelody();
-		for(NoteInformation noteInformation : melody) {
-			int track    = noteInformation.getTrack();
-			int note     = noteInformation.getNote();
-			int position = noteInformation.getPosition() * 2 + (960 * 4) * (targetMeasure - 1);
-			int duration = noteInformation.getDuration() * 2;
+		ArrayList<Note> melody = pattern.getMelody();
+		for(Note note : melody) {
+			int track    = note.getTrack();
+			int pitch    = note.getPitch();
+			int position = note.getPosition() + (PPQ * 4) * (targetMeasure - 1);
+			int duration = note.getDuration();
 			parent.setCurrentTrack(track);
-			parent.putNote(note, position, duration);
+			parent.putNote(pitch, position, duration);
 		}
 		parent.setCurrentTrack(1);
 	}

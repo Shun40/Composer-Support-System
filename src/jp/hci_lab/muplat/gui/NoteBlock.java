@@ -1,5 +1,5 @@
 package gui;
-import static gui.constants.NoteConstants.*;
+import static gui.constants.NoteBlockConstants.*;
 import static gui.constants.UniversalConstants.*;
 
 import javafx.event.EventHandler;
@@ -15,7 +15,7 @@ import javafx.scene.shape.Rectangle;
  * @author Shun Yamashita
  */
 public class NoteBlock extends Rectangle {
-	private NoteInformation noteInformation;
+	private Note note;
 	private float minX;
 	private float maxX;
 	private float minY;
@@ -38,15 +38,15 @@ public class NoteBlock extends Rectangle {
 	}
 
 	public void setupNoteInformation() {
-		int trackNumber = parent.getCurrentTrack();
-		int progNumber  = PROGRAM_NUMBERS[trackNumber - 1];
-		int noteNumber  = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
-		int position    = (int)(240 * ((getX() - 0.5) / 10)); // 240 is number of tick of 1/16 musical note
-		int duration    = (int)((getWidth() / BEAT_WIDTH) * 960); // 960 is number of tick of 1 measure
-		int velocity    = 100;
-		this.noteInformation = new NoteInformation(trackNumber, progNumber, noteNumber, position, duration, velocity, this);
+		int track    = parent.getCurrentTrack();
+		int program  = PROGRAM_NUMBERS[track - 1];
+		int pitch    = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
+		int position = (int)((PPQ / 4) * ((getX() - 0.5) / 10));
+		int duration = (int)((getWidth() / BEAT_WIDTH) * PPQ);
+		int velocity = 100;
+		note = new Note(track, program, pitch, position, duration, velocity, this);
 		// 発音
-		toneOn(trackNumber, progNumber, noteNumber, velocity);
+		toneOn(track, program, pitch, velocity);
 	}
 
 	public void setupColor() {
@@ -88,7 +88,7 @@ public class NoteBlock extends Rectangle {
 				pressedPos = "right";
 			}
 			// 発音
-			toneOn(noteInformation.getTrack(), noteInformation.getProgram(), noteInformation.getNote(), noteInformation.getVelocity());
+			toneOn(note.getTrack(), note.getProgram(), note.getPitch(), note.getVelocity());
 		} else { // Right Click
 			parent.removeNoteFromUi(this);
 			parent.removeNoteFromEngine(this);
@@ -98,7 +98,7 @@ public class NoteBlock extends Rectangle {
 	public void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			// 無発音
-			toneOff(noteInformation.getTrack());
+			toneOff(note.getTrack());
 		} else {
 		}
 	}
@@ -107,7 +107,7 @@ public class NoteBlock extends Rectangle {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
 			verticalDrug(e);
 			horizontalDrug(e);
-			noteInformation.updateNoteInfo();
+			note.updateNoteInfo();
 			parent.addNoteToUi(this);
 			parent.addNoteToEngine(this);
 		}
@@ -155,7 +155,7 @@ public class NoteBlock extends Rectangle {
 	}
 
 	public void updateView(int currentTrack) {
-		int track = noteInformation.getTrack();
+		int track = note.getTrack();
 		if(track == currentTrack) {
 			toFront();
 			setOpacity(1.0);
@@ -166,16 +166,16 @@ public class NoteBlock extends Rectangle {
 		}
 	}
 
-	public void toneOn(int track, int program, int note, int velocity) {
+	public void toneOn(int track, int program, int pitch, int velocity) {
 		if(!canTone) return;
 		UISynth.changeInstrument(track, program);
-		UISynth.toneOn(track, note, velocity);
+		UISynth.toneOn(track, pitch, velocity);
 	}
 
 	public void toneOff(int track) {
 		UISynth.toneOff(track);
 	}
 
-	public NoteInformation getNoteInformation() { return noteInformation; }
+	public Note getNote() { return note; }
 	public void setCanTone(boolean canTone) { this.canTone = canTone; }
 }

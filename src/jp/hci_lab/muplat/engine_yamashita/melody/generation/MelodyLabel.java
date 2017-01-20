@@ -1,5 +1,7 @@
 package engine_yamashita.melody.generation;
 
+import static gui.constants.UniversalConstants.*;
+
 public class MelodyLabel {
 	private int pitch;
 	private String chord;
@@ -22,8 +24,8 @@ public class MelodyLabel {
 		this.chord = chord;
 		this.variation = variation;
 		this.difference = difference;
-		this.position = (480 * 4) * (measure - 1) + 480 * (beat - 1) + 120 * (subPosition - 1);
-		this.duration = (480 * 4) / separation;
+		this.position = (PPQ * 4) * (measure - 1) + PPQ * (beat - 1) + (PPQ / 4) * (subPosition - 1);
+		this.duration = (PPQ * 4) / separation;
 	}
 
 	public int getPitch() { return pitch; }

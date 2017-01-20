@@ -17,7 +17,7 @@ import javafx.scene.text.Font;
 public class Key extends Group {
 	private int track;
 	private int program;
-	private int note;
+	private int pitch;
 	private String position;
 	private String normalColor;
 	private String shadowColor;
@@ -27,7 +27,7 @@ public class Key extends Group {
 		super();
 		this.track = 1;
 		this.program = PROGRAM_NUMBERS[track - 1];
-		this.note = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
+		this.pitch = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
 		this.position = interval + Integer.toString(octave);
 		setupColor(interval);
 		setupFrame(x, y, width, height);
@@ -90,7 +90,7 @@ public class Key extends Group {
 
 	public void toneOn() {
 		UISynth.synth.getChannels()[track - 1].programChange(program - 1);
-		UISynth.synth.getChannels()[track - 1].noteOn(note, 100);
+		UISynth.synth.getChannels()[track - 1].noteOn(pitch, 100);
 	}
 
 	public void toneOff() {

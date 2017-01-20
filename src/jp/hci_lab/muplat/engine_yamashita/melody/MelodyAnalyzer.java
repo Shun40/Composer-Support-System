@@ -1,8 +1,6 @@
 package engine_yamashita.melody;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import engine_yamashita.ArrangeInformation;
 import engine_yamashita.Melody;
@@ -11,7 +9,7 @@ import engine_yamashita.melody.generation.MelodyMaker;
 import engine_yamashita.melody.reference.MelodyPattern;
 import engine_yamashita.melody.reference.MelodyPatternData;
 import engine_yamashita.melody.reference.MelodyPatternDictionary;
-import gui.NoteInformation;
+import gui.Note;
 
 /**
  * メロディを解析するクラス
@@ -23,8 +21,8 @@ public class MelodyAnalyzer {
 
 	public ArrayList<Melody> getMelodies(ArrangeInformation arrangeInformation) {
 		ArrayList<Melody> melodies = new ArrayList<Melody>();
-		ArrayList<NoteInformation> currentMelody = arrangeInformation.getCurrentMelody();   // 現在小節のメロディ
-		ArrayList<NoteInformation> previousMelody = arrangeInformation.getPreviousMelody(); // 1小節前のメロディ
+		ArrayList<Note> currentMelody = arrangeInformation.getCurrentMelody();   // 現在小節のメロディ
+		ArrayList<Note> previousMelody = arrangeInformation.getPreviousMelody(); // 1小節前のメロディ
 
 		MelodyPatternDictionary melodyPatternDictionary = new MelodyPatternDictionary();
 		MelodyPattern currentMelodyPattern = getMelodyPattern(previousMelody, currentMelody);
@@ -79,10 +77,10 @@ public class MelodyAnalyzer {
 		System.out.println(melodyPatternDictionary.get(rank[4]).getName());
 
 		// リズムパターンと音高パターンを組み合わせてメロディを生成
-		int justBeforeNotePitch = previousMelody.get(previousMelody.size() - 1).getNote();
+		int justBeforeNotePitch = previousMelody.get(previousMelody.size() - 1).getPitch();
 		int justBeforeNotePosition = previousMelody.get(previousMelody.size() - 1).getPosition();
 		int justBeforeNoteDuration = previousMelody.get(previousMelody.size() - 1).getDuration();
-		NoteInformation justBeforeNote = new NoteInformation(1, 0, justBeforeNotePitch, justBeforeNotePosition, justBeforeNoteDuration, 100, null);
+		Note justBeforeNote = new Note(1, 0, justBeforeNotePitch, justBeforeNotePosition, justBeforeNoteDuration, 100, null);
 
 
 		ArrayList<ArrayList<MelodyLabel>> melodyLabels = new ArrayList<ArrayList<MelodyLabel>>();
@@ -96,7 +94,13 @@ public class MelodyAnalyzer {
 
 		// メロディを整形
 		for(int m = 0; m < melodyLabels.size(); m++) {
-			String name = melodyPatternDictionary.get(rank[m]).getName();
+			String name =
+				melodyPatternDictionary.get(rank[m]).getName()
+				+ "(" + pitchSimilarities[rank[m]].getContextSimilarity()
+				+ ", " + pitchSimilarities[rank[m]].getWordSimilarity()
+				+ ", " + rhythmSimilarities[rank[m]].getContextSimilarity()
+				+ ", " + rhythmSimilarities[rank[m]].getWordSimilarity()
+				+ ")";
 			Melody melody = new Melody(name);
 			for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
 				int track = 1;
@@ -105,7 +109,7 @@ public class MelodyAnalyzer {
 				int position = melodyLabels.get(m).get(n).getPosition();
 				int duration = melodyLabels.get(m).get(n).getDuration();
 				int velocity = 100;
-				melody.add(new NoteInformation(track, program, pitch, position, duration, velocity, null));
+				melody.add(new Note(track, program, pitch, position, duration, velocity, null));
 			}
 			melodies.add(melody);
 		}
@@ -113,21 +117,21 @@ public class MelodyAnalyzer {
 		return melodies;
 	}
 
-	public MelodyPattern getMelodyPattern(ArrayList<NoteInformation> previousMelody, ArrayList<NoteInformation> currentMelody) {
+	public MelodyPattern getMelodyPattern(ArrayList<Note> previousMelody, ArrayList<Note> currentMelody) {
 		// 音高情報を抽出
 		int[] variations = new int[currentMelody.size()];
 		int[] differences = new int[currentMelody.size()];
 		for(int i = 0; i < currentMelody.size(); i++) {
 			int previousPitch = 0;
-			int currentPitch = currentMelody.get(i).getNote();
+			int currentPitch = currentMelody.get(i).getPitch();
 			if(i <= 0) {
 				if(previousMelody == null || previousMelody.size() <= 0) {
-					previousPitch = currentMelody.get(i).getNote();
+					previousPitch = currentMelody.get(i).getPitch();
 				} else {
-					previousPitch = previousMelody.get(previousMelody.size() - 1).getNote();
+					previousPitch = previousMelody.get(previousMelody.size() - 1).getPitch();
 				}
 			} else {
-				previousPitch = currentMelody.get(i-1).getNote();
+				previousPitch = currentMelody.get(i-1).getPitch();
 			}
 			if(previousPitch == currentPitch) variations[i] = 0;
 			if(previousPitch > currentPitch) variations[i] = -1;
@@ -254,169 +258,6 @@ public class MelodyAnalyzer {
 			}
 		}
 		return 1.0 - (cost[targetSize - 1][patternSize - 1] / costMax);
-	}
-
-	public ArrayList<Double> getAccentScores(ArrangeInformation arrangeInformation) {
-		ArrayList<Double> accentScores = new ArrayList<Double>();
-		// 元の配列に影響を与えないようディープコピー
-		ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(arrangeInformation.getCurrentMelody());
-
-		if(_melody.size() <= 0) {
-			return null;
-		} else {
-			ArrayList<Boolean> silhouetteAccents = getSilhouetteAccents(_melody);
-			ArrayList<Boolean> longAccents = getLongAccents(_melody);
-			ArrayList<Boolean> isolationAccents = getIsolationAccents(_melody);
-
-			for(int n = 0; n < _melody.size(); n++) {
-				double accentScore = 0.0;
-				if(silhouetteAccents.get(n)) accentScore += 0.25;
-				if(longAccents.get(n)) accentScore += 0.5;
-				if(isolationAccents.get(n)) accentScore += 0.25;
-				accentScore /= 1.0;
-				accentScores.add(accentScore);
-			}
-			return accentScores;
-		}
-	}
-
-	/*
-	 * ノートの個数を返す
-	 */
-	public int getNumber(ArrayList<NoteInformation> melody) {
-		return melody.size();
-	}
-
-	/*
-	 * 最も音高が高いノートの情報を返す
-	 */
-	public NoteInformation getHighest(ArrayList<NoteInformation> melody) {
-		// 元の配列に影響を与えないようディープコピー
-		ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(melody);
-		// ノート番号で降順ソート
-		Collections.sort(_melody, new Comparator<NoteInformation>() {
-			public int compare(NoteInformation e1, NoteInformation e2) {
-				return e2.getNote() - e1.getNote();
-			}
-		});
-		return _melody.get(0);
-	}
-
-	/*
-	 * 最も音高が低いノートの情報を返す
-	 */
-	public NoteInformation getLowest(ArrayList<NoteInformation> melody) {
-		// 元の配列に影響を与えないようディープコピー
-			ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(melody);
-		// ノート番号で昇順ソート
-		Collections.sort(_melody, new Comparator<NoteInformation>() {
-			public int compare(NoteInformation e1, NoteInformation e2) {
-				return e1.getNote() - e2.getNote();
-			}
-		});
-		return _melody.get(0);
-	}
-
-	/*
-	 * 最も長いノートの情報を返す
-	 */
-	public NoteInformation getLongest(ArrayList<NoteInformation> melody) {
-		// 元の配列に影響を与えないようディープコピー
-			ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(melody);
-		// デュレーションで降順ソート
-		Collections.sort(_melody, new Comparator<NoteInformation>() {
-			public int compare(NoteInformation e1, NoteInformation e2) {
-				return e2.getDuration() - e1.getDuration();
-			}
-		});
-		return _melody.get(0);
-	}
-
-	/*
-	 * 最も短いノートの情報を返す
-	 */
-	public NoteInformation getShortest(ArrayList<NoteInformation> melody) {
-		// 元の配列に影響を与えないようディープコピー
-		ArrayList<NoteInformation> _melody = new ArrayList<NoteInformation>(melody);
-		// デュレーションで降順ソート
-		Collections.sort(_melody, new Comparator<NoteInformation>() {
-			public int compare(NoteInformation e1, NoteInformation e2) {
-				return e1.getDuration() - e2.getDuration();
-			}
-		});
-		return _melody.get(0);
-	}
-
-	/*
-	 * 輪郭アクセントと見なせるノート群を返す
-	 */
-	public ArrayList<Boolean> getSilhouetteAccents(ArrayList<NoteInformation> melody) {
-		ArrayList<Boolean> accents = new ArrayList<Boolean>();
-		if(melody.size() == 1) {
-			accents.add(false);
-			return accents;
-		}
-		for(int n = 0; n < melody.size(); n++) {
-			if(n == 0) {
-				if(melody.get(n).getNote() > melody.get(n+1).getNote()) {
-					accents.add(true);
-				} else {
-					accents.add(false);
-				}
-			} else if(n == melody.size() - 1) {
-				if(melody.get(n-1).getNote() < melody.get(n).getNote()) {
-					accents.add(true);
-				} else {
-					accents.add(false);
-				}
-			} else {
-				if(melody.get(n-1).getNote() < melody.get(n).getNote() && melody.get(n).getNote() > melody.get(n+1).getNote()) {
-					accents.add(true);
-				} else {
-					accents.add(false);
-				}
-			}
-		}
-		return accents;
-	}
-
-	/*
-	 * 長音アクセントと見なせるノート群を返す
-	 */
-	public ArrayList<Boolean> getLongAccents(ArrayList<NoteInformation> melody) {
-		ArrayList<Boolean> accents = new ArrayList<Boolean>();
-		int shortestDuration = getShortest(melody).getDuration();
-		for(int n = 0; n < melody.size(); n++) {
-			if(melody.get(n).getDuration() > shortestDuration) {
-				accents.add(true);
-			} else {
-				accents.add(false);
-			}
-		}
-		return accents;
-	}
-
-	/*
-	 * 隔離アクセントと見なせるノートを調べる
-	 */
-	public ArrayList<Boolean> getIsolationAccents(ArrayList<NoteInformation> melody) {
-		ArrayList<Boolean> accents = new ArrayList<Boolean>();
-		for(int n = 0; n < melody.size(); n++) {
-			if(n == melody.size() - 1) {
-				if((melody.get(n).getPosition() + melody.get(n).getDuration()) % (960 * 4) < 960 * 4) {
-					accents.add(true);
-				} else {
-					accents.add(false);
-				}
-			} else {
-				if(melody.get(n).getPosition() + melody.get(n).getDuration() < melody.get(n+1).getPosition()) {
-					accents.add(true);
-				} else {
-					accents.add(false);
-				}
-			}
-		}
-		return accents;
 	}
 
 	public class Similarity {

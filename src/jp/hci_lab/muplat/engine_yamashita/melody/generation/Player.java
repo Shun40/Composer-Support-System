@@ -1,5 +1,7 @@
 package engine_yamashita.melody.generation;
 
+import static gui.constants.UniversalConstants.*;
+
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
@@ -103,8 +105,8 @@ public class Player {
 	 * @param separation : �R�[�h��炷����(separation = 4�Ƃ����4���������̒����ɂȂ�)
 	 */
 	public void addMelody(byte midi, int program, int measure, int beat, int separation) {
-		int position = (480 * 4) * (measure - 1) + 480 * (beat - 1);
-		int duration = (480 * 4) / separation;
+		int position = (PPQ * 4) * (measure - 1) + PPQ * (beat - 1);
+		int duration = (PPQ * 4) / separation;
 		addMelody(midi, program, position, duration);
 	}
 
@@ -130,8 +132,8 @@ public class Player {
 	 * @param separation : �R�[�h��炷����(separation = 4�Ƃ����4���������̒����ɂȂ�)
 	 */
 	public void addChord(byte[] midi, int program, int measure, int beat, int separation) {
-		int position = (480 * 4) * (measure - 1) + 480 * (beat - 1);
-		int duration = (480 * 4) * (1 / separation);
+		int position = (PPQ * 4) * (measure - 1) + PPQ * (beat - 1);
+		int duration = (PPQ * 4) * (1 / separation);
 		addChord(midi, program, position, duration);
 	}
 

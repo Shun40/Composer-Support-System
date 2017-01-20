@@ -2,23 +2,23 @@ package engine_yamashita;
 
 import java.util.ArrayList;
 
-import gui.NoteInformation;
+import gui.Note;
 
 public class Accompaniment {
-	private ArrayList<NoteInformation> pianoPart;
-	private ArrayList<NoteInformation> bassPart;
-	private ArrayList<NoteInformation> drumPart;
+	private ArrayList<Note> pianoPart;
+	private ArrayList<Note> bassPart;
+	private ArrayList<Note> drumPart;
 
 	public Accompaniment() {
-		pianoPart = new ArrayList<NoteInformation>();
-		bassPart = new ArrayList<NoteInformation>();
-		drumPart = new ArrayList<NoteInformation>();
+		pianoPart = new ArrayList<Note>();
+		bassPart = new ArrayList<Note>();
+		drumPart = new ArrayList<Note>();
 	}
 
-	public ArrayList<NoteInformation> getPianoPart() { return pianoPart; }
-	public ArrayList<NoteInformation> getBassPart() { return bassPart; }
-	public ArrayList<NoteInformation> getDrumPart() { return drumPart; }
-	public void setPianoPart(ArrayList<NoteInformation> pianoPart) { this.pianoPart = pianoPart; }
-	public void setBassPart(ArrayList<NoteInformation> bassPart) { this.bassPart = bassPart; }
-	public void setDrumPart(ArrayList<NoteInformation> drumPart) { this.drumPart = drumPart; }
+	public ArrayList<Note> getPianoPart() { return pianoPart; }
+	public ArrayList<Note> getBassPart() { return bassPart; }
+	public ArrayList<Note> getDrumPart() { return drumPart; }
+	public void setPianoPart(ArrayList<Note> pianoPart) { this.pianoPart = pianoPart; }
+	public void setBassPart(ArrayList<Note> bassPart) { this.bassPart = bassPart; }
+	public void setDrumPart(ArrayList<Note> drumPart) { this.drumPart = drumPart; }
 }

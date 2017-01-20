@@ -31,11 +31,11 @@ public class Pianoroll extends Group {
 	private PlayButton playButton;
 	private EditArea editArea;
 	private Keyboard keyboard;
-	private InstrumentSelector instrumentSelector;
+	//private InstrumentSelector instrumentSelector;
 	private MeasureArea measureArea;
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
-	private ParameterSelector parameterSelector;
+	//private ParameterSelector parameterSelector;
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
@@ -53,7 +53,7 @@ public class Pianoroll extends Group {
 		setupPlayButton();
 		setupEditArea();
 		setupKeyboard();
-		setupInstrumentSelector();
+		//setupInstrumentSelector();
 		setupHScrollBar();
 		setupVScrollBar();
 		setupMeasureArea();
@@ -125,6 +125,7 @@ public class Pianoroll extends Group {
 		getChildren().add(vScrollBar);
 	}
 
+	/*
 	public void setupInstrumentSelector() {
 		instrumentSelector = new InstrumentSelector(INSTRUMENT_SELECTOR_X, INSTRUMENT_SELECTOR_Y, this);
 		getChildren().add(instrumentSelector);
@@ -134,6 +135,7 @@ public class Pianoroll extends Group {
 		parameterSelector = new ParameterSelector(PARAMETER_SELECTOR_X, PARAMETER_SELECTOR_Y, this);
 		getChildren().add(parameterSelector);
 	}
+	*/
 
 	public void setupMuteTrackSelector() {
 		trackMuteSelector = new TrackMuteSelector(TRACK_MUTE_SELECTOR_X, TRACK_MUTE_SELECTOR_Y, this);
@@ -210,8 +212,8 @@ public class Pianoroll extends Group {
 		hScrollBar.setValue(0.0);
 	}
 
-	public void putNote(int note, int position, int duration) {
-		editArea.putNote(note, position, duration);
+	public void putNote(int pitch, int position, int duration) {
+		editArea.putNote(pitch, position, duration);
 	}
 
 	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
@@ -222,12 +224,12 @@ public class Pianoroll extends Group {
 		editArea.removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, targetTrack);
 	}
 
-	public void addNoteToEngine(NoteBlock noteBlock) {
-		parent.addNoteToEngine(noteBlock);
+	public void addNoteToEngine(Note note) {
+		parent.addNoteToEngine(note);
 	}
 
-	public void removeNoteFromEngine(NoteBlock noteBlock) {
-		parent.removeNoteFromEngine(noteBlock);
+	public void removeNoteFromEngine(Note note) {
+		parent.removeNoteFromEngine(note);
 	}
 
 	public void clearNoteFromUi() {
@@ -244,23 +246,23 @@ public class Pianoroll extends Group {
 	public ArrayList<ArrangePattern> prediction() {
 		// アレンジに必要な情報を取得
 		int targetMeasure = getArrangeTargetMeasure();
-		ArrayList<NoteInformation> currentMelody = new ArrayList<NoteInformation>();
+		ArrayList<Note> currentMelody = new ArrayList<Note>();
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
-			NoteInformation noteInformation = noteBlock.getNoteInformation();
-			int track = noteInformation.getTrack();
-			int measure = noteInformation.getPosition() / (960 * 4) + 1;
+			Note note = noteBlock.getNote();
+			int track = note.getTrack();
+			int measure = note.getPosition() / (PPQ * 4) + 1;
 			if(track == 1 && measure == targetMeasure) {
-				currentMelody.add(noteInformation);
+				currentMelody.add(note);
 			}
 		}
-		ArrayList<NoteInformation> previousMelody = new ArrayList<NoteInformation>();
+		ArrayList<Note> previousMelody = new ArrayList<Note>();
 		if(targetMeasure > 1) {
 			for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
-				NoteInformation noteInformation = noteBlock.getNoteInformation();
-				int track = noteInformation.getTrack();
-				int measure = noteInformation.getPosition() / (960 * 4) + 1;
+				Note note = noteBlock.getNote();
+				int track = note.getTrack();
+				int measure = note.getPosition() / (PPQ * 4) + 1;
 				if(track == 1 && measure == targetMeasure - 1) {
-					previousMelody.add(noteInformation);
+					previousMelody.add(note);
 				}
 			}
 		}
@@ -282,9 +284,9 @@ public class Pianoroll extends Group {
 
 	public void makeAccompaniment(String chord, int measure, int count) {
 		Accompaniment accompaniment = parent.makeAccompaniment(chord);
-		ArrayList<NoteInformation> pianoPart = accompaniment.getPianoPart();
-		ArrayList<NoteInformation> bassPart = accompaniment.getBassPart();
-		ArrayList<NoteInformation> drumPart = accompaniment.getDrumPart();
+		ArrayList<Note> pianoPart = accompaniment.getPianoPart();
+		ArrayList<Note> bassPart = accompaniment.getBassPart();
+		ArrayList<Note> drumPart = accompaniment.getDrumPart();
 		int pianoTrack = 2;
 		int bassTrack = 9;
 		int drumTrack = 10;
@@ -303,25 +305,25 @@ public class Pianoroll extends Group {
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, bassTrack);
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, drumTrack);
 		for(int i = 0; i < pianoPart.size(); i++) {
-			int note     = pianoPart.get(i).getNote();
-			int position = pianoPart.get(i).getPosition() * 2 + (960 * 4) * (targetMeasure - 1) + 960 * (targetBeat1 - 1);
-			int duration = pianoPart.get(i).getDuration() * 2;
+			int pitch    = pianoPart.get(i).getPitch();
+			int position = pianoPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int duration = pianoPart.get(i).getDuration();
 			setCurrentTrack(pianoTrack);
-			putNote(note, position, duration);
+			putNote(pitch, position, duration);
 		}
 		for(int i = 0; i < bassPart.size(); i++) {
-			int note     = bassPart.get(i).getNote();
-			int position = bassPart.get(i).getPosition() * 2 + (960 * 4) * (targetMeasure - 1) + 960 * (targetBeat1 - 1);
-			int duration = bassPart.get(i).getDuration() * 2;
+			int pitch    = bassPart.get(i).getPitch();
+			int position = bassPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int duration = bassPart.get(i).getDuration();
 			setCurrentTrack(bassTrack);
-			putNote(note, position, duration);
+			putNote(pitch, position, duration);
 		}
 		for(int i = 0; i < drumPart.size(); i++) {
-			int note     = drumPart.get(i).getNote();
-			int position = drumPart.get(i).getPosition() * 2 + (960 * 4) * (targetMeasure - 1) + 960 * (targetBeat1 - 1);
-			int duration = drumPart.get(i).getDuration() * 2;
+			int pitch    = drumPart.get(i).getPitch();
+			int position = drumPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int duration = drumPart.get(i).getDuration();
 			setCurrentTrack(drumTrack);
-			putNote(note, position, duration);
+			putNote(pitch, position, duration);
 		}
 		setCurrentTrack(1);
 	}
@@ -345,7 +347,7 @@ public class Pianoroll extends Group {
 		this.currentTrack = currentTrack;
 		editArea.changeCurrentTrack(currentTrack);
 		keyboard.changeInstrument(currentTrack, PROGRAM_NUMBERS[currentTrack - 1]);
-		instrumentSelector.setSelectedTrack(currentTrack);
+		//instrumentSelector.setSelectedTrack(currentTrack);
 	}
 	public void setTrackMute(int track, boolean mute) { parent.setTrackMute(track, mute); }
 	public void setTrackSolo(int track, boolean solo) { parent.setTrackSolo(track, solo); }
