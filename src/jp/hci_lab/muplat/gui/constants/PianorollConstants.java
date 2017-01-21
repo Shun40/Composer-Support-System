@@ -41,6 +41,6 @@ public class PianorollConstants {
 	public static final int TRACK_SOLO_SELECTOR_X = 1030;
 	public static final int TRACK_SOLO_SELECTOR_Y = 120;
 	// PatternArea
-	public static final int PATTERN_AREA_X = 790;
+	public static final int PATTERN_AREA_X = 780;
 	public static final int PATTERN_AREA_Y = 94;
 }

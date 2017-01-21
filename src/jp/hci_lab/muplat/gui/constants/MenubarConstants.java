@@ -9,6 +9,6 @@ import static gui.constants.MainConstants.*;
 public class MenubarConstants {
 	private MenubarConstants() {}
 
-	public static final int MENUBAR_WIDTH = CLIENT_AREA_WIDTH;
+	public static final int MENUBAR_WIDTH = CLIENT_AREA_WIDTH + 18;
 	public static final int MENUBAR_HEIGHT = 10;
 }
