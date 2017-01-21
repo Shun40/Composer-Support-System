@@ -2,6 +2,8 @@ package gui;
 import static gui.constants.NoteGridConstants.*;
 import static gui.constants.UniversalConstants.*;
 
+import java.util.Arrays;
+
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
@@ -22,16 +24,25 @@ public class NoteGrid extends Group {
 		super();
 		this.resolution = resolution;
 		this.parent = parent;
-		setupColor(interval);
+		setupColor(interval, octave);
 		setupFrame(x, y, width, height);
-		setupEventListener();
+		setupEventListener(interval, octave);
 	}
 
-	public void setupColor(String interval) {
+	public void setupColor(String interval, int octave) {
+		int pitch = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
 		if(interval.contains("#") || interval.contains("♭")) {
-			color = BLACK_GRID_COLOR;
+			if(Arrays.asList(CAN_USE_PITCHES).contains(pitch)) {
+				color = BLACK_GRID_COLOR;
+			} else {
+				color = CANNOT_USE_BLACK_GRID_COLOR;
+			}
 		} else {
-			color = WHITE_GRID_COLOR;
+			if(Arrays.asList(CAN_USE_PITCHES).contains(pitch)) {
+				color = WHITE_GRID_COLOR;
+			} else {
+				color = CANNOT_USE_WHITE_GRID_COLOR;
+			}
 		}
 	}
 
@@ -42,7 +53,9 @@ public class NoteGrid extends Group {
 		getChildren().add(frame);
 	}
 
-	public void setupEventListener() {
+	public void setupEventListener(String interval, int octave) {
+		int pitch = 60 + (12 * (octave - 4)) + MIDI_NUMBERS.get(interval); // 60 is midi number of C4
+		if(!Arrays.asList(CAN_USE_PITCHES).contains(pitch)) return;
 		setOnMousePressed(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				NoteGrid.this.press(e);

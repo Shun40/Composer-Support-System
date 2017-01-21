@@ -50,11 +50,6 @@ public class UniversalConstants {
 			Color.LIGHTBLUE,  // track 9
 			Color.KHAKI,      // track 10
 	};
-	public static final String[] PARAMETERS = {
-		"Climax",
-		"Speed",
-		"Rhythm"
-	};
 	public static final HashMap<String, Integer> MIDI_NUMBERS = new HashMap<String, Integer>() {
 		{put("C", 0);} {put("C#", 1);} {put("D", 2);} {put("D#", 3);} {put("E", 4);}
 		{put("F", 5);} {put("F#", 6);} {put("G", 7);} {put("G#", 8);} {put("A", 9);} {put("A#", 10);} {put("B", 11);}
@@ -62,6 +57,11 @@ public class UniversalConstants {
 	public static final String[] INTERVALS = {"B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"};
 	public static final String[] WHITE_KEY_INTERVALS = {"B", "A", "G", "F", "E", "D", "C"};
 	public static final String[] BLACK_KEY_INTERVALS = {"A#", "G#", "F#", "D#", "C#"};
+	public static final Integer[] CAN_USE_PITCHES = {
+		55, 57, 59,
+		60, 62, 64, 65, 67, 69, 71,
+		72, 74, 76, 77, 79, 81, 83
+	};
 
 	public static final int PPQ = 480; // 4分音符のTick数
 	public static final int DEFAULT_BPM = 120; // BPM値(デフォルト値)

@@ -36,7 +36,7 @@ public class Note {
 			// 無発音
 			parent.toneOff(track);
 			// 発音
-			parent.toneOn(track, program, pitch, velocity);
+			parent.toneOn(track, program, newPitch, velocity);
 		}
 		pitch = newPitch;
 	}

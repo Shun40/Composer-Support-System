@@ -2,6 +2,8 @@ package gui;
 import static gui.constants.KeyConstants.*;
 import static gui.constants.UniversalConstants.*;
 
+import java.util.Arrays;
+
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -36,11 +38,21 @@ public class Key extends Group {
 
 	public void setupColor(String interval) {
 		if(interval.contains("#") || interval.contains("♭")) {
-			normalColor = BLACK_KEY_COLOR;
-			shadowColor = BLACK_KEY_SHADOW_COLOR;
+			if(Arrays.asList(CAN_USE_PITCHES).contains(pitch)) {
+				normalColor = BLACK_KEY_COLOR;
+				shadowColor = BLACK_KEY_SHADOW_COLOR;
+			} else {
+				normalColor = CANNOT_USE_BLACK_KEY_COLOR;
+				shadowColor = CANNOT_USE_BLACK_KEY_SHADOW_COLOR;
+			}
 		} else {
-			normalColor = WHITE_KEY_COLOR;
-			shadowColor = WHITE_KEY_SHADOW_COLOR;
+			if(Arrays.asList(CAN_USE_PITCHES).contains(pitch)) {
+				normalColor = WHITE_KEY_COLOR;
+				shadowColor = WHITE_KEY_SHADOW_COLOR;
+			} else {
+				normalColor = CANNOT_USE_WHITE_KEY_COLOR;
+				shadowColor = CANNOT_USE_WHITE_KEY_SHADOW_COLOR;
+			}
 		}
 	}
 
@@ -62,6 +74,7 @@ public class Key extends Group {
 	}
 
 	public void setupEventListener() {
+		if(!Arrays.asList(CAN_USE_PITCHES).contains(pitch)) return;
 		setOnMousePressed(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				Key.this.press(e);

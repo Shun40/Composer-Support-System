@@ -2,6 +2,8 @@ package gui;
 import static gui.constants.NoteBlockConstants.*;
 import static gui.constants.UniversalConstants.*;
 
+import java.util.Arrays;
+
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -34,10 +36,10 @@ public class NoteBlock extends Rectangle {
 		this.parent = parent;
 		setupColor();
 		setupEventListener();
-		setupNoteInformation();
+		setupNote();
 	}
 
-	public void setupNoteInformation() {
+	public void setupNote() {
 		int track    = parent.getCurrentTrack();
 		int program  = PROGRAM_NUMBERS[track - 1];
 		int pitch    = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
@@ -105,11 +107,14 @@ public class NoteBlock extends Rectangle {
 
 	public void drag(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // Left click
-			verticalDrug(e);
-			horizontalDrug(e);
-			note.updateNoteInfo();
-			parent.addNoteToUi(this);
-			parent.addNoteToEngine(this);
+			int pitch = (int)((MAX_OCTAVE + 2) * 12 - ((e.getY() - 0.5) / getHeight()) - 1) + 1;
+			if(Arrays.asList(CAN_USE_PITCHES).contains(pitch)) {
+				verticalDrug(e);
+				horizontalDrug(e);
+				note.updateNoteInfo();
+				parent.addNoteToUi(this);
+				parent.addNoteToEngine(this);
+			}
 		}
 	}
 
