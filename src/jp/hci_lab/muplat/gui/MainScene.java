@@ -15,8 +15,8 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
 import engine_yamashita.Accompaniment;
-import engine_yamashita.ArrangeInformation;
-import engine_yamashita.ArrangePattern;
+import engine_yamashita.PredictionInformation;
+import engine_yamashita.PredictionPattern;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
@@ -85,8 +85,8 @@ public class MainScene extends Scene {
 		uiController.close();
 	}
 
-	public ArrayList<ArrangePattern> prediction(ArrangeInformation arrangeInformation) {
-		return uiController.prediction(arrangeInformation);
+	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation) {
+		return uiController.prediction(predictionInformation);
 	}
 
 	public Accompaniment makeAccompaniment(String chord) {

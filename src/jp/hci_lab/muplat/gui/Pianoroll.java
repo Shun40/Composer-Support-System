@@ -5,9 +5,8 @@ import static gui.constants.UniversalConstants.*;
 import java.util.ArrayList;
 
 import engine_yamashita.Accompaniment;
-import engine_yamashita.ArrangeInformation;
-import engine_yamashita.ArrangeParameter;
-import engine_yamashita.ArrangePattern;
+import engine_yamashita.PredictionInformation;
+import engine_yamashita.PredictionPattern;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -35,7 +34,6 @@ public class Pianoroll extends Group {
 	private MeasureArea measureArea;
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
-	//private ParameterSelector parameterSelector;
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
@@ -57,7 +55,6 @@ public class Pianoroll extends Group {
 		setupHScrollBar();
 		setupVScrollBar();
 		setupMeasureArea();
-		//setupParameterSelector();
 		//setupMuteTrackSelector();
 		//setupSoloTrackSelector();
 		setupPatternArea();
@@ -129,11 +126,6 @@ public class Pianoroll extends Group {
 	public void setupInstrumentSelector() {
 		instrumentSelector = new InstrumentSelector(INSTRUMENT_SELECTOR_X, INSTRUMENT_SELECTOR_Y, this);
 		getChildren().add(instrumentSelector);
-	}
-
-	public void setupParameterSelector() {
-		parameterSelector = new ParameterSelector(PARAMETER_SELECTOR_X, PARAMETER_SELECTOR_Y, this);
-		getChildren().add(parameterSelector);
 	}
 	*/
 
@@ -243,46 +235,33 @@ public class Pianoroll extends Group {
 	/*
 	 * メロディの予測変換を行う
 	 */
-	public ArrayList<ArrangePattern> prediction() {
-		// アレンジに必要な情報を取得
-		int targetMeasure = getArrangeTargetMeasure();
-		ArrayList<Note> currentMelody = new ArrayList<Note>();
+	public ArrayList<PredictionPattern> prediction() {
+		// 予測変換に必要な情報を取得
+		// 予測変換対象小節
+		int targetMeasure = getPredictionTargetMeasure();
+		// メロディ音符
+		ArrayList<Note> melodyNotes = new ArrayList<Note>();
 		for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
 			Note note = noteBlock.getNote();
 			int track = note.getTrack();
-			int measure = note.getPosition() / (PPQ * 4) + 1;
-			if(track == 1 && measure == targetMeasure) {
-				currentMelody.add(note);
+			if(track == 1) {
+				melodyNotes.add(note);
 			}
 		}
-		ArrayList<Note> previousMelody = new ArrayList<Note>();
-		if(targetMeasure > 1) {
-			for(NoteBlock noteBlock : editArea.getNoteBlocks()) {
-				Note note = noteBlock.getNote();
-				int track = note.getTrack();
-				int measure = note.getPosition() / (PPQ * 4) + 1;
-				if(track == 1 && measure == targetMeasure - 1) {
-					previousMelody.add(note);
-				}
-			}
+		// コード進行
+		ChordPair[] chordProgression = new ChordPair[measureCount];
+		for(int i = 0; i < measureCount; i++) {
+			chordProgression[i] = new ChordPair();
+			chordProgression[i].setChord(measureArea.getChord(i+1, 0), 0);
+			chordProgression[i].setChord(measureArea.getChord(i+1, 1), 1);
 		}
-		ArrayList<String> currentChordProgression = new ArrayList<String>();
-		currentChordProgression.add(measureArea.getChord(targetMeasure, 1));
-		currentChordProgression.add(measureArea.getChord(targetMeasure, 2));
-		ArrayList<String> previousChordProgression = new ArrayList<String>();
-		if(targetMeasure > 1) {
-			previousChordProgression.add(measureArea.getChord(targetMeasure - 1, 1));
-			previousChordProgression.add(measureArea.getChord(targetMeasure - 1, 2));
-		}
-		//ArrangeParameter arrangeParameter = parameterSelector.getParameter();
-		ArrangeParameter arrangeParameter = null;
-		ArrangeInformation arrangeInformation = new ArrangeInformation(currentMelody, previousMelody, currentChordProgression, previousChordProgression, arrangeParameter);
+		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression);
 
 		// 予測変換
-		return parent.prediction(arrangeInformation);
+		return parent.prediction(predictionInformation);
 	}
 
-	public void makeAccompaniment(String chord, int measure, int count) {
+	public void makeAccompaniment(String chord, int measure, int index) {
 		Accompaniment accompaniment = parent.makeAccompaniment(chord);
 		ArrayList<Note> pianoPart = accompaniment.getPianoPart();
 		ArrayList<Note> bassPart = accompaniment.getBassPart();
@@ -291,16 +270,8 @@ public class Pianoroll extends Group {
 		int bassTrack = 9;
 		int drumTrack = 10;
 		int targetMeasure = measure;
-		int targetBeat1 = 1;
-		int targetBeat2 = 2;
-		if(count == 1) {
-			targetBeat1 = 1;
-			targetBeat2 = 2;
-		}
-		if(count == 2) {
-			targetBeat1 = 3;
-			targetBeat2 = 4;
-		}
+		int targetBeat1 = index * 2 + 1;
+		int targetBeat2 = index * 2 + 2;
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, pianoTrack);
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, bassTrack);
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, drumTrack);
@@ -351,5 +322,5 @@ public class Pianoroll extends Group {
 	}
 	public void setTrackMute(int track, boolean mute) { parent.setTrackMute(track, mute); }
 	public void setTrackSolo(int track, boolean solo) { parent.setTrackSolo(track, solo); }
-	public int getArrangeTargetMeasure() { return measureArea.getArrangeTarget(); }
+	public int getPredictionTargetMeasure() { return measureArea.getPredictionTarget(); }
 }

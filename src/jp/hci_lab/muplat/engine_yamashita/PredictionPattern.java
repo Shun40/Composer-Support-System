@@ -4,16 +4,16 @@ package engine_yamashita;
  * アレンジパターンをまとめたクラス
  * @author Shun Yamashita
  */
-public class ArrangePattern {
-	private String patternName;
+public class PredictionPattern {
+	private String name;
 	private Melody melody;
 
-	public ArrangePattern(String patternName) {
-		this.patternName = patternName;
-		this.melody = new Melody("");
+	public PredictionPattern(String name) {
+		this.name = name;
+		melody = new Melody("");
 	}
 
-	public String getPatternName() { return patternName; }
+	public String getName() { return name; }
 	public Melody getMelody() { return melody; }
 	public void setMelody(Melody melody) { this.melody = melody; }
 }

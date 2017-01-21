@@ -13,9 +13,9 @@ import javax.sound.midi.Track;
 
 import engine_yamashita.Accompaniment;
 import engine_yamashita.AccompanimentMaker;
-import engine_yamashita.ArrangeInformation;
-import engine_yamashita.ArrangePattern;
 import engine_yamashita.Melody;
+import engine_yamashita.PredictionInformation;
+import engine_yamashita.PredictionPattern;
 import engine_yamashita.melody.MelodyAnalyzer;
 import gui.Note;
 
@@ -147,20 +147,20 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public ArrayList<ArrangePattern> prediction(ArrangeInformation arrangeInformation) {
-		ArrayList<ArrangePattern> arrangePatterns = new ArrayList<ArrangePattern>();
+	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation) {
+		ArrayList<PredictionPattern> predictionPatterns = new ArrayList<PredictionPattern>();
 
 		// メロディ分析
 		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
-		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(arrangeInformation);
+		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(predictionInformation);
 
 		for(int n = 0; n < melodies.size(); n++) {
-			ArrangePattern arrangePattern = new ArrangePattern(melodies.get(n).getName());
-			arrangePattern.setMelody(melodies.get(n));
-			arrangePatterns.add(arrangePattern);
+			PredictionPattern predictionPattern = new PredictionPattern(melodies.get(n).getName());
+			predictionPattern.setMelody(melodies.get(n));
+			predictionPatterns.add(predictionPattern);
 		}
 
-		return arrangePatterns;
+		return predictionPatterns;
 	}
 
 	public Accompaniment makeAccompaniment(String chord) {

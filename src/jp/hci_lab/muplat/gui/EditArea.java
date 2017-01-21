@@ -269,14 +269,10 @@ public class EditArea extends Group {
 		for(NoteBlock noteBlock : noteBlocks) {
 			if((noteBlock.getNote().getPosition() / (PPQ * 4)) + 1 == targetMeasure
 				&& noteBlock.getNote().getTrack() == targetTrack) {
-				System.out.println(targetMeasure);
-				System.out.println(targetBeat1);
-				System.out.println(targetBeat2);
 				if(((noteBlock.getNote().getPosition() % (PPQ * 4)) / PPQ + 1) == targetBeat1){
 					removeNoteBlocks.add(noteBlock);
 				}
 				if(((noteBlock.getNote().getPosition() % (PPQ * 4)) / PPQ + 1) == targetBeat2) {
-					System.out.println(targetBeat2);
 					removeNoteBlocks.add(noteBlock);
 				}
 			}

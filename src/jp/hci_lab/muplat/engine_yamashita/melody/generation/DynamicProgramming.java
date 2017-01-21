@@ -34,12 +34,18 @@ public class DynamicProgramming {
 		for(int j = 0; j < numPitch; j++) {
 			// 対象小節の(ユーザによって与えられた)直前音高を固定する
 			// そのために直前音高と一致しない音高の出現確率を0として経路上に出現しないようにする
-			if(j == melodyLabels.get(0).getPitch() - minPitch) {
-				delta[0][j] = 1.0;
-				psi[0][j] = j;
-			} else {
-				delta[0][j] = 0.0;
+			if(melodyLabels.get(0).getPitch() == -1) {
+				delta[0][j] = rangeAppearanceProbability.getProbability(j)
+						* chordAppearanceProbability.getProbability(melodyLabels.get(0).getChord(), j);
 				psi[0][j] = 0;
+			} else {
+				if(j == melodyLabels.get(0).getPitch() - minPitch) {
+					delta[0][j] = 1.0;
+					psi[0][j] = j;
+				} else {
+					delta[0][j] = 0.0;
+					psi[0][j] = 0;
+				}
 			}
 		}
 		// Step.2 再帰計算

@@ -4,7 +4,7 @@ import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
-import engine_yamashita.ArrangePattern;
+import engine_yamashita.PredictionPattern;
 import javafx.scene.Group;
 
 /**
@@ -41,14 +41,14 @@ public class PatternArea extends Group {
 
 	public void prediction() {
 		patternSelector.getItems().clear(); // 一度リストの中身を空にする
-		ArrayList<ArrangePattern> patterns = parent.prediction();
-		for(ArrangePattern pattern : patterns) {
+		ArrayList<PredictionPattern> patterns = parent.prediction();
+		for(PredictionPattern pattern : patterns) {
 			patternSelector.addList(pattern);
 		}
 	}
 
-	public void arrange(ArrangePattern pattern) {
-		int targetMeasure = parent.getArrangeTargetMeasure();
+	public void arrange(PredictionPattern pattern) {
+		int targetMeasure = parent.getPredictionTargetMeasure();
 		parent.removeNoteInMeasure(targetMeasure, 1); // メロディトラックのノートを消去
 		ArrayList<Note> melody = pattern.getMelody();
 		for(Note note : melody) {

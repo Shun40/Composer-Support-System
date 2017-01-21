@@ -15,6 +15,15 @@ public class ChordAppearanceProbability {
 	public void setProbabilityForChord(String chord) {
 		resetProbability();
 		switch(chord) {
+		case "N.C.":
+			probabilities[5] = probabilities[17] = 1.0; // C
+			probabilities[7] = probabilities[19] = 1.0; // D
+			probabilities[9] = probabilities[21] = 1.0; // E
+			probabilities[10] = probabilities[22] = 1.0; // F
+			probabilities[0] = probabilities[12] = probabilities[24] = 1.0; // G
+			probabilities[2] = probabilities[14] = probabilities[26] = 1.0; // A
+			probabilities[4] = probabilities[16] = probabilities[28] = 1.0; // B
+			break;
 		case "C":
 			probabilities[5] = probabilities[17] = 1.0; // C
 			probabilities[7] = probabilities[19] = 0.5; // D

@@ -9,15 +9,13 @@ import javafx.scene.control.ComboBox;
  * @author Shun Yamashita
  */
 public class ChordSelector extends ComboBox<String> {
-	private int measure;
-	private int beat;
+	private int index;
 	private boolean setupFinished;
-	private MeasureArea parent;
+	private ChordSelectorPair parent;
 
-	public ChordSelector(int measure, int beat, int x, int y, MeasureArea parent) {
+	public ChordSelector(int index, int x, int y, ChordSelectorPair parent) {
 		super();
-		this.measure = measure;
-		this.beat = beat;
+		this.index = index;
 		this.setupFinished = false;
 		this.parent = parent;
 		setupComboBox();
@@ -29,7 +27,7 @@ public class ChordSelector extends ComboBox<String> {
 		setItems(chords);
 		setValue(initValue);
 		setEditable(false);
-		setChord(initValue, measure, beat);
+		setChord(initValue, index);
 	}
 
 	public void setupPoint(int x, int y) {
@@ -40,16 +38,16 @@ public class ChordSelector extends ComboBox<String> {
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends String> ov, String oldVal, String newVal)->{
-				setChord(newVal, measure, beat);
+				setChord(newVal, index);
 			}
 		);
 		setupFinished = true;
 	}
 
-	public void setChord(String chord, int measure, int beat) {
-		parent.setChord(chord, measure, beat);
+	public void setChord(String chord, int index) {
+		parent.setChord(chord, index);
 		if(setupFinished) {
-			parent.makeAccompaniment(chord, measure, beat);
+			parent.makeAccompaniment(chord, index);
 		}
 	}
 }

@@ -22,12 +22,12 @@ import javafx.scene.text.Font;
 
 public class MeasureArea extends Group {
 	private int measureCount;
-	private String chords[];
+	private ChordPair chords[];
 	private Rectangle[] measureFrames;
 	private Label[] measureLabels;
 	private final ToggleGroup toggleGroup;
-	private RadioButton[] arrangeTargetButtons;
-	private ChordSelector[] chordSelectors;
+	private RadioButton[] predictionTargetButtons;
+	private ChordSelectorPair[] chordSelectorPairs;
 	private Line[] vFrameLines;
 	private Pianoroll parent;
 
@@ -41,12 +41,12 @@ public class MeasureArea extends Group {
 		setupChords();
 		setupMeasureFrames();
 		setupMeasureLabels();
-		setupArrangeTargetButtons();
-		setupChordSelector();
+		setupPredictionTargetButtons();
+		setupChordSelectorPairs();
 		setupFrameLines();
 		setupOptionalLines();
 		setupEventListener();
-		setArrangeTarget(1);
+		setPredictionTarget(1);
 	}
 
 	public void setupPoint(int x, int y) {
@@ -55,7 +55,10 @@ public class MeasureArea extends Group {
 	}
 
 	public void setupChords() {
-		chords = new String[measureCount * 2];
+		chords = new ChordPair[measureCount];
+		for(int measure = 0; measure < measureCount; measure++) {
+			chords[measure] = new ChordPair();
+		}
 	}
 
 	public void setupMeasureFrames() {
@@ -86,36 +89,34 @@ public class MeasureArea extends Group {
 		}
 	}
 
-	public void setupArrangeTargetButtons() {
-		arrangeTargetButtons = new RadioButton[measureCount];
+	public void setupPredictionTargetButtons() {
+		predictionTargetButtons = new RadioButton[measureCount];
 		for(int n = 0; n < measureCount; n++) {
 			int x = 140 + MEASURE_WIDTH * n;
 			int y = 2;
-			arrangeTargetButtons[n] = new RadioButton("");
-			arrangeTargetButtons[n].setUserData(n+1);
-			arrangeTargetButtons[n].setLayoutX(x);
-			arrangeTargetButtons[n].setLayoutY(y);
-			arrangeTargetButtons[n].setToggleGroup(toggleGroup);
-			getChildren().add(arrangeTargetButtons[n]);
+			predictionTargetButtons[n] = new RadioButton("");
+			predictionTargetButtons[n].setUserData(n+1);
+			predictionTargetButtons[n].setLayoutX(x);
+			predictionTargetButtons[n].setLayoutY(y);
+			predictionTargetButtons[n].setToggleGroup(toggleGroup);
+			getChildren().add(predictionTargetButtons[n]);
 		}
 	}
 
 	public void setupEventListener() {
 		toggleGroup.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle oldToggle, Toggle newToggle) -> {
-			if(oldToggle != null) resetArrangeTarget((int)oldToggle.getUserData());
-			setArrangeTarget((int)newToggle.getUserData());
+			if(oldToggle != null) resetPredictionTarget((int)oldToggle.getUserData());
+			setPredictionTarget((int)newToggle.getUserData());
 		});
 	}
 
-	public void setupChordSelector() {
-		chordSelectors = new ChordSelector[measureCount * 2];
+	public void setupChordSelectorPairs() {
+		chordSelectorPairs = new ChordSelectorPair[measureCount];
 		for(int measure = 0; measure < measureCount; measure++) {
-			for(int beat = 0; beat < 2; beat++) {
-				int x = 3 + MEASURE_WIDTH * measure + (MEASURE_WIDTH / 2) * beat;
-				int y = 20;
-				chordSelectors[measure * 2 + beat] = new ChordSelector(measure + 1, beat + 1, x, y, this);
-				getChildren().add(chordSelectors[measure * 2 + beat]);
-			}
+			int x = 3 + MEASURE_WIDTH * measure;
+			int y = 20;
+			chordSelectorPairs[measure] = new ChordSelectorPair(measure + 1, x, y, this);
+			getChildren().add(chordSelectorPairs[measure]);
 		}
 	}
 
@@ -160,40 +161,40 @@ public class MeasureArea extends Group {
 		for(Label measureLabel : measureLabels) {
 			measureLabel.setTranslateX(move);
 		}
-		for(ToggleButton arrangeTargetButton : arrangeTargetButtons) {
+		for(ToggleButton arrangeTargetButton : predictionTargetButtons) {
 			arrangeTargetButton.setTranslateX(move);
 		}
-		for(ChordSelector chordSelector : chordSelectors) {
-			chordSelector.setTranslateX(move);
+		for(ChordSelectorPair chordSelectoPair : chordSelectorPairs) {
+			chordSelectoPair.setTranslateX(move);
 		}
 		for(Line vFrameLine : vFrameLines) {
 			vFrameLine.setTranslateX(move);
 		}
 	}
 
-	public void setArrangeTarget(int arrangeTargetMeasure) {
-		toggleGroup.selectToggle(arrangeTargetButtons[arrangeTargetMeasure - 1]);
-		measureFrames[arrangeTargetMeasure - 1].setStyle("-fx-stroke: #7FFFD4;-fx-stroke-type: centered;");
-		measureFrames[arrangeTargetMeasure - 1].setStyle("-fx-fill: #7FFFD4;" + DEFAULT_STYLE);
+	public void setPredictionTarget(int targetMeasure) {
+		toggleGroup.selectToggle(predictionTargetButtons[targetMeasure - 1]);
+		measureFrames[targetMeasure - 1].setStyle("-fx-stroke: #7FFFD4;-fx-stroke-type: centered;");
+		measureFrames[targetMeasure - 1].setStyle("-fx-fill: #7FFFD4;" + DEFAULT_STYLE);
 	}
 
-	public void resetArrangeTarget(int arrangeTargetMeasure) {
-		measureFrames[arrangeTargetMeasure - 1].setStyle("-fx-stroke: #FFFFFF;-fx-stroke-type: centered;");
-		measureFrames[arrangeTargetMeasure - 1].setStyle("-fx-fill: #FFFFFF;" + DEFAULT_STYLE);
+	public void resetPredictionTarget(int targetMeasure) {
+		measureFrames[targetMeasure - 1].setStyle("-fx-stroke: #FFFFFF;-fx-stroke-type: centered;");
+		measureFrames[targetMeasure - 1].setStyle("-fx-fill: #FFFFFF;" + DEFAULT_STYLE);
 	}
 
-	public int getArrangeTarget() {
+	public int getPredictionTarget() {
 		return (int)toggleGroup.getSelectedToggle().getUserData();
 	}
 
-	public void makeAccompaniment(String chord, int measure, int count) {
-		parent.makeAccompaniment(chord, measure, count);
+	public void makeAccompaniment(String chord, int measure, int index) {
+		parent.makeAccompaniment(chord, measure, index);
 	}
 
-	public String getChord(int measure, int count) {
-		return chords[(measure - 1) * 2 + (count - 1)];
+	public String getChord(int measure, int index) {
+		return chords[measure - 1].getChord(index);
 	}
-	public void setChord(String chord, int measure, int count) {
-		this.chords[(measure - 1) * 2 + (count - 1)] = chord;
+	public void setChord(String chord, int measure, int index) {
+		this.chords[measure - 1].setChord(chord, index);
 	}
 }
