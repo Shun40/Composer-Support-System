@@ -89,6 +89,10 @@ public class MainScene extends Scene {
 		return uiController.prediction(predictionInformation);
 	}
 
+	public void incPredictionPatternFrequency(int index) {
+		uiController.incPredictionPatternFrequency(index);
+	}
+
 	public Accompaniment makeAccompaniment(String chord) {
 		return uiController.makeAccompaniment(chord);
 	}

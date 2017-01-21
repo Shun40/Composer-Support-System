@@ -187,37 +187,41 @@ public class MelodyPatternDictionary extends ArrayList<MelodyPatternDictionaryRe
 		p4_8.add(-1, 2, 960, 960);
 
 		// とりあえず既存楽曲数曲のパターンを登録しておく
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ1小節目", p1_8, p1_1, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ2小節目", p1_1, p1_2, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ3小節目", p1_2, p1_3, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ4小節目", p1_3, p1_4, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ5小節目", p1_4, p1_5, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ6小節目", p1_5, p1_6, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ7小節目", p1_6, p1_7, 0));
-		add(new MelodyPatternDictionaryRecord("初音ミク 『メルト』 サビ8小節目", p1_7, p1_8, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ1小節目", p2_8, p2_1, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ2小節目", p2_1, p2_2, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ3小節目", p2_2, p2_3, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ4小節目", p2_3, p2_4, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ5小節目", p2_4, p2_5, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ6小節目", p2_5, p2_6, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ7小節目", p2_6, p2_7, 0));
-		add(new MelodyPatternDictionaryRecord("KANA-BOON 『シルエット』 サビ8小節目", p2_7, p2_8, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ1小節目", p3_8, p3_1, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ2小節目", p3_1, p3_2, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ3小節目", p3_2, p3_3, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ4小節目", p3_3, p3_4, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ5小節目", p3_4, p3_5, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ6小節目", p3_5, p3_6, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ7小節目", p3_6, p3_7, 0));
-		add(new MelodyPatternDictionaryRecord("BUMP OF CHICKEN 『天体観測』 サビ8小節目", p3_7, p3_8, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ1小節目", p4_8, p4_1, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ2小節目", p4_1, p4_2, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ3小節目", p4_2, p4_3, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ4小節目", p4_3, p4_4, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ5小節目", p4_4, p4_5, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ6小節目", p4_5, p4_6, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ7小節目", p4_6, p4_7, 0));
-		add(new MelodyPatternDictionaryRecord("スピッツ 『チェリー』 サビ8小節目", p4_7, p4_8, 0));
+		add(new MelodyPatternDictionaryRecord(0, "初音ミク 『メルト』 サビ1小節目", p1_8, p1_1, 1));
+		add(new MelodyPatternDictionaryRecord(1, "初音ミク 『メルト』 サビ2小節目", p1_1, p1_2, 1));
+		add(new MelodyPatternDictionaryRecord(2, "初音ミク 『メルト』 サビ3小節目", p1_2, p1_3, 1));
+		add(new MelodyPatternDictionaryRecord(3, "初音ミク 『メルト』 サビ4小節目", p1_3, p1_4, 1));
+		add(new MelodyPatternDictionaryRecord(4, "初音ミク 『メルト』 サビ5小節目", p1_4, p1_5, 1));
+		add(new MelodyPatternDictionaryRecord(5, "初音ミク 『メルト』 サビ6小節目", p1_5, p1_6, 1));
+		add(new MelodyPatternDictionaryRecord(6, "初音ミク 『メルト』 サビ7小節目", p1_6, p1_7, 1));
+		add(new MelodyPatternDictionaryRecord(7, "初音ミク 『メルト』 サビ8小節目", p1_7, p1_8, 1));
+		add(new MelodyPatternDictionaryRecord(8, "KANA-BOON 『シルエット』 サビ1小節目", p2_8, p2_1, 1));
+		add(new MelodyPatternDictionaryRecord(9, "KANA-BOON 『シルエット』 サビ2小節目", p2_1, p2_2, 1));
+		add(new MelodyPatternDictionaryRecord(10, "KANA-BOON 『シルエット』 サビ3小節目", p2_2, p2_3, 1));
+		add(new MelodyPatternDictionaryRecord(11, "KANA-BOON 『シルエット』 サビ4小節目", p2_3, p2_4, 1));
+		add(new MelodyPatternDictionaryRecord(12, "KANA-BOON 『シルエット』 サビ5小節目", p2_4, p2_5, 1));
+		add(new MelodyPatternDictionaryRecord(13, "KANA-BOON 『シルエット』 サビ6小節目", p2_5, p2_6, 1));
+		add(new MelodyPatternDictionaryRecord(14, "KANA-BOON 『シルエット』 サビ7小節目", p2_6, p2_7, 1));
+		add(new MelodyPatternDictionaryRecord(15, "KANA-BOON 『シルエット』 サビ8小節目", p2_7, p2_8, 1));
+		add(new MelodyPatternDictionaryRecord(16, "BUMP OF CHICKEN 『天体観測』 サビ1小節目", p3_8, p3_1, 1));
+		add(new MelodyPatternDictionaryRecord(17, "BUMP OF CHICKEN 『天体観測』 サビ2小節目", p3_1, p3_2, 1));
+		add(new MelodyPatternDictionaryRecord(18, "BUMP OF CHICKEN 『天体観測』 サビ3小節目", p3_2, p3_3, 1));
+		add(new MelodyPatternDictionaryRecord(19, "BUMP OF CHICKEN 『天体観測』 サビ4小節目", p3_3, p3_4, 1));
+		add(new MelodyPatternDictionaryRecord(20, "BUMP OF CHICKEN 『天体観測』 サビ5小節目", p3_4, p3_5, 1));
+		add(new MelodyPatternDictionaryRecord(21, "BUMP OF CHICKEN 『天体観測』 サビ6小節目", p3_5, p3_6, 1));
+		add(new MelodyPatternDictionaryRecord(22, "BUMP OF CHICKEN 『天体観測』 サビ7小節目", p3_6, p3_7, 1));
+		add(new MelodyPatternDictionaryRecord(23, "BUMP OF CHICKEN 『天体観測』 サビ8小節目", p3_7, p3_8, 1));
+		add(new MelodyPatternDictionaryRecord(24, "スピッツ 『チェリー』 サビ1小節目", p4_8, p4_1, 1));
+		add(new MelodyPatternDictionaryRecord(25, "スピッツ 『チェリー』 サビ2小節目", p4_1, p4_2, 1));
+		add(new MelodyPatternDictionaryRecord(26, "スピッツ 『チェリー』 サビ3小節目", p4_2, p4_3, 1));
+		add(new MelodyPatternDictionaryRecord(27, "スピッツ 『チェリー』 サビ4小節目", p4_3, p4_4, 1));
+		add(new MelodyPatternDictionaryRecord(28, "スピッツ 『チェリー』 サビ5小節目", p4_4, p4_5, 1));
+		add(new MelodyPatternDictionaryRecord(29, "スピッツ 『チェリー』 サビ6小節目", p4_5, p4_6, 1));
+		add(new MelodyPatternDictionaryRecord(30, "スピッツ 『チェリー』 サビ7小節目", p4_6, p4_7, 1));
+		add(new MelodyPatternDictionaryRecord(31, "スピッツ 『チェリー』 サビ8小節目", p4_7, p4_8, 1));
+	}
+
+	public void incPatternFrequency(int index) {
+		get(index).incFrequency();
 	}
 }

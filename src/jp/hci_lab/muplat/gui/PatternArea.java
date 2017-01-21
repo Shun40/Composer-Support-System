@@ -14,6 +14,7 @@ import javafx.scene.Group;
 public class PatternArea extends Group {
 	private PatternSelector patternSelector;
 	private PredictionButton predictionButton;
+	private DecisionButton decisionButton;
 	private Pianoroll parent;
 
 	public PatternArea(int x, int y, Pianoroll parent) {
@@ -22,6 +23,7 @@ public class PatternArea extends Group {
 		setupPoint(x, y);
 		setupPatternSelector();
 		setupPredictionButton();
+		setupDecisionButton();
 	}
 
 	public void setupPoint(int x, int y) {
@@ -39,12 +41,24 @@ public class PatternArea extends Group {
 		getChildren().add(predictionButton);
 	}
 
+	public void setupDecisionButton() {
+		decisionButton = new DecisionButton(80, 0, this);
+		getChildren().add(decisionButton);
+	}
+
 	public void prediction() {
+		patternSelector.getSelectionModel().clearSelection();
 		patternSelector.getItems().clear(); // 一度リストの中身を空にする
 		ArrayList<PredictionPattern> patterns = parent.prediction();
 		for(PredictionPattern pattern : patterns) {
 			patternSelector.addList(pattern);
 		}
+	}
+
+	public void decision() {
+		PredictionPattern pattern = patternSelector.getSelectionModel().getSelectedItem();
+		if(pattern == null) return;
+		parent.incPredictionPatternFrequency(pattern.getMelody().getIndex());
 	}
 
 	public void arrange(PredictionPattern pattern) {

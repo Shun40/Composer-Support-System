@@ -29,6 +29,8 @@ public class UIController {
 	private Sequence sequence;
 	private HashMap<Object, ArrayList<MidiEvent>> note2events;
 
+	private MelodyAnalyzer melodyAnalyzer;
+
 	public UIController() {
 		try {
 			sequencer = MidiSystem.getSequencer();
@@ -42,6 +44,7 @@ public class UIController {
 			e.printStackTrace();
 		}
 		note2events = new HashMap<Object, ArrayList<MidiEvent>>();
+		melodyAnalyzer = new MelodyAnalyzer();
 	}
 
 	public void setBpm(int bpm) {
@@ -151,16 +154,19 @@ public class UIController {
 		ArrayList<PredictionPattern> predictionPatterns = new ArrayList<PredictionPattern>();
 
 		// メロディ分析
-		MelodyAnalyzer melodyAnalyzer = new MelodyAnalyzer();
 		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(predictionInformation);
 
 		for(int n = 0; n < melodies.size(); n++) {
-			PredictionPattern predictionPattern = new PredictionPattern(melodies.get(n).getName());
+			PredictionPattern predictionPattern = new PredictionPattern();
 			predictionPattern.setMelody(melodies.get(n));
 			predictionPatterns.add(predictionPattern);
 		}
 
 		return predictionPatterns;
+	}
+
+	public void incPredictionPatternFrequency(int index) {
+		melodyAnalyzer.incMelodyPatternFrequency(index);
 	}
 
 	public Accompaniment makeAccompaniment(String chord) {

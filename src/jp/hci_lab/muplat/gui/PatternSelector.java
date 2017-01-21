@@ -50,7 +50,7 @@ public class PatternSelector extends ListView<PredictionPattern> {
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends PredictionPattern> ov, PredictionPattern oldVal, PredictionPattern newVal)->{
-				parent.arrange(newVal);
+				if(newVal != null) parent.arrange(newVal);
 			}
 		);
 	}

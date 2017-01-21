@@ -5,15 +5,16 @@ package engine_yamashita;
  * @author Shun Yamashita
  */
 public class PredictionPattern {
-	private String name;
 	private Melody melody;
 
-	public PredictionPattern(String name) {
-		this.name = name;
-		melody = new Melody("");
+	public PredictionPattern() {
+		melody = new Melody(-1, "", 0);
 	}
 
-	public String getName() { return name; }
+	public int getIndex() { return melody.getIndex(); }
+	public String getName() { return melody.getName(); }
+	public int getFrequency() { return melody.getFrequency(); }
+
 	public Melody getMelody() { return melody; }
 	public void setMelody(Melody melody) { this.melody = melody; }
 }

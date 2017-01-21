@@ -261,6 +261,10 @@ public class Pianoroll extends Group {
 		return parent.prediction(predictionInformation);
 	}
 
+	public void incPredictionPatternFrequency(int index) {
+		parent.incPredictionPatternFrequency(index);
+	}
+
 	public void makeAccompaniment(String chord, int measure, int index) {
 		Accompaniment accompaniment = parent.makeAccompaniment(chord);
 		ArrayList<Note> pianoPart = accompaniment.getPianoPart();

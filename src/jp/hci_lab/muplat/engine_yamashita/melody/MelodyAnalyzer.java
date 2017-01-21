@@ -19,7 +19,10 @@ import gui.Note;
  * @author Shun Yamashita
  */
 public class MelodyAnalyzer {
+	private MelodyPatternDictionary melodyPatternDictionary;
+
 	public MelodyAnalyzer() {
+		melodyPatternDictionary = new MelodyPatternDictionary();
 	}
 
 	public ArrayList<Melody> getMelodies(PredictionInformation predictionInformation) {
@@ -33,7 +36,6 @@ public class MelodyAnalyzer {
 		ArrayList<Note> previousNotes1 = getInMeasureNotes(targetMeasure - 1, melodyNotes);
 		ArrayList<Note> previousNotes2 = getInMeasureNotes(targetMeasure - 2, melodyNotes);
 
-		MelodyPatternDictionary melodyPatternDictionary = new MelodyPatternDictionary();
 		MelodyPattern currentMelodyPattern = getMelodyPattern(getLastNote(previousNotes1), targetNotes);
 		MelodyPattern previousMelodyPattern = getMelodyPattern(getLastNote(previousNotes2), previousNotes1);
 
@@ -74,7 +76,15 @@ public class MelodyAnalyzer {
 			for(int n = m; n < melodyPatternDictionary.size(); n++) {
 				double sum_m = rhythmSimilarities[rank[m]].getScore() + pitchSimilarities[rank[m]].getScore();
 				double sum_n = rhythmSimilarities[rank[n]].getScore() + pitchSimilarities[rank[n]].getScore();
-				if(sum_m < sum_n) {
+				double frequency_m = melodyPatternDictionary.get(rank[m]).getFrequency();
+				double frequency_n = melodyPatternDictionary.get(rank[n]).getFrequency();
+				double score_m = sum_m * frequency_m; // 選択頻度を重みとして乗じる
+				double score_n = sum_n * frequency_n; // 選択頻度を重みとして乗じる
+				if(sum_m <= 0 && sum_n <= 0) { // 類似度が共に0以下の場合は選択頻度のみで大小比較する
+					score_m = frequency_m;
+					score_n = frequency_n;
+				}
+				if(score_m < score_n) {
 					int temp = rank[m];
 					rank[m] = rank[n];
 					rank[n] = temp;
@@ -99,8 +109,10 @@ public class MelodyAnalyzer {
 		// メロディを整形
 		ArrayList<Melody> melodies = new ArrayList<Melody>();
 		for(int m = 0; m < melodyLabels.size(); m++) {
+			int index = melodyPatternDictionary.get(rank[m]).getIndex();
 			String name = melodyPatternDictionary.get(rank[m]).getName();
-			Melody melody = new Melody(name);
+			int frequency = melodyPatternDictionary.get(rank[m]).getFrequency();
+			Melody melody = new Melody(index, name, frequency);
 			for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
 				int track = 1;
 				int program = 0;
@@ -188,6 +200,10 @@ public class MelodyAnalyzer {
 	public String getLastChord(ArrayList<String> chordProgression) {
 		if(chordProgression.isEmpty()) return "N.C.";
 		else return chordProgression.get(chordProgression.size() - 1);
+	}
+
+	public void incMelodyPatternFrequency(int index) {
+		melodyPatternDictionary.incPatternFrequency(index);
 	}
 
 	public class Similarity {
