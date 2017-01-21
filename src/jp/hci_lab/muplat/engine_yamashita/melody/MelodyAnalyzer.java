@@ -110,7 +110,7 @@ public class MelodyAnalyzer {
 		ArrayList<Melody> melodies = new ArrayList<Melody>();
 		for(int m = 0; m < melodyLabels.size(); m++) {
 			int index = melodyPatternDictionary.get(rank[m]).getIndex();
-			String name = melodyPatternDictionary.get(rank[m]).getName();
+			String name = melodyPatternDictionary.get(rank[m]).getName() + " (" + (melodyPatternDictionary.get(rank[m]).getFrequency() - 1) + "回)";
 			int frequency = melodyPatternDictionary.get(rank[m]).getFrequency();
 			Melody melody = new Melody(index, name, frequency);
 			for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める

@@ -12,13 +12,13 @@ public class ChordSelectorConstants {
 
 	public static final ObservableList<String> chords = FXCollections.observableArrayList(
 		"N.C.",
-		"C",
-		"Dm",
-		"Em",
-		"F",
-		"G",
-		"Am",
-		"Bdim"
+		"C", "CM7",
+		"Dm", "Dm7",
+		"Em", "Em7",
+		"F", "FM7",
+		"G", "G7",
+		"Am", "Am7",
+		"Bmb5", "Bm7b5"
 	);
 	public static final String initValue = "N.C.";
 }

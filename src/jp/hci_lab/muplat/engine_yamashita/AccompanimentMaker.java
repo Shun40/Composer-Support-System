@@ -1,6 +1,7 @@
 package engine_yamashita;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import gui.Note;
 
@@ -10,43 +11,26 @@ public class AccompanimentMaker {
 
 	public ArrayList<Note> makePianoPart(String chord) {
 		ArrayList<Note> pianoPart = new ArrayList<Note>();
+		ArrayList<Integer> chordPitches = new ArrayList<Integer>();
 
 		switch(chord) {
-		case "C":
-			pianoPart.add(new Note(2, 1, 60, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 64, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 67, 0, 960, 100, null));
-			break;
-		case "Dm":
-			pianoPart.add(new Note(2, 1, 62, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 65, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 69, 0, 960, 100, null));
-			break;
-		case "Em":
-			pianoPart.add(new Note(2, 1, 64, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 67, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 71, 0, 960, 100, null));
-			break;
-		case "F":
-			pianoPart.add(new Note(2, 1, 65, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 69, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 72, 0, 960, 100, null));
-			break;
-		case "G":
-			pianoPart.add(new Note(2, 1, 67, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 71, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 74, 0, 960, 100, null));
-			break;
-		case "Am":
-			pianoPart.add(new Note(2, 1, 69, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 72, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 76, 0, 960, 100, null));
-			break;
-		case "Bdim":
-			pianoPart.add(new Note(2, 1, 71, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 74, 0, 960, 100, null));
-			pianoPart.add(new Note(2, 1, 77, 0, 960, 100, null));
-			break;
+		case "C": chordPitches.addAll(Arrays.asList(60, 64, 67)); break;
+		case "CM7": chordPitches.addAll(Arrays.asList(60, 64, 67, 71)); break;
+		case "Dm": chordPitches.addAll(Arrays.asList(62, 65, 69)); break;
+		case "Dm7": chordPitches.addAll(Arrays.asList(62, 65, 69, 72)); break;
+		case "Em": chordPitches.addAll(Arrays.asList(64, 67, 71)); break;
+		case "Em7": chordPitches.addAll(Arrays.asList(64, 67, 71, 74)); break;
+		case "F": chordPitches.addAll(Arrays.asList(65, 69, 72)); break;
+		case "FM7": chordPitches.addAll(Arrays.asList(65, 69, 72, 76)); break;
+		case "G": chordPitches.addAll(Arrays.asList(67, 71, 74)); break;
+		case "G7": chordPitches.addAll(Arrays.asList(67, 71, 74, 77)); break;
+		case "Am": chordPitches.addAll(Arrays.asList(69, 72, 76)); break;
+		case "Am7": chordPitches.addAll(Arrays.asList(69, 72, 76, 79)); break;
+		case "Bmb5": chordPitches.addAll(Arrays.asList(71, 74, 77)); break;
+		case "Bm7b5": chordPitches.addAll(Arrays.asList(71, 74, 77, 81)); break;
+		}
+		for(int n = 0; n < chordPitches.size(); n++) {
+			pianoPart.add(new Note(1, 82, chordPitches.get(n), 0, 960, 100, null));
 		}
 		return pianoPart;
 	}
@@ -58,13 +42,27 @@ public class AccompanimentMaker {
 		if(chord.equals("N.C.")) return bassPart;
 
 		switch(chord) {
-		case "C": rootTone = 48; break;
-		case "Dm": rootTone = 50; break;
-		case "Em": rootTone = 52; break;
-		case "F": rootTone = 53; break;
-		case "G": rootTone = 55; break;
-		case "Am": rootTone = 57; break;
-		case "Bdim": rootTone = 59; break;
+		case "C":
+		case "CM7":
+			rootTone = 48; break;
+		case "Dm":
+		case "Dm7":
+			rootTone = 50; break;
+		case "Em":
+		case "Em7":
+			rootTone = 52; break;
+		case "F":
+		case "FM7":
+			rootTone = 53; break;
+		case "G":
+		case "G7":
+			rootTone = 55; break;
+		case "Am":
+		case "Am7":
+			rootTone = 57; break;
+		case "Bmb5":
+		case "Bm7b5":
+			rootTone = 59; break;
 		}
 		for(int i = 0; i < 4; i++) {
 			bassPart.add(new Note(9, 34, rootTone, 240 * i, 240, 100, null));

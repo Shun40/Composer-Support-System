@@ -2,13 +2,13 @@ package gui;
 import static gui.constants.ChordSelectorConstants.*;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
 
 /**
  * コードを指定するコンボボックスのクラス
  * @author Shun Yamashita
  */
-public class ChordSelector extends ComboBox<String> {
+public class ChordSelector extends ChoiceBox<String> {
 	private int index;
 	private boolean setupFinished;
 	private ChordSelectorPair parent;
@@ -26,7 +26,6 @@ public class ChordSelector extends ComboBox<String> {
 	public void setupComboBox() {
 		setItems(chords);
 		setValue(initValue);
-		setEditable(false);
 		setChord(initValue, index);
 	}
 
