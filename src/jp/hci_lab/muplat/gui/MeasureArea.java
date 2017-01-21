@@ -176,6 +176,7 @@ public class MeasureArea extends Group {
 		toggleGroup.selectToggle(predictionTargetButtons[targetMeasure - 1]);
 		measureFrames[targetMeasure - 1].setStyle("-fx-stroke: #7FFFD4;-fx-stroke-type: centered;");
 		measureFrames[targetMeasure - 1].setStyle("-fx-fill: #7FFFD4;" + DEFAULT_STYLE);
+		parent.setPredictionPatternList(targetMeasure);
 	}
 
 	public void resetPredictionTarget(int targetMeasure) {

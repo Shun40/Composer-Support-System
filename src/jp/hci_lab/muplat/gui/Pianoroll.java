@@ -54,10 +54,10 @@ public class Pianoroll extends Group {
 		//setupInstrumentSelector();
 		setupHScrollBar();
 		setupVScrollBar();
-		setupMeasureArea();
 		//setupMuteTrackSelector();
 		//setupSoloTrackSelector();
 		setupPatternArea();
+		setupMeasureArea();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -263,6 +263,10 @@ public class Pianoroll extends Group {
 
 	public void incPredictionPatternFrequency(int index) {
 		parent.incPredictionPatternFrequency(index);
+	}
+
+	public void setPredictionPatternList(int targetMeasure) {
+		patternArea.setPredictionPatternList(targetMeasure);
 	}
 
 	public void makeAccompaniment(String chord, int measure, int index) {

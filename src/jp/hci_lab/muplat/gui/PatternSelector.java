@@ -14,15 +14,15 @@ import javafx.util.Callback;
  * @author Shun Yamashita
  */
 public class PatternSelector extends ListView<PredictionPattern> {
-	private ObservableList<PredictionPattern> patterns;
+	private ObservableList<PredictionPattern> patternList;
 	private PatternArea parent;
 
-	public PatternSelector(int x, int y, PatternArea parent) {
+	public PatternSelector(int measureCount, int x, int y, PatternArea parent) {
 		super();
 		this.parent = parent;
 		setupSize(PATTERN_SELECTOR_WIDTH, PATTERN_SELECTOR_HEIGHT);
 		setupPoint(x, y);
-		setupList();
+		setupList(measureCount);
 		setupEventListener();
 	}
 
@@ -36,9 +36,9 @@ public class PatternSelector extends ListView<PredictionPattern> {
 		setLayoutY(y);
 	}
 
-	public void setupList() {
-		patterns = FXCollections.observableArrayList();
-		setItems(patterns);
+	public void setupList(int measureCount) {
+		patternList = FXCollections.observableArrayList();
+		setItems(patternList);
 		setCellFactory(new Callback<ListView<PredictionPattern>, ListCell<PredictionPattern>>() {
 			@Override
 			public ListCell<PredictionPattern> call(ListView<PredictionPattern> arg0) {
@@ -50,13 +50,15 @@ public class PatternSelector extends ListView<PredictionPattern> {
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends PredictionPattern> ov, PredictionPattern oldVal, PredictionPattern newVal)->{
-				if(newVal != null) parent.arrange(newVal);
+				if(newVal != null) {
+					parent.arrange(newVal);
+				}
 			}
 		);
 	}
 
 	public void addList(PredictionPattern predictionPattern) {
-		patterns.add(predictionPattern);
+		patternList.add(predictionPattern);
 	}
 
 	/*

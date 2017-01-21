@@ -12,7 +12,7 @@ import javafx.scene.Group;
  * @author Shun Yamashita
  */
 public class PatternArea extends Group {
-	private PatternSelector patternSelector;
+	private PatternSelector[] patternSelectors;
 	private PredictionButton predictionButton;
 	private DecisionButton decisionButton;
 	private Pianoroll parent;
@@ -32,8 +32,11 @@ public class PatternArea extends Group {
 	}
 
 	public void setupPatternSelector() {
-		patternSelector = new PatternSelector(0, 26, this);
-		getChildren().add(patternSelector);
+		patternSelectors = new PatternSelector[parent.getMeasureCount()];
+		for(int n = 0; n < patternSelectors.length; n++) {
+			patternSelectors[n] = new PatternSelector(parent.getMeasureCount(), 0, 26, this);
+		}
+		getChildren().add(patternSelectors[0]);
 	}
 
 	public void setupPredictionButton() {
@@ -47,16 +50,18 @@ public class PatternArea extends Group {
 	}
 
 	public void prediction() {
-		patternSelector.getSelectionModel().clearSelection();
-		patternSelector.getItems().clear(); // 一度リストの中身を空にする
+		int targetMeasure = parent.getPredictionTargetMeasure();
+		//patternSelector.getSelectionModel().clearSelection();
+		patternSelectors[targetMeasure - 1].getItems().clear(); // 一度リストの中身を空にする
 		ArrayList<PredictionPattern> patterns = parent.prediction();
 		for(PredictionPattern pattern : patterns) {
-			patternSelector.addList(pattern);
+			patternSelectors[targetMeasure - 1].addList(pattern);
 		}
 	}
 
 	public void decision() {
-		PredictionPattern pattern = patternSelector.getSelectionModel().getSelectedItem();
+		int targetMeasure = parent.getPredictionTargetMeasure();
+		PredictionPattern pattern = patternSelectors[targetMeasure - 1].getSelectionModel().getSelectedItem();
 		if(pattern == null) return;
 		parent.incPredictionPatternFrequency(pattern.getMelody().getIndex());
 	}
@@ -74,5 +79,16 @@ public class PatternArea extends Group {
 			parent.putNote(pitch, position, duration);
 		}
 		parent.setCurrentTrack(1);
+	}
+
+	public void setPredictionPatternList(int targetMeasure) {
+		for(int n = 0; n < patternSelectors.length; n++) {
+			getChildren().remove(patternSelectors[n]);
+		}
+		getChildren().add(patternSelectors[targetMeasure - 1]);
+	}
+
+	public int getTargetMeasure() {
+		return parent.getPredictionTargetMeasure();
 	}
 }
