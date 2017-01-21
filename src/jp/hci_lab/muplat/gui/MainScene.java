@@ -17,9 +17,17 @@ import javax.sound.midi.Sequence;
 import engine_yamashita.Accompaniment;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
+import engine_yamashita.melody.reference.MelodyPatternDictionary;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import system.UIController;
@@ -181,5 +189,75 @@ public class MainScene extends Scene {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void readDictionaryFile() {
+		final FileChooser fc = new FileChooser();
+		fc.setTitle("Read Dictionary File");
+		fc.getExtensionFilters().addAll(
+			new ExtensionFilter("Dictionary Files", "*.dic"),
+			new ExtensionFilter("All Files", "+.+")
+		);
+		ArrayList<String> lines = new ArrayList<String>();
+		File readFile = fc.showOpenDialog(null);
+		if(readFile != null) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(readFile));
+				String line = br.readLine();
+				while(line != null) {
+					lines.add(line);
+					line = br.readLine();
+				}
+				br.close();
+			} catch(Exception e) {
+				System.out.println(e);
+			}
+		}
+		uiController.readDictionary(lines);
+	}
+
+	public void showDictionary() {
+		MelodyPatternDictionary melodyPatternDicitonary = uiController.getMelodyPatternDictionary();
+		Dialog dialog = new Dialog<>();
+		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+		dialog.setTitle("辞書内容");
+		dialog.setHeaderText("辞書に登録されているパターンの一覧です.");
+		dialog.getDialogPane().setPrefWidth(440);
+		dialog.setResizable(true);
+
+		// テーブル作成
+		TableView<Record> table = new TableView<>();
+		TableColumn<Record, String> index = new TableColumn<Record, String>("インデックス");
+		index.setCellValueFactory(new PropertyValueFactory<>("index"));
+		TableColumn<Record, String> name = new TableColumn<Record, String>("パターン名");
+		name.setCellValueFactory(new PropertyValueFactory<>("name"));
+		TableColumn<Record, String> frequency = new TableColumn<Record, String>("選択回数");
+		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
+		table.getColumns().setAll(index, name, frequency);
+
+		ObservableList<Record> records = FXCollections.observableArrayList();
+		for(int i = 0; i < melodyPatternDicitonary.size(); i++) {
+			String _index = Integer.toString(melodyPatternDicitonary.get(i).getIndex());
+			String _name = melodyPatternDicitonary.get(i).getName();
+			String _frequency = Integer.toString(melodyPatternDicitonary.get(i).getFrequency() - 1);
+			records.add(new Record(_index, _name, _frequency));
+		}
+		table.setItems(records);
+		dialog.getDialogPane().setContent(table);
+		dialog.showAndWait();
+	}
+
+	public class Record {
+		private final String index;
+		private final String name;
+		private final String frequency;
+		public Record(String index, String name, String frequency) {
+			this.index = index;
+			this.name = name;
+			this.frequency = frequency;
+		}
+		public String getIndex() { return index; }
+		public String getName() { return name; }
+		public String getFrequency() { return frequency; }
 	}
 }

@@ -29,35 +29,49 @@ public class Menubar extends MenuBar {
 	}
 
 	public void setupFileMenu() {
-		Menu menu = new Menu("File");
-		MenuItem item1 = new MenuItem("Read MUP File");
-		MenuItem item2 = new MenuItem("Save MUP File");
-		MenuItem item3 = new MenuItem("Save MIDI FILE");
-		MenuItem item4 = new MenuItem("Close");
+		Menu menu1 = new Menu("File");
+		MenuItem item1_1 = new MenuItem("Read MUP File");
+		MenuItem item1_2 = new MenuItem("Save MUP File");
+		MenuItem item1_3 = new MenuItem("Save MIDI FILE");
+		MenuItem item1_4 = new MenuItem("Close");
 		MenuItem separator = new SeparatorMenuItem();
-
-		item1.setOnAction(new EventHandler<ActionEvent>() {
+		item1_1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.read();
 			}
 		});
-		item2.setOnAction(new EventHandler<ActionEvent>() {
+		item1_2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.save();
 			}
 		});
-		item3.setOnAction(new EventHandler<ActionEvent>() {
+		item1_3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.saveMidiFile();
 			}
 		});
-		item4.setOnAction(new EventHandler<ActionEvent>() {
+		item1_4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				Platform.exit();
 			}
 		});
+		menu1.getItems().addAll(item1_1, item1_2, item1_3, separator, item1_4);
+		getMenus().addAll(menu1);
 
-		menu.getItems().addAll(item1, item2, item3, separator, item4);
-		getMenus().addAll(menu);
+		Menu menu2 = new Menu("Dictionary");
+		MenuItem item2_1 = new MenuItem("Read Dictionary File");
+		MenuItem item2_2 = new MenuItem("Show Dictionary");
+		item2_1.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.readDictionaryFile();
+			}
+		});
+		item2_2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.showDictionary();
+			}
+		});
+		menu2.getItems().addAll(item2_1, item2_2);
+		getMenus().addAll(menu2);
 	}
 }

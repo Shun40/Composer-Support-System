@@ -206,6 +206,14 @@ public class MelodyAnalyzer {
 		melodyPatternDictionary.incPatternFrequency(index);
 	}
 
+	public void readDictionary(ArrayList<String> lines) {
+		melodyPatternDictionary.readDictionary(lines);
+	}
+
+	public MelodyPatternDictionary getMelodyPatternDictionary() {
+		return melodyPatternDictionary;
+	}
+
 	public class Similarity {
 		private double contextSimilarity;
 		private double wordSimilarity;

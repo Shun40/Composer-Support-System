@@ -17,6 +17,7 @@ import engine_yamashita.Melody;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
 import engine_yamashita.melody.MelodyAnalyzer;
+import engine_yamashita.melody.reference.MelodyPatternDictionary;
 import gui.Note;
 
 /**
@@ -177,6 +178,14 @@ public class UIController {
 		accompaniment.setDrumPart(accompanimentMaker.makeDrumPart());
 
 		return accompaniment;
+	}
+
+	public void readDictionary(ArrayList<String> lines) {
+		melodyAnalyzer.readDictionary(lines);
+	}
+
+	public MelodyPatternDictionary getMelodyPatternDictionary() {
+		return melodyAnalyzer.getMelodyPatternDictionary();
 	}
 
 	public Sequence getSequence() { return sequence; }

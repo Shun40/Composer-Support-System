@@ -1,14 +1,16 @@
 package engine_yamashita.melody.reference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MelodyPatternDictionary extends ArrayList<MelodyPatternDictionaryRecord> {
 	public MelodyPatternDictionary() {
 		super();
-		makeDictionary();
+		//makeDictionary();
 	}
 
 	public void makeDictionary() {
+		/*
 		// 「メルト」サビ8小節
 		MelodyPattern p1_1 = new MelodyPattern();
 		p1_1.add(1, 2, 0, 720);
@@ -284,9 +286,43 @@ public class MelodyPatternDictionary extends ArrayList<MelodyPatternDictionaryRe
 		add(new MelodyPatternDictionaryRecord(37, "初音ミク 『メルト』 サビ6小節目", p1_5, p1_6, 1));
 		add(new MelodyPatternDictionaryRecord(38, "初音ミク 『メルト』 サビ7小節目", p1_6, p1_7, 1));
 		add(new MelodyPatternDictionaryRecord(39, "初音ミク 『メルト』 サビ8小節目", p1_7, p1_8, 1));
+		*/
 	}
 
 	public void incPatternFrequency(int index) {
 		get(index).incFrequency();
+	}
+
+	public void readDictionary(ArrayList<String> lines) {
+		clear();
+		int index = 0;
+		HashMap<String, MelodyPattern> map = new HashMap<String, MelodyPattern>();
+		for(int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
+			String type = line.split(":")[0];
+			String data = line.split(":")[1];
+			switch(type) {
+			case "pattern":
+				map.put(data, new MelodyPattern());
+				break;
+			case "data":
+				String patternName = data.split(",")[0];
+				int variation = Integer.parseInt(data.split(",")[1]);
+				int difference = Integer.parseInt(data.split(",")[2]);
+				int position = Integer.parseInt(data.split(",")[3]);
+				int duration = Integer.parseInt(data.split(",")[4]);
+				map.get(patternName).add(variation, difference, position, duration);
+				break;
+			case "record":
+				String recordName = data.split(",")[0];
+				String transition = data.split(",")[1];
+				String contextName = transition.split("-")[0];
+				String wordName = transition.split("-")[1];
+				int frequency = Integer.parseInt(data.split(",")[2]);
+				add(new MelodyPatternDictionaryRecord(index, recordName, map.get(contextName), map.get(wordName), frequency));
+				index++;
+				break;
+			}
+		}
 	}
 }
