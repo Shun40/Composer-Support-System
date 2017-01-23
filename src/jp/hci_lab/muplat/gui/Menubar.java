@@ -29,12 +29,11 @@ public class Menubar extends MenuBar {
 	}
 
 	public void setupFileMenu() {
-		Menu menu1 = new Menu("File");
-		MenuItem item1_1 = new MenuItem("Read MUP File");
-		MenuItem item1_2 = new MenuItem("Save MUP File");
-		MenuItem item1_3 = new MenuItem("Save MIDI FILE");
-		MenuItem item1_4 = new MenuItem("Close");
-		MenuItem separator = new SeparatorMenuItem();
+		Menu menu1 = new Menu("ファイル");
+		MenuItem item1_1 = new MenuItem("MUPファイルを開く");
+		MenuItem item1_2 = new MenuItem("MUPファイルに保存");
+		MenuItem item1_3 = new MenuItem("MIDIファイルに保存");
+		MenuItem item1_4 = new MenuItem("終了");
 		item1_1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.read();
@@ -55,14 +54,14 @@ public class Menubar extends MenuBar {
 				Platform.exit();
 			}
 		});
-		menu1.getItems().addAll(item1_1, item1_2, item1_3, separator, item1_4);
+		menu1.getItems().addAll(item1_1, item1_2, item1_3, new SeparatorMenuItem(), item1_4);
 		getMenus().addAll(menu1);
 
-		Menu menu2 = new Menu("Dictionary");
-		MenuItem item2_1 = new MenuItem("Read Word Dictionary File");
-		MenuItem item2_2 = new MenuItem("Show Word Dictionary");
-		MenuItem item2_3 = new MenuItem("Read Phrase Dictionary File");
-		MenuItem item2_4 = new MenuItem("Show Phrase Dictionary");
+		Menu menu2 = new Menu("辞書");
+		MenuItem item2_1 = new MenuItem("単語辞書ファイルを開く");
+		MenuItem item2_2 = new MenuItem("単語辞書を表示");
+		MenuItem item2_3 = new MenuItem("例文辞書ファイルを開く");
+		MenuItem item2_4 = new MenuItem("例文辞書を表示");
 		item2_1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.readWordDictionaryFile();
@@ -83,7 +82,7 @@ public class Menubar extends MenuBar {
 				parent.showPhraseDictionary();
 			}
 		});
-		menu2.getItems().addAll(item2_1, item2_2, item2_3, item2_4);
+		menu2.getItems().addAll(item2_1, item2_2, new SeparatorMenuItem(), item2_3, item2_4);
 		getMenus().addAll(menu2);
 	}
 }

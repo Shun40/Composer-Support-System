@@ -11,7 +11,7 @@ public class PredictionButton extends Button {
 	private PatternArea parent;
 
 	public PredictionButton(int x, int y, PatternArea parent) {
-		super("Prediction");
+		super("予測変換");
 		this.parent = parent;
 		setupPoint(x, y);
 		setupEventListener();

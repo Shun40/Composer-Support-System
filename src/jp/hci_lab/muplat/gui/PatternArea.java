@@ -71,7 +71,7 @@ public class PatternArea extends Group {
 			lastDecidedName[n].setPrefWidth(TEXT_FIELD_WIDTH);
 			lastDecidedName[n].setPrefHeight(TEXT_FIELD_HEIGHT);
 			lastDecidedName[n].setDisable(true);
-			lastDecidedName[n].setPromptText("Last Decided Pattern");
+			lastDecidedName[n].setPromptText("最後に決定したパターン");
 			getChildren().add(lastDecidedName[n]);
 		}
 	}

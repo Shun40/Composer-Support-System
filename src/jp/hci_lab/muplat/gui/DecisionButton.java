@@ -8,7 +8,7 @@ public class DecisionButton extends Button {
 	private PatternArea parent;
 
 	public DecisionButton(int x, int y, PatternArea parent) {
-		super("Decision");
+		super("決定");
 		this.parent = parent;
 		setupPoint(x, y);
 		setupEventListener();

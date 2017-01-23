@@ -116,7 +116,7 @@ public class MainScene extends Scene {
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装
 	public void read() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Read");
+		fc.setTitle("MUPファイルを読み込む");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Muplat Files", "*.mup"),
 			new ExtensionFilter("All Files", "+.+")
@@ -152,7 +152,7 @@ public class MainScene extends Scene {
 		ArrayList<NoteBlock> noteBlocks = pianoroll.getNoteBlocks();
 
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Save");
+		fc.setTitle("MUPファイルに保存");
 		fc.setInitialFileName((new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".mup");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Muplat Files", "*.mup"),
@@ -183,7 +183,7 @@ public class MainScene extends Scene {
 		Sequence sequence = uiController.getSequence();
 
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Save");
+		fc.setTitle("MIDIファイルに保存");
 		fc.setInitialFileName((new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".mid");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("MIDI Files", "*.mid"),
@@ -201,7 +201,7 @@ public class MainScene extends Scene {
 
 	public void readWordDictionaryFile() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Read Word-Dictionary File");
+		fc.setTitle("単語辞書ファイルを読み込む");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Dictionary Files", "*.dic"),
 			new ExtensionFilter("All Files", "+.+")
@@ -221,12 +221,12 @@ public class MainScene extends Scene {
 				System.out.println(e);
 			}
 		}
-		uiController.readWordDictionary(lines);
+		if(!lines.isEmpty()) uiController.readWordDictionary(lines);
 	}
 
 	public void readPhraseDictionaryFile() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Read Phrase-Dictionary File");
+		fc.setTitle("例文辞書ファイルを読み込む");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Dictionary Files", "*.dic"),
 			new ExtensionFilter("All Files", "+.+")
@@ -246,7 +246,7 @@ public class MainScene extends Scene {
 				System.out.println(e);
 			}
 		}
-		uiController.readPhraseDictionary(lines);
+		if(!lines.isEmpty()) uiController.readPhraseDictionary(lines);
 	}
 
 	public void showWordDictionary() {
