@@ -8,10 +8,11 @@ public class PredictionPattern {
 	private Melody melody;
 
 	public PredictionPattern() {
-		melody = new Melody(-1, "", 0);
+		melody = new Melody(-1, "", "", 0);
 	}
 
 	public int getIndex() { return melody.getIndex(); }
+	public String getId() { return melody.getId(); }
 	public String getName() { return melody.getName(); }
 	public int getFrequency() { return melody.getFrequency(); }
 

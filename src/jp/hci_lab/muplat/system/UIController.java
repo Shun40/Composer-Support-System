@@ -17,7 +17,10 @@ import engine_yamashita.Melody;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
 import engine_yamashita.melody.MelodyAnalyzer;
-import engine_yamashita.melody.reference.MelodyPatternDictionary;
+import engine_yamashita.melody.reference.MelodyPattern;
+import engine_yamashita.melody.reference.PhraseDictionary;
+import engine_yamashita.melody.reference.WordDictionary;
+import gui.MainScene;
 import gui.Note;
 
 /**
@@ -30,9 +33,10 @@ public class UIController {
 	private Sequence sequence;
 	private HashMap<Object, ArrayList<MidiEvent>> note2events;
 
+	private MainScene mainScene;
 	private MelodyAnalyzer melodyAnalyzer;
 
-	public UIController() {
+	public UIController(MainScene mainScene) {
 		try {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
@@ -45,7 +49,8 @@ public class UIController {
 			e.printStackTrace();
 		}
 		note2events = new HashMap<Object, ArrayList<MidiEvent>>();
-		melodyAnalyzer = new MelodyAnalyzer();
+		this.mainScene = mainScene;
+		melodyAnalyzer = new MelodyAnalyzer(this);
 	}
 
 	public void setBpm(int bpm) {
@@ -166,10 +171,6 @@ public class UIController {
 		return predictionPatterns;
 	}
 
-	public void incPredictionPatternFrequency(int index) {
-		melodyAnalyzer.incMelodyPatternFrequency(index);
-	}
-
 	public Accompaniment makeAccompaniment(String chord) {
 		Accompaniment accompaniment = new Accompaniment();
 		AccompanimentMaker accompanimentMaker = new AccompanimentMaker();
@@ -180,12 +181,32 @@ public class UIController {
 		return accompaniment;
 	}
 
-	public void readDictionary(ArrayList<String> lines) {
-		melodyAnalyzer.readDictionary(lines);
+	public void incWordDictionaryFrequency(String wordId) {
+		melodyAnalyzer.incWordDictionaryFrequency(wordId);
 	}
 
-	public MelodyPatternDictionary getMelodyPatternDictionary() {
-		return melodyAnalyzer.getMelodyPatternDictionary();
+	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
+		melodyAnalyzer.incPhraseDictionaryFrequency(contextId, wordId);
+	}
+
+	public void readWordDictionary(ArrayList<String> lines) {
+		melodyAnalyzer.readWordDictionary(lines);
+	}
+
+	public void readPhraseDictionary(ArrayList<String> lines) {
+		melodyAnalyzer.readPhraseDictionary(lines);
+	}
+
+	public WordDictionary getWordDictionary() {
+		return melodyAnalyzer.getWordDictionary();
+	}
+
+	public PhraseDictionary getPhraseDictionary() {
+		return melodyAnalyzer.getPhraseDictionary();
+	}
+
+	public String getNewPhraseEntryName(MelodyPattern context, MelodyPattern word) {
+		return mainScene.getNewPhraseEntryName(context, word);
 	}
 
 	public Sequence getSequence() { return sequence; }

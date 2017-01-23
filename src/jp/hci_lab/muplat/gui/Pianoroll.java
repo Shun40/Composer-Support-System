@@ -261,8 +261,12 @@ public class Pianoroll extends Group {
 		return parent.prediction(predictionInformation);
 	}
 
-	public void incPredictionPatternFrequency(int index) {
-		parent.incPredictionPatternFrequency(index);
+	public void incWordDictionaryFrequency(String wordId) {
+		parent.incWordDictionaryFrequency(wordId);
+	}
+
+	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
+		parent.incPhraseDictionaryFrequency(contextId, wordId);
 	}
 
 	public void setPredictionPatternList(int targetMeasure) {

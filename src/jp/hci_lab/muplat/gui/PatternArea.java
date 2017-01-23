@@ -1,11 +1,13 @@
 package gui;
 
+import static gui.constants.PatternAreaConstants.*;
 import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
 import engine_yamashita.PredictionPattern;
 import javafx.scene.Group;
+import javafx.scene.control.TextField;
 
 /**
  * パターン予測変換の編集領域のクラス
@@ -15,6 +17,8 @@ public class PatternArea extends Group {
 	private PatternSelector[] patternSelectors;
 	private PredictionButton predictionButton;
 	private DecisionButton decisionButton;
+	private String[] lastDecidedId;
+	private TextField[] lastDecidedName;
 	private Pianoroll parent;
 
 	public PatternArea(int x, int y, Pianoroll parent) {
@@ -24,6 +28,8 @@ public class PatternArea extends Group {
 		setupPatternSelector();
 		setupPredictionButton();
 		setupDecisionButton();
+		setupLastDecidedId();
+		setupLastDecidedName();
 	}
 
 	public void setupPoint(int x, int y) {
@@ -49,9 +55,29 @@ public class PatternArea extends Group {
 		getChildren().add(decisionButton);
 	}
 
+	public void setupLastDecidedId() {
+		lastDecidedId = new String[parent.getMeasureCount()];
+		for(int n = 0; n < lastDecidedId.length; n++) {
+			lastDecidedId[n] = null;
+		}
+	}
+
+	public void setupLastDecidedName() {
+		lastDecidedName = new TextField[parent.getMeasureCount()];
+		for(int n = 0; n < lastDecidedName.length; n++) {
+			lastDecidedName[n] = new TextField("");
+			lastDecidedName[n].setLayoutX(0);
+			lastDecidedName[n].setLayoutY(436);
+			lastDecidedName[n].setPrefWidth(TEXT_FIELD_WIDTH);
+			lastDecidedName[n].setPrefHeight(TEXT_FIELD_HEIGHT);
+			lastDecidedName[n].setDisable(true);
+			lastDecidedName[n].setPromptText("Last Decided Pattern");
+			getChildren().add(lastDecidedName[n]);
+		}
+	}
+
 	public void prediction() {
 		int targetMeasure = parent.getPredictionTargetMeasure();
-		//patternSelector.getSelectionModel().clearSelection();
 		patternSelectors[targetMeasure - 1].getItems().clear(); // 一度リストの中身を空にする
 		ArrayList<PredictionPattern> patterns = parent.prediction();
 		for(PredictionPattern pattern : patterns) {
@@ -63,7 +89,20 @@ public class PatternArea extends Group {
 		int targetMeasure = parent.getPredictionTargetMeasure();
 		PredictionPattern pattern = patternSelectors[targetMeasure - 1].getSelectionModel().getSelectedItem();
 		if(pattern == null) return;
-		parent.incPredictionPatternFrequency(pattern.getMelody().getIndex());
+
+		String wordId = pattern.getId();
+		if(targetMeasure == 1) { // 単語辞書の頻度更新
+			parent.incWordDictionaryFrequency(wordId);
+		} else {
+			String contextId = lastDecidedId[targetMeasure - 1 - 1];
+			if(contextId == null) { // 単語辞書の頻度更新
+				parent.incWordDictionaryFrequency(wordId);
+			} else { // 例文辞書の頻度更新
+				parent.incPhraseDictionaryFrequency(contextId, wordId);
+			}
+		}
+		lastDecidedId[targetMeasure - 1] = wordId;
+		lastDecidedName[targetMeasure - 1].setText(pattern.getName());
 	}
 
 	public void arrange(PredictionPattern pattern) {
@@ -86,6 +125,10 @@ public class PatternArea extends Group {
 			getChildren().remove(patternSelectors[n]);
 		}
 		getChildren().add(patternSelectors[targetMeasure - 1]);
+		for(int n = 0; n < lastDecidedName.length; n++) {
+			getChildren().remove(lastDecidedName[n]);
+		}
+		getChildren().add(lastDecidedName[targetMeasure - 1]);
 	}
 
 	public int getTargetMeasure() {

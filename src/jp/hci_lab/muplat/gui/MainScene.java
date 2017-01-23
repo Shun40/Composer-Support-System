@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
@@ -17,7 +18,9 @@ import javax.sound.midi.Sequence;
 import engine_yamashita.Accompaniment;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
-import engine_yamashita.melody.reference.MelodyPatternDictionary;
+import engine_yamashita.melody.reference.MelodyPattern;
+import engine_yamashita.melody.reference.PhraseDictionary;
+import engine_yamashita.melody.reference.WordDictionary;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -27,6 +30,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -42,7 +46,7 @@ public class MainScene extends Scene {
 
 	public MainScene(Group root, int width, int height) {
 		super(root, width, height);
-		this.uiController = new UIController();
+		this.uiController = new UIController(this);
 		setupMenuBar();
 		setupPianoroll();
 	}
@@ -97,8 +101,12 @@ public class MainScene extends Scene {
 		return uiController.prediction(predictionInformation);
 	}
 
-	public void incPredictionPatternFrequency(int index) {
-		uiController.incPredictionPatternFrequency(index);
+	public void incWordDictionaryFrequency(String wordId) {
+		uiController.incWordDictionaryFrequency(wordId);
+	}
+
+	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
+		uiController.incPhraseDictionaryFrequency(contextId, wordId);
 	}
 
 	public Accompaniment makeAccompaniment(String chord) {
@@ -191,9 +199,9 @@ public class MainScene extends Scene {
 		}
 	}
 
-	public void readDictionaryFile() {
+	public void readWordDictionaryFile() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("Read Dictionary File");
+		fc.setTitle("Read Word-Dictionary File");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Dictionary Files", "*.dic"),
 			new ExtensionFilter("All Files", "+.+")
@@ -213,51 +221,152 @@ public class MainScene extends Scene {
 				System.out.println(e);
 			}
 		}
-		uiController.readDictionary(lines);
+		uiController.readWordDictionary(lines);
 	}
 
-	public void showDictionary() {
-		MelodyPatternDictionary melodyPatternDicitonary = uiController.getMelodyPatternDictionary();
+	public void readPhraseDictionaryFile() {
+		final FileChooser fc = new FileChooser();
+		fc.setTitle("Read Phrase-Dictionary File");
+		fc.getExtensionFilters().addAll(
+			new ExtensionFilter("Dictionary Files", "*.dic"),
+			new ExtensionFilter("All Files", "+.+")
+		);
+		ArrayList<String> lines = new ArrayList<String>();
+		File readFile = fc.showOpenDialog(null);
+		if(readFile != null) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(readFile));
+				String line = br.readLine();
+				while(line != null) {
+					lines.add(line);
+					line = br.readLine();
+				}
+				br.close();
+			} catch(Exception e) {
+				System.out.println(e);
+			}
+		}
+		uiController.readPhraseDictionary(lines);
+	}
+
+	public void showWordDictionary() {
+		WordDictionary wordDictionary = uiController.getWordDictionary();
 		Dialog dialog = new Dialog<>();
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-		dialog.setTitle("辞書内容");
-		dialog.setHeaderText("辞書に登録されているパターンの一覧です.");
-		dialog.getDialogPane().setPrefWidth(440);
+		dialog.setTitle("単語辞書内容");
+		dialog.setHeaderText("単語辞書に登録されているパターンの一覧です.");
+		dialog.getDialogPane().setPrefWidth(800);
 		dialog.setResizable(true);
 
 		// テーブル作成
-		TableView<Record> table = new TableView<>();
-		TableColumn<Record, String> index = new TableColumn<Record, String>("インデックス");
+		TableView<WordEntry> table = new TableView<>();
+		TableColumn<WordEntry, String> index = new TableColumn<WordEntry, String>("インデックス");
 		index.setCellValueFactory(new PropertyValueFactory<>("index"));
-		TableColumn<Record, String> name = new TableColumn<Record, String>("パターン名");
+		TableColumn<WordEntry, String> name = new TableColumn<WordEntry, String>("パターン名");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		TableColumn<Record, String> frequency = new TableColumn<Record, String>("選択回数");
+		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("ワード");
+		word.setCellValueFactory(new PropertyValueFactory<>("word"));
+		TableColumn<WordEntry, String> frequency = new TableColumn<WordEntry, String>("選択回数");
 		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
-		table.getColumns().setAll(index, name, frequency);
+		table.getColumns().setAll(index, name, word, frequency);
 
-		ObservableList<Record> records = FXCollections.observableArrayList();
-		for(int i = 0; i < melodyPatternDicitonary.size(); i++) {
-			String _index = Integer.toString(melodyPatternDicitonary.get(i).getIndex());
-			String _name = melodyPatternDicitonary.get(i).getName();
-			String _frequency = Integer.toString(melodyPatternDicitonary.get(i).getFrequency() - 1);
-			records.add(new Record(_index, _name, _frequency));
+		ObservableList<WordEntry> records = FXCollections.observableArrayList();
+		for(int i = 0; i < wordDictionary.size(); i++) {
+			String _index = Integer.toString(wordDictionary.get(i).getIndex());
+			String _name = wordDictionary.get(i).getName();
+			String _word = wordDictionary.get(i).getWord().getId();
+			String _frequency = Integer.toString(wordDictionary.get(i).getFrequency() - 1);
+			records.add(new WordEntry(_index, _name, _word, _frequency));
 		}
 		table.setItems(records);
 		dialog.getDialogPane().setContent(table);
 		dialog.showAndWait();
 	}
 
-	public class Record {
+	public void showPhraseDictionary() {
+		PhraseDictionary phraseDictionary = uiController.getPhraseDictionary();
+		Dialog dialog = new Dialog<>();
+		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+		dialog.setTitle("例文辞書内容");
+		dialog.setHeaderText("例文辞書に登録されているパターンの一覧です.");
+		dialog.getDialogPane().setPrefWidth(800);
+		dialog.setResizable(true);
+
+		// テーブル作成
+		TableView<PhraseEntry> table = new TableView<>();
+		TableColumn<PhraseEntry, String> index = new TableColumn<PhraseEntry, String>("インデックス");
+		index.setCellValueFactory(new PropertyValueFactory<>("index"));
+		TableColumn<PhraseEntry, String> name = new TableColumn<PhraseEntry, String>("パターン名");
+		name.setCellValueFactory(new PropertyValueFactory<>("name"));
+		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("コンテクスト");
+		context.setCellValueFactory(new PropertyValueFactory<>("context"));
+		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("ワード");
+		word.setCellValueFactory(new PropertyValueFactory<>("word"));
+		TableColumn<PhraseEntry, String> frequency = new TableColumn<PhraseEntry, String>("選択回数");
+		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
+		table.getColumns().setAll(index, name, context, word, frequency);
+
+		ObservableList<PhraseEntry> records = FXCollections.observableArrayList();
+		for(int i = 0; i < phraseDictionary.size(); i++) {
+			String _index = Integer.toString(phraseDictionary.get(i).getIndex());
+			String _name = phraseDictionary.get(i).getName();
+			String _context = phraseDictionary.get(i).getContext().getId();
+			String _word = phraseDictionary.get(i).getWord().getId();
+			String _frequency = Integer.toString(phraseDictionary.get(i).getFrequency() - 1);
+			records.add(new PhraseEntry(_index, _name, _context, _word, _frequency));
+		}
+		table.setItems(records);
+		dialog.getDialogPane().setContent(table);
+		dialog.showAndWait();
+	}
+
+	public String getNewPhraseEntryName(MelodyPattern context, MelodyPattern word) {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("新しい例文辞書エントリの登録");
+		dialog.setHeaderText("新しい例文辞書エントリの名前を入力して下さい.");
+		dialog.setContentText("コンテクスト: " + context.getId() + "\n" + "ワード: " + word.getId());
+		Optional<String> name = dialog.showAndWait();
+		if(name.isPresent()){
+			return name.get();
+		} else {
+			return context.getId() + "-" + word.getId();
+		}
+	}
+
+	public class WordEntry {
 		private final String index;
 		private final String name;
+		private final String word;
 		private final String frequency;
-		public Record(String index, String name, String frequency) {
+		public WordEntry(String index, String name, String word, String frequency) {
 			this.index = index;
 			this.name = name;
+			this.word = word;
 			this.frequency = frequency;
 		}
 		public String getIndex() { return index; }
 		public String getName() { return name; }
+		public String getWord() { return word; }
+		public String getFrequency() { return frequency; }
+	}
+
+	public class PhraseEntry {
+		private final String index;
+		private final String name;
+		private final String context;
+		private final String word;
+		private final String frequency;
+		public PhraseEntry(String index, String name, String context, String word, String frequency) {
+			this.index = index;
+			this.name = name;
+			this.context = context;
+			this.word = word;
+			this.frequency = frequency;
+		}
+		public String getIndex() { return index; }
+		public String getName() { return name; }
+		public String getContext() { return context; }
+		public String getWord() { return word; }
 		public String getFrequency() { return frequency; }
 	}
 }

@@ -59,19 +59,31 @@ public class Menubar extends MenuBar {
 		getMenus().addAll(menu1);
 
 		Menu menu2 = new Menu("Dictionary");
-		MenuItem item2_1 = new MenuItem("Read Dictionary File");
-		MenuItem item2_2 = new MenuItem("Show Dictionary");
+		MenuItem item2_1 = new MenuItem("Read Word Dictionary File");
+		MenuItem item2_2 = new MenuItem("Show Word Dictionary");
+		MenuItem item2_3 = new MenuItem("Read Phrase Dictionary File");
+		MenuItem item2_4 = new MenuItem("Show Phrase Dictionary");
 		item2_1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				parent.readDictionaryFile();
+				parent.readWordDictionaryFile();
 			}
 		});
 		item2_2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				parent.showDictionary();
+				parent.showWordDictionary();
 			}
 		});
-		menu2.getItems().addAll(item2_1, item2_2);
+		item2_3.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.readPhraseDictionaryFile();
+			}
+		});
+		item2_4.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.showPhraseDictionary();
+			}
+		});
+		menu2.getItems().addAll(item2_1, item2_2, item2_3, item2_4);
 		getMenus().addAll(menu2);
 	}
 }

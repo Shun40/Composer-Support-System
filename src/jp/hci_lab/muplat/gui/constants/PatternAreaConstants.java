@@ -9,5 +9,8 @@ public class PatternAreaConstants {
 
 	// PatternSelector
 	public static final int PATTERN_SELECTOR_WIDTH = 300;
-	public static final int PATTERN_SELECTOR_HEIGHT = 450;
+	public static final int PATTERN_SELECTOR_HEIGHT = 400;
+	// TextField
+	public static final int TEXT_FIELD_WIDTH = 300;
+	public static final int TEXT_FIELD_HEIGHT = 24;
 }
