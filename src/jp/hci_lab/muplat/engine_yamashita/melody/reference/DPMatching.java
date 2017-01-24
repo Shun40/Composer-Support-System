@@ -19,9 +19,11 @@ public class DPMatching {
 			for(int j = 0; j < patternSize; j++) {
 				MelodyPatternData pattern_j = pattern.get(j);
 				// 音高パターン要素のユークリッド距離を計算
-				double diffVariation = Math.pow(target_i.getVariation() - pattern_j.getVariation(), 2);
-				double diffDifference = Math.pow(target_i.getDifference() - pattern_j.getDifference(), 2);
-				miss[i][j] = Math.sqrt(diffVariation + diffDifference);
+				//double diffVariation = Math.pow(target_i.getVariation() - pattern_j.getVariation(), 2);
+				//double diffDifference = Math.pow(target_i.getDifference() - pattern_j.getDifference(), 2);
+				//miss[i][j] = Math.sqrt(diffVariation + diffDifference);
+				double diff = Math.pow(target_i.getVariation() * target_i.getDifference() - pattern_j.getVariation() * pattern_j.getDifference(), 2);
+				miss[i][j] = Math.sqrt(diff);
 			}
 		}
 
