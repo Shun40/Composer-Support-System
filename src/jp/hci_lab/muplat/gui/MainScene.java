@@ -85,8 +85,8 @@ public class MainScene extends Scene {
 		uiController.setTrackSolo(track, solo);
 	}
 
-	public void play() {
-		uiController.play();
+	public void play(int startMeasure) {
+		uiController.play(startMeasure);
 	}
 
 	public void stop() {
@@ -201,7 +201,7 @@ public class MainScene extends Scene {
 
 	public void readWordDictionaryFile() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("単語辞書ファイルを読み込む");
+		fc.setTitle("単語辞書ファイルを開く");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Dictionary Files", "*.dic"),
 			new ExtensionFilter("All Files", "+.+")
@@ -226,7 +226,7 @@ public class MainScene extends Scene {
 
 	public void readPhraseDictionaryFile() {
 		final FileChooser fc = new FileChooser();
-		fc.setTitle("例文辞書ファイルを読み込む");
+		fc.setTitle("例文辞書ファイルを開く");
 		fc.getExtensionFilters().addAll(
 			new ExtensionFilter("Dictionary Files", "*.dic"),
 			new ExtensionFilter("All Files", "+.+")
@@ -262,11 +262,11 @@ public class MainScene extends Scene {
 		TableView<WordEntry> table = new TableView<>();
 		TableColumn<WordEntry, String> index = new TableColumn<WordEntry, String>("インデックス");
 		index.setCellValueFactory(new PropertyValueFactory<>("index"));
-		TableColumn<WordEntry, String> name = new TableColumn<WordEntry, String>("パターン名");
+		TableColumn<WordEntry, String> name = new TableColumn<WordEntry, String>("エントリ名");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("ワード");
+		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("旋律概形");
 		word.setCellValueFactory(new PropertyValueFactory<>("word"));
-		TableColumn<WordEntry, String> frequency = new TableColumn<WordEntry, String>("選択回数");
+		TableColumn<WordEntry, String> frequency = new TableColumn<WordEntry, String>("選択頻度");
 		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
 		table.getColumns().setAll(index, name, word, frequency);
 
@@ -296,13 +296,13 @@ public class MainScene extends Scene {
 		TableView<PhraseEntry> table = new TableView<>();
 		TableColumn<PhraseEntry, String> index = new TableColumn<PhraseEntry, String>("インデックス");
 		index.setCellValueFactory(new PropertyValueFactory<>("index"));
-		TableColumn<PhraseEntry, String> name = new TableColumn<PhraseEntry, String>("パターン名");
+		TableColumn<PhraseEntry, String> name = new TableColumn<PhraseEntry, String>("エントリ名");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("コンテクスト");
+		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("先行旋律概形");
 		context.setCellValueFactory(new PropertyValueFactory<>("context"));
-		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("ワード");
+		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("旋律概形");
 		word.setCellValueFactory(new PropertyValueFactory<>("word"));
-		TableColumn<PhraseEntry, String> frequency = new TableColumn<PhraseEntry, String>("選択回数");
+		TableColumn<PhraseEntry, String> frequency = new TableColumn<PhraseEntry, String>("選択頻度");
 		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
 		table.getColumns().setAll(index, name, context, word, frequency);
 
@@ -324,7 +324,7 @@ public class MainScene extends Scene {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("新しい例文辞書エントリの登録");
 		dialog.setHeaderText("新しい例文辞書エントリの名前を入力して下さい.");
-		dialog.setContentText("コンテクスト: " + context.getId() + "\n" + "ワード: " + word.getId());
+		dialog.setContentText("先行旋律概形: " + context.getId() + "\n" + "旋律概形: " + word.getId());
 		Optional<String> name = dialog.showAndWait();
 		if(name.isPresent()){
 			return name.get();

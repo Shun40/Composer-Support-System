@@ -166,7 +166,7 @@ public class NoteBlock extends Rectangle {
 			setOpacity(1.0);
 			setDisable(false);
 		} else {
-			setOpacity(0.5);
+			setOpacity(0.45);
 			setDisable(true);
 		}
 	}

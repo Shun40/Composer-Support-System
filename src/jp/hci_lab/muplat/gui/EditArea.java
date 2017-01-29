@@ -289,7 +289,7 @@ public class EditArea extends Group {
 		}
 	}
 
-	public void setupBeforePlay() {
+	public void setupBeforePlay(int startMeasure) {
 		for(NoteBlock noteBlock : noteBlocks) {
 			noteBlock.setDisable(true);
 		}
@@ -298,10 +298,10 @@ public class EditArea extends Group {
 				element.setDisable(true);
 			}
 		}
-		playLine.setLayoutX(0);
+		playLine.setLayoutX(MEASURE_WIDTH * (startMeasure - 1));
 	}
 
-	public void setupAfterPlay() {
+	public void setupAfterPlay(int startMeasure) {
 		for(NoteBlock noteBlock : noteBlocks) {
 			noteBlock.setDisable(false);
 		}
@@ -310,28 +310,33 @@ public class EditArea extends Group {
 				element.setDisable(false);
 			}
 		}
-		playLine.setLayoutX(0);
+		playLine.setLayoutX(MEASURE_WIDTH * (startMeasure - 1));
 	}
 
-	public void playAnimation(int bpm) {
+	public void playAnimation(int bpm, int startMeasure) {
 		float secPerBeat = 60.f / bpm;
 		float secPerMeasure = secPerBeat * 4;
-		float playTimeSec = secPerMeasure * measureCount;
+		float playTimeSec = secPerMeasure * (measureCount - (startMeasure - 1));
 		playTimeline = new Timeline();
 		EventHandler<ActionEvent> onFinished = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				parent.stop();
 			}
 		};
-		KeyValue kvStart = new KeyValue(playLine.layoutXProperty(), 0);
+		KeyValue kvStart = new KeyValue(playLine.layoutXProperty(), MEASURE_WIDTH * (startMeasure - 1)); // 再生線の始点
 		KeyFrame kfStart = new KeyFrame(Duration.ZERO, kvStart);
-		KeyValue kvEnd = new KeyValue(playLine.layoutXProperty(), MEASURE_WIDTH * measureCount);
+		KeyValue kvEnd = new KeyValue(playLine.layoutXProperty(), MEASURE_WIDTH * measureCount); // 再生線の終点
 		KeyFrame kfEnd = new KeyFrame(Duration.millis(playTimeSec * 1000), onFinished, kvEnd);
 		KeyValue[] kvMeasureChange = new KeyValue[measureCount / SHOW_MEASURE_COUNT - 1];
 		KeyFrame[] kfMeasureChange = new KeyFrame[measureCount / SHOW_MEASURE_COUNT - 1];
 		for(int n = 0; n < kfMeasureChange.length; n++) {
 			kvMeasureChange[n] = new KeyValue(parent.getHScrollBarValueProperty(), (100.0 / (measureCount - SHOW_MEASURE_COUNT)) * 4 * (n + 1), Interpolator.DISCRETE);
-			kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 4 * (n + 1) * 1000), kvMeasureChange[n]);
+			//kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 4 * (n + 1) * 1000), kvMeasureChange[n]);
+			// とりあえず実験に間に合わせるためのクソ実装なので後で見直すこと
+			if(startMeasure == 1 || startMeasure == 5) kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 4 * (n + 1) * 1000), kvMeasureChange[n]);
+			if(startMeasure == 2 || startMeasure == 6) kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 3 * (n + 1) * 1000), kvMeasureChange[n]);
+			if(startMeasure == 3 || startMeasure == 7) kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 2 * (n + 1) * 1000), kvMeasureChange[n]);
+			if(startMeasure == 4 || startMeasure == 8) kfMeasureChange[n] = new KeyFrame(Duration.millis(secPerMeasure * 1 * (n + 1) * 1000), kvMeasureChange[n]);
 			playTimeline.getKeyFrames().add(kfMeasureChange[n]);
 		}
 		playTimeline.getKeyFrames().add(kfStart);
@@ -343,6 +348,10 @@ public class EditArea extends Group {
 
 	public void stop() {
 		playTimeline.stop();
+	}
+
+	public void setPlayLine(int startMeasure) {
+		playLine.setLayoutX(MEASURE_WIDTH * (startMeasure - 1));
 	}
 
 	public int getCurrentTrack() { return parent.getCurrentTrack(); }

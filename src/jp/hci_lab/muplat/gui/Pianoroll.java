@@ -180,9 +180,9 @@ public class Pianoroll extends Group {
 
 		// エンジンへの再生指示
 		parent.setBpm(bpm);
-		parent.play();
+		parent.play(getPredictionTargetMeasure());
 
-		editArea.playAnimation(bpm);
+		editArea.playAnimation(bpm, getPredictionTargetMeasure());
 	}
 
 	public void setupBeforePlay() {
@@ -190,8 +190,9 @@ public class Pianoroll extends Group {
 		bpmLabel.setDisable(true);
 		stopButton.setDisable(false);
 		playButton.setDisable(true);
-		editArea.setupBeforePlay();
-		hScrollBar.setValue(0.0);
+		editArea.setupBeforePlay(getPredictionTargetMeasure());
+		if(getPredictionTargetMeasure() <= 4) hScrollBar.setValue(0.0);
+		if(getPredictionTargetMeasure() >= 5) hScrollBar.setValue(100.0);
 	}
 
 	public void setupAfterPlay() {
@@ -199,9 +200,10 @@ public class Pianoroll extends Group {
 		bpmLabel.setDisable(false);
 		stopButton.setDisable(true);
 		playButton.setDisable(false);
-		editArea.setupAfterPlay();
+		editArea.setupAfterPlay(getPredictionTargetMeasure());
 		editArea.changeCurrentTrack(currentTrack);
-		hScrollBar.setValue(0.0);
+		if(getPredictionTargetMeasure() <= 4) hScrollBar.setValue(0.0);
+		if(getPredictionTargetMeasure() >= 5) hScrollBar.setValue(100.0);
 	}
 
 	public void putNote(int pitch, int position, int duration) {
@@ -271,6 +273,10 @@ public class Pianoroll extends Group {
 
 	public void setPredictionPatternList(int targetMeasure) {
 		patternArea.setPredictionPatternList(targetMeasure);
+	}
+
+	public void setPlayLine(int targetMeasure) {
+		editArea.setPlayLine(targetMeasure);
 	}
 
 	public void makeAccompaniment(String chord, int measure, int index) {

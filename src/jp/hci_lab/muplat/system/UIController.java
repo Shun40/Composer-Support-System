@@ -137,7 +137,8 @@ public class UIController {
 		sequencer.setTrackSolo(track - 1, solo);
 	}
 
-	public void play() {
+	public void play(int startMeasure) {
+		sequencer.setTickPosition((long)(sequence.getResolution() * 4) * (startMeasure - 1));
 		try {
 			sequencer.start();
 		} catch(Exception e) {
