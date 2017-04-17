@@ -1,54 +1,25 @@
-# muplat
+# Composer Support System
+初心者向けの作曲支援システムです。ユーザが途中までメロディを作ると、システムがその先に続くメロディ候補を複数提示し、ユーザのメロディ発想を支援します。
 
-HCI Lab Music Platform
+### 使い方
+1. ピアノロール上部のプルダウンからコード（和音）を指定します。
+    + コードは2拍単位で指定出来ます。
+    + コードを指定すると、ピアノ、ベース、ドラムによる伴奏が自動で付与されます。
+2. ピアノロール上にメロディのノートを置きます。
+    + 左クリックでノートを配置。
+    + 右クリックでノートを削除。
+    + ドラッグ操作でノートの移動と伸縮。
+3. メロディ候補を提示してもらう。
+    + メロディ候補を提示してほしい小節のラジオボタンを押します。小節が水色になると、その小節がメロディ候補提示の対象になります。
+    + 画面右側の予測ボタンを押すと、メロディ候補の一覧が表示されます。
+    + メロディ候補の名前をクリックすると、そのメロディのノートがピアノロール上に置かれます。
+    + 気に入ったメロディ候補が見つかったら、画面右側の決定ボタンを押します。
+4. 2.と3.を繰り返し、曲を作っていきます。
 
-### 備考
-sandboxフォルダはgit/githubの練習用です。
+### 仕組み
+システムは内部に「辞書」と呼ばれるデータベースを持っています。辞書には既存楽曲のメロディのペア等が登録されています。システムは辞書に登録されたメロディと、ユーザが作ったメロディとのマッチングをとり、一致度に応じてメロディ候補を生成します。  
+より詳しく知りたい場合は以下のプレゼンテーション資料もご参照下さい。  
+<https://www.slideshare.net/Shun_40/ss-72730215>
 
----
-
-### DAWエンジン インタフェース
-
-> package jp.hci_lab.muplat;  
-> DAW daw = new DAW();
-  
-
-#### daw
-DAWエンジン全体
-- SetBPM(int bpm)
-- NewProject()
-- OpenProject(String filename)  
-現状は.MIDファイルが読み込める。（いずれ付加的情報も読むようにするかも）
-- SaveProject(String filename)  
-現状は.MIDファイルが書き込める。
-- CloseProject()
-
-#### daw.controller
-再生、録音操作関係
-- Start()
-- Stop()
-- Pause()
-- Restart()
-
-#### daw.track[]
-DAWのトラックに相当するクラス(デフォルトで16トラック)
-- void NoteOn(int note_no, int velocity)  
-即時発音。シーケンスとして配置する場合はdaw.score.AddNote()を使う。
-- void NoteOff(int note_no)  
-即時発音停止。
-- void SetInstrument(int n)
-音色の選択
-- List<String> GetInstrumentList()
-音色名の一覧取得
-
-#### daw.score
-楽曲データ関係。MIDIデータを少し抽象化してアクセスしやすくする（予定）
-- SetTrack(int track_no)
-- AddNote(int position, int note_no, int duration)  
-シーケンスの指定位置に発音イベントを配置する
-
-#### daw.config
-楽曲に依存しないDAW全体の設定関係
--  List<String> GetMidiDeviceNameList()  
-MIDIデバイス名の一覧表示
-
+### 実行環境
+本システムは全てJavaで実装されています。本システムを実行するにはJava 8以上のバージョンを使用することをおすすめします。
