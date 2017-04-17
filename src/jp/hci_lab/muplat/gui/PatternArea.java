@@ -51,7 +51,7 @@ public class PatternArea extends Group {
 	}
 
 	public void setupDecisionButton() {
-		decisionButton = new DecisionButton(80, 0, this);
+		decisionButton = new DecisionButton(152, 0, this);
 		getChildren().add(decisionButton);
 	}
 

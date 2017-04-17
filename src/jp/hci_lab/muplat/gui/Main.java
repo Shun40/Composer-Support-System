@@ -20,7 +20,7 @@ public class Main extends Application {
 		Group root = new Group();
 		scene = new MainScene(root, CLIENT_AREA_WIDTH + WINDOW_OFFSET_WIDTH, CLIENT_AREA_HEIGHT + WINDOW_OFFSET_HEIGHT);
 
-		stage.setTitle("muplat");
+		stage.setTitle("");
 		stage.setResizable(false);
 		stage.setOnCloseRequest(req -> close());
 		stage.setScene(scene);

@@ -106,7 +106,7 @@ public class MelodyAnalyzer {
 			for(int m = 0; m < melodyLabels.size(); m++) {
 				int index = wordDictionary.get(rank[m]).getIndex();
 				String id = wordDictionary.get(rank[m]).getWord().getId();
-				String name = wordDictionary.get(rank[m]).getName() + " (" + (wordDictionary.get(rank[m]).getFrequency() - 1) + "回)";
+				String name = wordDictionary.get(rank[m]).getName();
 				int frequency = wordDictionary.get(rank[m]).getFrequency();
 				Melody melody = new Melody(index, id, name, frequency);
 				for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める

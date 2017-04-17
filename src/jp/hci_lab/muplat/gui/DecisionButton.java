@@ -10,6 +10,7 @@ public class DecisionButton extends Button {
 	public DecisionButton(int x, int y, PatternArea parent) {
 		super("決定");
 		this.parent = parent;
+		setPrefWidth(148);
 		setupPoint(x, y);
 		setupEventListener();
 	}

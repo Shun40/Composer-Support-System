@@ -49,6 +49,8 @@ public class MainScene extends Scene {
 		this.uiController = new UIController(this);
 		setupMenuBar();
 		setupPianoroll();
+		readWordDictionaryFile();
+		readPhraseDictionaryFile();
 	}
 
 	public void setupMenuBar() {
@@ -207,7 +209,8 @@ public class MainScene extends Scene {
 			new ExtensionFilter("All Files", "+.+")
 		);
 		ArrayList<String> lines = new ArrayList<String>();
-		File readFile = fc.showOpenDialog(null);
+		//File readFile = fc.showOpenDialog(null);
+		File readFile = new File("./word.dic");
 		if(readFile != null) {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(readFile));
@@ -232,7 +235,8 @@ public class MainScene extends Scene {
 			new ExtensionFilter("All Files", "+.+")
 		);
 		ArrayList<String> lines = new ArrayList<String>();
-		File readFile = fc.showOpenDialog(null);
+		//File readFile = fc.showOpenDialog(null);
+		File readFile = new File("./phrase.dic");
 		if(readFile != null) {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(readFile));
@@ -254,7 +258,7 @@ public class MainScene extends Scene {
 		Dialog dialog = new Dialog<>();
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 		dialog.setTitle("単語辞書内容");
-		dialog.setHeaderText("単語辞書に登録されているパターンの一覧です.");
+		dialog.setHeaderText("単語辞書に登録されているエントリの一覧です.");
 		dialog.getDialogPane().setPrefWidth(800);
 		dialog.setResizable(true);
 
@@ -264,7 +268,7 @@ public class MainScene extends Scene {
 		index.setCellValueFactory(new PropertyValueFactory<>("index"));
 		TableColumn<WordEntry, String> name = new TableColumn<WordEntry, String>("エントリ名");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("旋律概形");
+		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("相対メロディ");
 		word.setCellValueFactory(new PropertyValueFactory<>("word"));
 		TableColumn<WordEntry, String> frequency = new TableColumn<WordEntry, String>("選択頻度");
 		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
@@ -288,7 +292,7 @@ public class MainScene extends Scene {
 		Dialog dialog = new Dialog<>();
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 		dialog.setTitle("例文辞書内容");
-		dialog.setHeaderText("例文辞書に登録されているパターンの一覧です.");
+		dialog.setHeaderText("例文辞書に登録されているエントリの一覧です.");
 		dialog.getDialogPane().setPrefWidth(800);
 		dialog.setResizable(true);
 
@@ -298,9 +302,9 @@ public class MainScene extends Scene {
 		index.setCellValueFactory(new PropertyValueFactory<>("index"));
 		TableColumn<PhraseEntry, String> name = new TableColumn<PhraseEntry, String>("エントリ名");
 		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("先行旋律概形");
+		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("先行相対メロディ");
 		context.setCellValueFactory(new PropertyValueFactory<>("context"));
-		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("旋律概形");
+		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("相対メロディ");
 		word.setCellValueFactory(new PropertyValueFactory<>("word"));
 		TableColumn<PhraseEntry, String> frequency = new TableColumn<PhraseEntry, String>("選択頻度");
 		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
@@ -324,10 +328,11 @@ public class MainScene extends Scene {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("新しい例文辞書エントリの登録");
 		dialog.setHeaderText("新しい例文辞書エントリの名前を入力して下さい.");
-		dialog.setContentText("先行旋律概形: " + context.getId() + "\n" + "旋律概形: " + word.getId());
+		dialog.setContentText("先行相対メロディ: " + context.getId() + "\n" + "相対メロディ: " + word.getId());
 		Optional<String> name = dialog.showAndWait();
 		if(name.isPresent()){
-			return name.get();
+			if(name.get().isEmpty()) return context.getId() + "-" + word.getId();
+			else return name.get();
 		} else {
 			return context.getId() + "-" + word.getId();
 		}
