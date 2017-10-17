@@ -85,6 +85,14 @@ public class UniversalConstants {
 		RHYTHM // リズムパターン
 	};
 
+	public static enum MelodyStructureType {
+		ABAB, // A-B-A'-B'
+		AABB, // A-A'-B-B'
+		AABC, // A-A'-B-C
+		ABCC, // A-B-C-C'
+		ABCD  // A-B-C-D
+	};
+
 	public static final int PPQ = 480; // 4分音符のTick数
 	public static final int DEFAULT_BPM = 120; // BPM値(デフォルト値)
 	public static final int DEFAULT_MEASURE = 8; // 小節数

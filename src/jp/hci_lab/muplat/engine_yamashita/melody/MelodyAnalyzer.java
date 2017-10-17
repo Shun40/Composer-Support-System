@@ -16,6 +16,7 @@ import gui.ChordPair;
 import gui.Note;
 import gui.constants.UniversalConstants.Algorithm;
 import gui.constants.UniversalConstants.DictionaryType;
+import gui.constants.UniversalConstants.MelodyStructureType;
 import gui.constants.UniversalConstants.SimilarityType;
 import system.UIController;
 
@@ -65,7 +66,7 @@ public class MelodyAnalyzer {
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
-			msRhythmSimilarities = calcMsSimilarities(SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
 
 			// ソート
 			for(int m = 0; m < wordDictionary.size(); m++) {
@@ -148,7 +149,7 @@ public class MelodyAnalyzer {
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
-			msRhythmSimilarities = calcMsSimilarities(SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
 
 			// ソート
 			for(int m = 0; m < phraseDictionary.size(); m++) {
@@ -288,13 +289,47 @@ public class MelodyAnalyzer {
 		return similarities;
 	}
 
-	private Similarity[] calcMsSimilarities(SimilarityType similarityType, MelodyPattern previous, MelodyPattern current, int targetMeasure, ArrayList<Note> melodyNotes) {
+	private Similarity[] calcMsSimilarities(MelodyStructureType melodyStructureType, SimilarityType similarityType, MelodyPattern previous, MelodyPattern current, int targetMeasure, ArrayList<Note> melodyNotes) {
 		Similarity[] similarities = new Similarity[wordDictionary.size()];
-		MelodyPattern target, pattern;
+		MelodyPattern reference = null, target, pattern;
 		double similarity;
-		if(targetMeasure == 3 || targetMeasure == 4) {
-			// (targetMeasure - 2)小節目のメロディ情報を抽出
-			MelodyPattern reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 3, melodyNotes)), getInMeasureNotes(targetMeasure - 2, melodyNotes));
+
+		switch(melodyStructureType) {
+		case ABAB:
+			if(targetMeasure >= 3) {
+				// (targetMeasure - 2)小節目のメロディ情報を抽出
+				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 3, melodyNotes)), getInMeasureNotes(targetMeasure - 2, melodyNotes));
+			}
+			break;
+		case AABB:
+			if(targetMeasure == 2 || targetMeasure == 4) {
+				// (targetMeasure - 1)小節目のメロディ情報を抽出
+				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 2, melodyNotes)), getInMeasureNotes(targetMeasure - 1, melodyNotes));
+			}
+			break;
+		case AABC:
+			if(targetMeasure == 2) {
+				// (targetMeasure - 1)小節目のメロディ情報を抽出
+				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 2, melodyNotes)), getInMeasureNotes(targetMeasure - 1, melodyNotes));
+			}
+			break;
+		case ABCC:
+			if(targetMeasure == 4) {
+				// (targetMeasure - 1)小節目のメロディ情報を抽出
+				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 2, melodyNotes)), getInMeasureNotes(targetMeasure - 1, melodyNotes));
+			}
+			break;
+		case ABCD:
+			break;
+		default:
+			break;
+		}
+
+		if(reference == null) {
+			for(int n = 0; n < similarities.length; n++) {
+				similarities[n] = new Similarity(0.0, 0.0);
+			}
+		} else {
 			for(int n = 0; n < similarities.length; n++) {
 				target = reference;
 				pattern = wordDictionary.get(n).getWord();
@@ -311,11 +346,8 @@ public class MelodyAnalyzer {
 				}
 				similarities[n] = new Similarity(0.0, similarity);
 			}
-		} else {
-			for(int n = 0; n < similarities.length; n++) {
-				similarities[n] = new Similarity(0.0, 0.0);
-			}
 		}
+
 		return similarities;
 	}
 
