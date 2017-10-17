@@ -1,6 +1,7 @@
 package gui;
 import static gui.constants.MenubarConstants.*;
 
+import gui.constants.UniversalConstants.Algorithm;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -84,5 +85,27 @@ public class Menubar extends MenuBar {
 		});
 		menu2.getItems().addAll(item2_1, item2_2, new SeparatorMenuItem(), item2_3, item2_4);
 		getMenus().addAll(menu2);
+
+		Menu menu3 = new Menu("アルゴリズム");
+		MenuItem item3_1 = new MenuItem("予測変換");
+		MenuItem item3_2 = new MenuItem("メロディ構造");
+		MenuItem item3_3 = new MenuItem("予測変換 + メロディ構造");
+		item3_1.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.setAlgorithm(Algorithm.PC);
+			}
+		});
+		item3_2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.setAlgorithm(Algorithm.MS);
+			}
+		});
+		item3_3.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				parent.setAlgorithm(Algorithm.PC_AND_MS);
+			}
+		});
+		menu3.getItems().addAll(item3_1, item3_2, item3_3);
+		getMenus().addAll(menu3);
 	}
 }

@@ -14,6 +14,9 @@ import engine_yamashita.melody.reference.PhraseDictionary;
 import engine_yamashita.melody.reference.WordDictionary;
 import gui.ChordPair;
 import gui.Note;
+import gui.constants.UniversalConstants.Algorithm;
+import gui.constants.UniversalConstants.DictionaryType;
+import gui.constants.UniversalConstants.SimilarityType;
 import system.UIController;
 
 /**
@@ -23,11 +26,13 @@ import system.UIController;
 public class MelodyAnalyzer {
 	private WordDictionary wordDictionary;
 	private PhraseDictionary phraseDictionary;
+	private Algorithm algorithm;
 	private UIController uiController;
 
 	public MelodyAnalyzer(UIController uiController) {
 		wordDictionary = new WordDictionary();
 		phraseDictionary = new PhraseDictionary(this);
+		algorithm = Algorithm.PC;
 		this.uiController = uiController;
 	}
 
@@ -42,36 +47,44 @@ public class MelodyAnalyzer {
 		ArrayList<Note> previousNotes1 = getInMeasureNotes(targetMeasure - 1, melodyNotes);
 		ArrayList<Note> previousNotes2 = getInMeasureNotes(targetMeasure - 2, melodyNotes);
 
-		MelodyPattern currentMelodyPattern = getMelodyPattern(getLastNote(previousNotes1), targetNotes);
-		MelodyPattern previousMelodyPattern = getMelodyPattern(getLastNote(previousNotes2), previousNotes1);
+		MelodyPattern previous = getMelodyPattern(getLastNote(previousNotes2), previousNotes1);
+		MelodyPattern current = getMelodyPattern(getLastNote(previousNotes1), targetNotes);
 
-		if(previousMelodyPattern.isEmpty()) { // 単語辞書を検索する場合
-			DPMatching dpMatching = new DPMatching();
-			double[] pitchSimilarities = new double[wordDictionary.size()];
-			double[] rhythmSimilarities = new double[wordDictionary.size()];
+		double msWeight = 2.0; // メロディ構造のマッチングスコアの重み
+
+		if(previous.isEmpty()) { // 単語辞書を検索する場合
+			Similarity[] pcPitchSimilarities, pcRhythmSimilarities, msRhythmSimilarities;
 			int[] rank = new int[wordDictionary.size()];
-			for(int n = 0; n < rank.length; n++) rank[n] = n;
-
-			// 音高パターンの類似度計算
-			for(int n = 0; n < wordDictionary.size(); n++) {
-				// word部分の類似度計算
-				MelodyPattern target = currentMelodyPattern;
-				MelodyPattern pattern = wordDictionary.get(n).getWord();
-				pitchSimilarities[n] = dpMatching.calcPitchSimilarity(target, pattern);
+			for(int n = 0; n < rank.length; n++) {
+				rank[n] = n;
 			}
 
-			// リズムパターンの類似度計算
-			for(int n = 0; n < wordDictionary.size(); n++) {
-				// word部分の類似度計算
-				MelodyPattern target = currentMelodyPattern;
-				MelodyPattern pattern = wordDictionary.get(n).getWord();
-				rhythmSimilarities[n] = dpMatching.calcRhythmSimilarity(target, pattern);
-			}
+			// 類似度計算
+			// PCアルゴリズムの音高パターン類似度計算
+			pcPitchSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.PITCH, previous, current);
+			// PCアルゴリズムのリズムパターン類似度計算
+			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.RHYTHM, previous, current);
+			// MSアルゴリズムのリズムパターン類似度計算
+			msRhythmSimilarities = calcMsSimilarities(SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+
 			// ソート
 			for(int m = 0; m < wordDictionary.size(); m++) {
 				for(int n = m; n < wordDictionary.size(); n++) {
-					double sum_m = rhythmSimilarities[rank[m]] + pitchSimilarities[rank[m]];
-					double sum_n = rhythmSimilarities[rank[n]] + pitchSimilarities[rank[n]];
+					double sum_m = 0.0, sum_n = 0.0;
+					switch(algorithm) {
+					case PC:
+						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
+						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
+						break;
+					case MS:
+						sum_m = msRhythmSimilarities[rank[m]].getScore();
+						sum_n = msRhythmSimilarities[rank[n]].getScore();
+						break;
+					case PC_AND_MS:
+						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore() + (msWeight * msRhythmSimilarities[rank[m]].getScore());
+						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore() + (msWeight * msRhythmSimilarities[rank[n]].getScore());
+						break;
+					}
 					double frequency_m = wordDictionary.get(rank[m]).getFrequency();
 					double frequency_n = wordDictionary.get(rank[n]).getFrequency();
 					double score_m = sum_m * frequency_m; // 選択頻度を重みとして乗じる
@@ -87,6 +100,7 @@ public class MelodyAnalyzer {
 					}
 				}
 			}
+
 			// リズムパターンと音高パターンを組み合わせてメロディを生成
 			Note justBeforeNote = getLastNote(previousNotes1);
 			ArrayList<String> targetChordProgression = getInMeasureChordProgression(targetMeasure, chordProgression);
@@ -122,42 +136,38 @@ public class MelodyAnalyzer {
 			}
 			return melodies;
 		} else { // 例文辞書を検索する場合
-			DPMatching dpMatching = new DPMatching();
-			Similarity[] pitchSimilarities = new Similarity[phraseDictionary.size()];
-			Similarity[] rhythmSimilarities = new Similarity[phraseDictionary.size()];
+			Similarity[] pcPitchSimilarities, pcRhythmSimilarities, msRhythmSimilarities;
 			int[] rank = new int[phraseDictionary.size()];
-			for(int n = 0; n < rank.length; n++) rank[n] = n;
-
-			// 音高パターンの類似度計算
-			for(int n = 0; n < phraseDictionary.size(); n++) {
-				// context部分の類似度計算
-				MelodyPattern target = previousMelodyPattern;
-				MelodyPattern pattern = phraseDictionary.get(n).getContext();
-				double contextSimilarity = dpMatching.calcPitchSimilarity(target, pattern);
-				// word部分の類似度計算
-				target = currentMelodyPattern;
-				pattern = phraseDictionary.get(n).getWord();
-				double wordSimilarity = dpMatching.calcPitchSimilarity(target, pattern);
-				pitchSimilarities[n] = new Similarity(contextSimilarity, wordSimilarity);
+			for(int n = 0; n < rank.length; n++) {
+				rank[n] = n;
 			}
 
-			// リズムパターンの類似度計算
-			for(int n = 0; n < phraseDictionary.size(); n++) {
-				// context部分の類似度計算
-				MelodyPattern target = previousMelodyPattern;
-				MelodyPattern pattern = phraseDictionary.get(n).getContext();
-				double contextSimilarity = dpMatching.calcRhythmSimilarity(target, pattern);
-				// word部分の類似度計算
-				target = currentMelodyPattern;
-				pattern = phraseDictionary.get(n).getWord();
-				double wordSimilarity = dpMatching.calcRhythmSimilarity(target, pattern);
-				rhythmSimilarities[n] = new Similarity(contextSimilarity, wordSimilarity);
-			}
+			// 類似度計算
+			// PCアルゴリズムの音高パターン類似度計算
+			pcPitchSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.PITCH, previous, current);
+			// PCアルゴリズムのリズムパターン類似度計算
+			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.RHYTHM, previous, current);
+			// MSアルゴリズムのリズムパターン類似度計算
+			msRhythmSimilarities = calcMsSimilarities(SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+
 			// ソート
 			for(int m = 0; m < phraseDictionary.size(); m++) {
 				for(int n = m; n < phraseDictionary.size(); n++) {
-					double sum_m = rhythmSimilarities[rank[m]].getScore() + pitchSimilarities[rank[m]].getScore();
-					double sum_n = rhythmSimilarities[rank[n]].getScore() + pitchSimilarities[rank[n]].getScore();
+					double sum_m = 0.0, sum_n = 0.0;
+					switch(algorithm) {
+					case PC:
+						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
+						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
+						break;
+					case MS:
+						sum_m = msRhythmSimilarities[rank[m]].getScore();
+						sum_n = msRhythmSimilarities[rank[n]].getScore();
+						break;
+					case PC_AND_MS:
+						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore() + (msWeight * msRhythmSimilarities[rank[m]].getScore());
+						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore() + (msWeight * msRhythmSimilarities[rank[n]].getScore());
+						break;
+					}
 					double frequency_m = phraseDictionary.get(rank[m]).getFrequency();
 					double frequency_n = phraseDictionary.get(rank[n]).getFrequency();
 					double score_m = sum_m * frequency_m; // 選択頻度を重みとして乗じる
@@ -208,6 +218,105 @@ public class MelodyAnalyzer {
 			}
 			return melodies;
 		}
+	}
+
+	private Similarity[] calcPcSimilarities(DictionaryType dictionaryType, SimilarityType similarityType, MelodyPattern previous, MelodyPattern current) {
+		Similarity[] similarities;
+		MelodyPattern target, pattern;
+		double contextSimilarity, wordSimilarity;
+		switch(dictionaryType) {
+		case WORD:
+			similarities = new Similarity[wordDictionary.size()];
+			for(int n = 0; n < similarities.length; n++) {
+				target = current;
+				pattern = wordDictionary.get(n).getWord();
+				switch(similarityType) {
+				case PITCH:
+					wordSimilarity = DPMatching.calcPitchSimilarity(target, pattern);
+					break;
+				case RHYTHM:
+					wordSimilarity = DPMatching.calcRhythmSimilarity(target, pattern);
+					break;
+				default:
+					wordSimilarity = 0.0;
+					break;
+				}
+				similarities[n] = new Similarity(0.0, wordSimilarity);
+			}
+			break;
+		case PHRASE:
+			similarities = new Similarity[phraseDictionary.size()];
+			for(int n = 0; n < similarities.length; n++) {
+				target = previous;
+				pattern = phraseDictionary.get(n).getContext();
+				switch(similarityType) {
+				case PITCH:
+					contextSimilarity = DPMatching.calcPitchSimilarity(target, pattern);
+					break;
+				case RHYTHM:
+					contextSimilarity = DPMatching.calcRhythmSimilarity(target, pattern);
+					break;
+				default:
+					contextSimilarity = 0.0;
+					break;
+				}
+
+				target = current;
+				pattern = phraseDictionary.get(n).getWord();
+				switch(similarityType) {
+				case PITCH:
+					wordSimilarity = DPMatching.calcPitchSimilarity(target, pattern);
+					break;
+				case RHYTHM:
+					wordSimilarity = DPMatching.calcRhythmSimilarity(target, pattern);
+					break;
+				default:
+					wordSimilarity = 0.0;
+					break;
+				}
+
+				similarities[n] = new Similarity(contextSimilarity, wordSimilarity);
+			}
+			break;
+		default:
+			similarities = new Similarity[wordDictionary.size()];
+			for(int n = 0; n < similarities.length; n++) {
+				similarities[n] = new Similarity(0.0, 0.0);
+			}
+			break;
+		}
+		return similarities;
+	}
+
+	private Similarity[] calcMsSimilarities(SimilarityType similarityType, MelodyPattern previous, MelodyPattern current, int targetMeasure, ArrayList<Note> melodyNotes) {
+		Similarity[] similarities = new Similarity[wordDictionary.size()];
+		MelodyPattern target, pattern;
+		double similarity;
+		if(targetMeasure == 3 || targetMeasure == 4) {
+			// (targetMeasure - 2)小節目のメロディ情報を抽出
+			MelodyPattern reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 3, melodyNotes)), getInMeasureNotes(targetMeasure - 2, melodyNotes));
+			for(int n = 0; n < similarities.length; n++) {
+				target = reference;
+				pattern = wordDictionary.get(n).getWord();
+				switch(similarityType) {
+				case PITCH:
+					similarity = DPMatching.calcPitchSimilarity(target, pattern);
+					break;
+				case RHYTHM:
+					similarity = DPMatching.calcRhythmSimilarity(target, pattern);
+					break;
+				default:
+					similarity = 0.0;
+					break;
+				}
+				similarities[n] = new Similarity(0.0, similarity);
+			}
+		} else {
+			for(int n = 0; n < similarities.length; n++) {
+				similarities[n] = new Similarity(0.0, 0.0);
+			}
+		}
+		return similarities;
 	}
 
 	public MelodyPattern getMelodyPattern(Note justBeforeNote, ArrayList<Note> melody) {
@@ -311,6 +420,11 @@ public class MelodyAnalyzer {
 
 	public String getNewPhraseEntryName(MelodyPattern context, MelodyPattern word) {
 		return uiController.getNewPhraseEntryName(context, word);
+	}
+
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
+		System.out.println("Algorithm is " + this.algorithm);
 	}
 
 	public class Similarity {

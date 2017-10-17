@@ -4,7 +4,7 @@ public class DPMatching {
 	public DPMatching() {
 	}
 
-	public double calcPitchSimilarity(MelodyPattern target, MelodyPattern pattern) {
+	public static double calcPitchSimilarity(MelodyPattern target, MelodyPattern pattern) {
 		int targetSize = target.size();
 		int patternSize = pattern.size();
 
@@ -58,7 +58,7 @@ public class DPMatching {
 		return 1.0 - (cost[targetSize - 1][patternSize - 1] / costMax);
 	}
 
-	public double calcRhythmSimilarity(MelodyPattern target, MelodyPattern pattern) {
+	public static double calcRhythmSimilarity(MelodyPattern target, MelodyPattern pattern) {
 		int targetSize = target.size();
 		int patternSize = pattern.size();
 

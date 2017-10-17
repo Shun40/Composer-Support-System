@@ -25,7 +25,7 @@ public class DynamicProgramming {
 	public void makeMelodyByDP(ArrayList<MelodyLabel> melodyLabels) {
 		int N = melodyLabels.size() - 1; // 先頭dummy分-1
 
-		// 音後列X
+		// 音高列X
 		int[] X = new int[N+1];
 
 		// Step.1 初期化

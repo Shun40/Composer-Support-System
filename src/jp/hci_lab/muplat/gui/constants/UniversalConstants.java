@@ -63,6 +63,28 @@ public class UniversalConstants {
 		72, 74, 76, 77, 79, 81, 83
 	};
 
+	public static enum Algorithm {
+		PC,       // Prediction Conversion
+		MS,       // Melody Structure
+		PC_AND_MS // Prediction Conversion + Melody Structure
+	};
+
+	public static enum ChordFunction {
+		TONIC,
+		DOMINANT,
+		SUBDOMINANT
+	};
+
+	public static enum DictionaryType {
+		WORD,  // 単語辞書
+		PHRASE // 例文辞書
+	};
+
+	public static enum SimilarityType {
+		PITCH, // 音高パターン
+		RHYTHM // リズムパターン
+	};
+
 	public static final int PPQ = 480; // 4分音符のTick数
 	public static final int DEFAULT_BPM = 120; // BPM値(デフォルト値)
 	public static final int DEFAULT_MEASURE = 8; // 小節数

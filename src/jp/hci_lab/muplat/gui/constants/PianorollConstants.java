@@ -43,4 +43,7 @@ public class PianorollConstants {
 	// PatternArea
 	public static final int PATTERN_AREA_X = 780;
 	public static final int PATTERN_AREA_Y = 94;
+	// AlgorithmLabel
+	public static final int ALGORITHM_LABEL_X = 920;
+	public static final int ALGORITHM_LABEL_Y = 98;
 }

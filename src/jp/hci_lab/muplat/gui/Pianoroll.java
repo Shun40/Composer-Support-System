@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import engine_yamashita.Accompaniment;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
+import gui.constants.UniversalConstants.Algorithm;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -37,6 +38,7 @@ public class Pianoroll extends Group {
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
+	private AlgorithmLabel algorithmLabel;
 
 	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
@@ -58,6 +60,7 @@ public class Pianoroll extends Group {
 		//setupSoloTrackSelector();
 		setupPatternArea();
 		setupMeasureArea();
+		setupAlgorithmLabel();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -66,7 +69,7 @@ public class Pianoroll extends Group {
 	}
 
 	public void setupBpmLabel() {
-		bpmLabel = new BpmLabel(bpm,  BPM_LABEL_X,  BPM_LABEL_Y, this);
+		bpmLabel = new BpmLabel(bpm, BPM_LABEL_X, BPM_LABEL_Y, this);
 		getChildren().add(bpmLabel);
 	}
 
@@ -142,6 +145,11 @@ public class Pianoroll extends Group {
 	public void setupPatternArea() {
 		patternArea = new PatternArea(PATTERN_AREA_X, PATTERN_AREA_Y, this);
 		getChildren().add(patternArea);
+	}
+
+	public void setupAlgorithmLabel() {
+		algorithmLabel = new AlgorithmLabel(Algorithm.PC, ALGORITHM_LABEL_X, ALGORITHM_LABEL_Y);
+		getChildren().add(algorithmLabel);
 	}
 
 	public void hTranslate() {
@@ -310,6 +318,8 @@ public class Pianoroll extends Group {
 		}
 		setCurrentTrack(1);
 	}
+
+	public void setAlgorithm(Algorithm algorithm) { algorithmLabel.setAlgorithm(algorithm); }
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
 	public ArrayList<NoteBlock> getNoteBlocks() { return editArea.getNoteBlocks(); }
