@@ -64,9 +64,9 @@ public class UniversalConstants {
 	};
 
 	public static enum Algorithm {
-		PC,       // Prediction Conversion
-		MS,       // Melody Structure
-		PC_AND_MS // Prediction Conversion + Melody Structure
+		PC, // Prediction Conversion
+		MS, // Melody Structure
+		CF  // Chord Function
 	};
 
 	public static enum ChordFunction {

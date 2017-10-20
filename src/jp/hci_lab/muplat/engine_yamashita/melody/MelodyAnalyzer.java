@@ -3,6 +3,7 @@ package engine_yamashita.melody;
 import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import engine_yamashita.Melody;
 import engine_yamashita.PredictionInformation;
@@ -27,13 +28,11 @@ import system.UIController;
 public class MelodyAnalyzer {
 	private WordDictionary wordDictionary;
 	private PhraseDictionary phraseDictionary;
-	private Algorithm algorithm;
 	private UIController uiController;
 
 	public MelodyAnalyzer(UIController uiController) {
 		wordDictionary = new WordDictionary();
 		phraseDictionary = new PhraseDictionary(this);
-		algorithm = Algorithm.PC;
 		this.uiController = uiController;
 	}
 
@@ -41,6 +40,7 @@ public class MelodyAnalyzer {
 		int targetMeasure = predictionInformation.getTargetMeasure(); // 対象小節番号
 		ArrayList<Note> melodyNotes = predictionInformation.getMelodyNotes();   // メロディの音符
 		ChordPair[] chordProgression = predictionInformation.getChordProgression(); // コード進行
+		ArrayList<Algorithm> algorithms = predictionInformation.getAlgorithms(); // 選択アルゴリズム
 
 		// 下準備
 		melodyNotes.sort((a, b) -> a.getPosition() - b.getPosition()); // positionが小さい順にソート
@@ -51,40 +51,58 @@ public class MelodyAnalyzer {
 		MelodyPattern previous = getMelodyPattern(getLastNote(previousNotes2), previousNotes1);
 		MelodyPattern current = getMelodyPattern(getLastNote(previousNotes1), targetNotes);
 
-		double msWeight = 2.0; // メロディ構造のマッチングスコアの重み
+		double msWeight = 1.0; // MSアルゴリズムのスコアの重み
+		double cfWeight = 1.0; // CFアルゴリズムのスコアの重み
 
 		if(previous.isEmpty()) { // 単語辞書を検索する場合
 			Similarity[] pcPitchSimilarities, pcRhythmSimilarities, msRhythmSimilarities;
+			double[] cfScores;
 			int[] rank = new int[wordDictionary.size()];
 			for(int n = 0; n < rank.length; n++) {
 				rank[n] = n;
 			}
 
-			// 類似度計算
+			// 1. 辞書登録済みパターンからメロディを生成
+			Note justBeforeNote = getLastNote(previousNotes1);
+			ArrayList<String> targetChordProgression = getInMeasureChordProgression(targetMeasure, chordProgression);
+			ArrayList<String> previousChordProgression = getInMeasureChordProgression(targetMeasure - 1, chordProgression);
+			String justBeforeChord = getLastChord(previousChordProgression);
+			ArrayList<ArrayList<MelodyLabel>> melodyLabels = new ArrayList<ArrayList<MelodyLabel>>();
+			MelodyMaker melodyMaker = new MelodyMaker();
+			for(int n = 0; n < wordDictionary.size(); n++) {
+				MelodyPattern context = null;
+				MelodyPattern word = wordDictionary.get(rank[n]).getWord();
+				melodyLabels.add(melodyMaker.makeMelody(context, word, justBeforeNote, targetChordProgression, justBeforeChord));
+			}
+
+			// 2. 類似度等のスコアを用いて候補メロディをソート
 			// PCアルゴリズムの音高パターン類似度計算
 			pcPitchSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.PITCH, previous, current);
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
 			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
-
+			// CFアルゴリズムのスコア計算
+			cfScores = calcCfScores(melodyLabels);
 			// ソート
 			for(int m = 0; m < wordDictionary.size(); m++) {
 				for(int n = m; n < wordDictionary.size(); n++) {
 					double sum_m = 0.0, sum_n = 0.0;
-					switch(algorithm) {
-					case PC:
-						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
-						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
-						break;
-					case MS:
-						sum_m = msRhythmSimilarities[rank[m]].getScore();
-						sum_n = msRhythmSimilarities[rank[n]].getScore();
-						break;
-					case PC_AND_MS:
-						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore() + (msWeight * msRhythmSimilarities[rank[m]].getScore());
-						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore() + (msWeight * msRhythmSimilarities[rank[n]].getScore());
-						break;
+					for(Algorithm algorithm : algorithms) {
+						switch(algorithm) {
+						case PC:
+							sum_m += pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
+							sum_n += pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
+							break;
+						case MS:
+							sum_m += msWeight * msRhythmSimilarities[rank[m]].getScore();
+							sum_n += msWeight * msRhythmSimilarities[rank[n]].getScore();
+							break;
+						case CF:
+							sum_m += cfWeight * cfScores[rank[m]];
+							sum_n += cfWeight * cfScores[rank[n]];
+							break;
+						}
 					}
 					double frequency_m = wordDictionary.get(rank[m]).getFrequency();
 					double frequency_n = wordDictionary.get(rank[n]).getFrequency();
@@ -102,21 +120,7 @@ public class MelodyAnalyzer {
 				}
 			}
 
-			// リズムパターンと音高パターンを組み合わせてメロディを生成
-			Note justBeforeNote = getLastNote(previousNotes1);
-			ArrayList<String> targetChordProgression = getInMeasureChordProgression(targetMeasure, chordProgression);
-			ArrayList<String> previousChordProgression = getInMeasureChordProgression(targetMeasure - 1, chordProgression);
-			String justBeforeChord = getLastChord(previousChordProgression);
-
-			ArrayList<ArrayList<MelodyLabel>> melodyLabels = new ArrayList<ArrayList<MelodyLabel>>();
-			MelodyMaker melodyMaker = new MelodyMaker();
-			for(int n = 0; n < wordDictionary.size(); n++) {
-				MelodyPattern context = null;
-				MelodyPattern word = wordDictionary.get(rank[n]).getWord();
-				melodyLabels.add(melodyMaker.makeMelody(context, word, justBeforeNote, targetChordProgression, justBeforeChord));
-			}
-
-			// メロディを整形
+			// 3. メロディを整形
 			ArrayList<Melody> melodies = new ArrayList<Melody>();
 			for(int m = 0; m < melodyLabels.size(); m++) {
 				int index = wordDictionary.get(rank[m]).getIndex();
@@ -124,12 +128,12 @@ public class MelodyAnalyzer {
 				String name = wordDictionary.get(rank[m]).getName() + " (" + (wordDictionary.get(rank[m]).getFrequency() - 1) + "回)";
 				int frequency = wordDictionary.get(rank[m]).getFrequency();
 				Melody melody = new Melody(index, id, name, frequency);
-				for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
+				for(int n = 1; n < melodyLabels.get(rank[m]).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
 					int track = 1;
 					int program = 0;
-					int pitch = melodyLabels.get(m).get(n).getPitch();
-					int position = melodyLabels.get(m).get(n).getPosition();
-					int duration = melodyLabels.get(m).get(n).getDuration();
+					int pitch = melodyLabels.get(rank[m]).get(n).getPitch();
+					int position = melodyLabels.get(rank[m]).get(n).getPosition();
+					int duration = melodyLabels.get(rank[m]).get(n).getDuration();
 					int velocity = 100;
 					melody.add(new Note(track, program, pitch, position, duration, velocity, null));
 				}
@@ -138,36 +142,53 @@ public class MelodyAnalyzer {
 			return melodies;
 		} else { // 例文辞書を検索する場合
 			Similarity[] pcPitchSimilarities, pcRhythmSimilarities, msRhythmSimilarities;
+			double[] cfScores;
 			int[] rank = new int[phraseDictionary.size()];
 			for(int n = 0; n < rank.length; n++) {
 				rank[n] = n;
 			}
 
-			// 類似度計算
+			// 1. 辞書登録済みパターンからメロディを生成
+			Note justBeforeNote = getLastNote(previousNotes1);
+			ArrayList<String> targetChordProgression = getInMeasureChordProgression(targetMeasure, chordProgression);
+			ArrayList<String> previousChordProgression = getInMeasureChordProgression(targetMeasure - 1, chordProgression);
+			String justBeforeChord = getLastChord(previousChordProgression);
+			ArrayList<ArrayList<MelodyLabel>> melodyLabels = new ArrayList<ArrayList<MelodyLabel>>();
+			MelodyMaker melodyMaker = new MelodyMaker();
+			for(int n = 0; n < phraseDictionary.size(); n++) {
+				MelodyPattern context = phraseDictionary.get(rank[n]).getContext();
+				MelodyPattern word = phraseDictionary.get(rank[n]).getWord();
+				melodyLabels.add(melodyMaker.makeMelody(context, word, justBeforeNote, targetChordProgression, justBeforeChord));
+			}
+
+			// 2. 類似度等のスコアを用いて候補メロディをソート
 			// PCアルゴリズムの音高パターン類似度計算
 			pcPitchSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.PITCH, previous, current);
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
 			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
-
+			// CFアルゴリズムのスコア計算
+			cfScores = calcCfScores(melodyLabels);
 			// ソート
 			for(int m = 0; m < phraseDictionary.size(); m++) {
 				for(int n = m; n < phraseDictionary.size(); n++) {
 					double sum_m = 0.0, sum_n = 0.0;
-					switch(algorithm) {
-					case PC:
-						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
-						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
-						break;
-					case MS:
-						sum_m = msRhythmSimilarities[rank[m]].getScore();
-						sum_n = msRhythmSimilarities[rank[n]].getScore();
-						break;
-					case PC_AND_MS:
-						sum_m = pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore() + (msWeight * msRhythmSimilarities[rank[m]].getScore());
-						sum_n = pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore() + (msWeight * msRhythmSimilarities[rank[n]].getScore());
-						break;
+					for(Algorithm algorithm : algorithms) {
+						switch(algorithm) {
+						case PC:
+							sum_m += pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
+							sum_n += pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
+							break;
+						case MS:
+							sum_m += msWeight * msRhythmSimilarities[rank[m]].getScore();
+							sum_n += msWeight * msRhythmSimilarities[rank[n]].getScore();
+							break;
+						case CF:
+							sum_m += cfWeight * cfScores[rank[m]];
+							sum_n += cfWeight * cfScores[rank[n]];
+							break;
+						}
 					}
 					double frequency_m = phraseDictionary.get(rank[m]).getFrequency();
 					double frequency_n = phraseDictionary.get(rank[n]).getFrequency();
@@ -184,21 +205,8 @@ public class MelodyAnalyzer {
 					}
 				}
 			}
-			// リズムパターンと音高パターンを組み合わせてメロディを生成
-			Note justBeforeNote = getLastNote(previousNotes1);
-			ArrayList<String> targetChordProgression = getInMeasureChordProgression(targetMeasure, chordProgression);
-			ArrayList<String> previousChordProgression = getInMeasureChordProgression(targetMeasure - 1, chordProgression);
-			String justBeforeChord = getLastChord(previousChordProgression);
 
-			ArrayList<ArrayList<MelodyLabel>> melodyLabels = new ArrayList<ArrayList<MelodyLabel>>();
-			MelodyMaker melodyMaker = new MelodyMaker();
-			for(int n = 0; n < phraseDictionary.size(); n++) {
-				MelodyPattern context = phraseDictionary.get(rank[n]).getContext();
-				MelodyPattern word = phraseDictionary.get(rank[n]).getWord();
-				melodyLabels.add(melodyMaker.makeMelody(context, word, justBeforeNote, targetChordProgression, justBeforeChord));
-			}
-
-			// メロディを整形
+			// 3. メロディを整形
 			ArrayList<Melody> melodies = new ArrayList<Melody>();
 			for(int m = 0; m < melodyLabels.size(); m++) {
 				int index = phraseDictionary.get(rank[m]).getIndex();
@@ -206,12 +214,12 @@ public class MelodyAnalyzer {
 				String name = phraseDictionary.get(rank[m]).getName() + " (" + (phraseDictionary.get(rank[m]).getFrequency() - 1) + "回)";
 				int frequency = phraseDictionary.get(rank[m]).getFrequency();
 				Melody melody = new Melody(index, id, name, frequency);
-				for(int n = 1; n < melodyLabels.get(m).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
+				for(int n = 1; n < melodyLabels.get(rank[m]).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
 					int track = 1;
 					int program = 0;
-					int pitch = melodyLabels.get(m).get(n).getPitch();
-					int position = melodyLabels.get(m).get(n).getPosition();
-					int duration = melodyLabels.get(m).get(n).getDuration();
+					int pitch = melodyLabels.get(rank[m]).get(n).getPitch();
+					int position = melodyLabels.get(rank[m]).get(n).getPosition();
+					int duration = melodyLabels.get(rank[m]).get(n).getDuration();
 					int velocity = 100;
 					melody.add(new Note(track, program, pitch, position, duration, velocity, null));
 				}
@@ -351,6 +359,40 @@ public class MelodyAnalyzer {
 		return similarities;
 	}
 
+	private double[] calcCfScores(ArrayList<ArrayList<MelodyLabel>> melodyLabelsList) {
+		double[] scores = new double[melodyLabelsList.size()];
+		for(int n = 0; n < scores.length; n++) {
+			scores[n] = 0.0;
+		}
+
+		for(int n = 0; n < melodyLabelsList.size(); n++) {
+			ArrayList<MelodyLabel> melodyLabels = melodyLabelsList.get(n);
+			int chordToneRatio = 0;
+			for(int m = 1; m < melodyLabels.size(); m++) { // 先頭には前の小節のノートが入っているのでそれを飛ばすためにインデックスを1からスタート
+				MelodyLabel melodyLabel = melodyLabels.get(m);
+				String chord = melodyLabel.getChord(); // 音が属するコードを取得
+				ArrayList<Integer> chordTone = new ArrayList<Integer>();
+				switch(chord) {
+				// コードがトニックの場合
+				case "C":
+					chordTone = new ArrayList<Integer>(Arrays.asList(55, 60, 64, 67, 72, 76, 79));
+					break;
+				// コードがドミナントまたはサブドミナントの場合
+				default:
+					break;
+				}
+				if(chordTone.contains(melodyLabel.getPitch())) {
+					// 音価による重みづけ
+					// 音価の大きいコード構成音ほどスコアを高く与える
+					chordToneRatio += melodyLabel.getDuration() / (PPQ / 4);
+				}
+			}
+			scores[n] = (double)chordToneRatio / 16; // スコアを0.0~1.0の範囲に正規化
+		}
+
+		return scores;
+	}
+
 	public MelodyPattern getMelodyPattern(Note justBeforeNote, ArrayList<Note> melody) {
 		// 音高情報を抽出
 		int[] variations = new int[melody.size()];
@@ -452,11 +494,6 @@ public class MelodyAnalyzer {
 
 	public String getNewPhraseEntryName(MelodyPattern context, MelodyPattern word) {
 		return uiController.getNewPhraseEntryName(context, word);
-	}
-
-	public void setAlgorithm(Algorithm algorithm) {
-		this.algorithm = algorithm;
-		System.out.println("Algorithm is " + this.algorithm);
 	}
 
 	public class Similarity {

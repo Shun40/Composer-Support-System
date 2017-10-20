@@ -38,7 +38,7 @@ public class Pianoroll extends Group {
 	private TrackMuteSelector trackMuteSelector;
 	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
-	private AlgorithmLabel algorithmLabel;
+	private AlgorithmSelector algorithmSelector;
 
 	public Pianoroll(int measureCount, int octaveCount, int bpm, MainScene parent) {
 		super();
@@ -60,7 +60,7 @@ public class Pianoroll extends Group {
 		//setupSoloTrackSelector();
 		setupPatternArea();
 		setupMeasureArea();
-		setupAlgorithmLabel();
+		setupAlgorithmSelector();
 	}
 
 	public void setupNoteResolutionSelector() {
@@ -147,9 +147,9 @@ public class Pianoroll extends Group {
 		getChildren().add(patternArea);
 	}
 
-	public void setupAlgorithmLabel() {
-		algorithmLabel = new AlgorithmLabel(Algorithm.PC, ALGORITHM_LABEL_X, ALGORITHM_LABEL_Y);
-		getChildren().add(algorithmLabel);
+	public void setupAlgorithmSelector() {
+		algorithmSelector = new AlgorithmSelector(Algorithm.PC, ALGORITHM_SELECTOR_X, ALGORITHM_SELECTOR_Y);
+		getChildren().add(algorithmSelector);
 	}
 
 	public void hTranslate() {
@@ -263,9 +263,11 @@ public class Pianoroll extends Group {
 			chordProgression[i].setChord(measureArea.getChord(i+1, 0), 0);
 			chordProgression[i].setChord(measureArea.getChord(i+1, 1), 1);
 		}
-		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression);
+		// 選択アルゴリズム
+		ArrayList<Algorithm> algorithms = algorithmSelector.getSelectedAlgorithms();
 
 		// 予測変換
+		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression, algorithms);
 		return parent.prediction(predictionInformation);
 	}
 
@@ -318,8 +320,6 @@ public class Pianoroll extends Group {
 		}
 		setCurrentTrack(1);
 	}
-
-	public void setAlgorithm(Algorithm algorithm) { algorithmLabel.setAlgorithm(algorithm); }
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }
 	public ArrayList<NoteBlock> getNoteBlocks() { return editArea.getNoteBlocks(); }

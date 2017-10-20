@@ -23,7 +23,6 @@ import engine_yamashita.melody.reference.PhraseDictionary;
 import engine_yamashita.melody.reference.WordDictionary;
 import gui.MainScene;
 import gui.Note;
-import gui.constants.UniversalConstants.Algorithm;
 
 /**
  * UIとエンジンを仲介するコントローラのクラス
@@ -212,8 +211,6 @@ public class UIController {
 	}
 
 	public Sequence getSequence() { return sequence; }
-
-	public void setAlgorithm(Algorithm algorithm) { melodyAnalyzer.setAlgorithm(algorithm); }
 
 	/*
 	public UIController() {

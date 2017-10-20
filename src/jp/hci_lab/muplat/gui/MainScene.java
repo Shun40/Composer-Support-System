@@ -21,7 +21,6 @@ import engine_yamashita.PredictionPattern;
 import engine_yamashita.melody.reference.MelodyPattern;
 import engine_yamashita.melody.reference.PhraseDictionary;
 import engine_yamashita.melody.reference.WordDictionary;
-import gui.constants.UniversalConstants.Algorithm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -52,7 +51,6 @@ public class MainScene extends Scene {
 		setupPianoroll();
 		readWordDictionaryFile();
 		readPhraseDictionaryFile();
-		setAlgorithm(Algorithm.PC_AND_MS); // アルゴリズムの初期値
 	}
 
 	public void setupMenuBar() {
@@ -337,11 +335,6 @@ public class MainScene extends Scene {
 		} else {
 			return context.getId() + "-" + word.getId();
 		}
-	}
-
-	public void setAlgorithm(Algorithm algorithm) {
-		uiController.setAlgorithm(algorithm);
-		pianoroll.setAlgorithm(algorithm);
 	}
 
 	public class WordEntry {
