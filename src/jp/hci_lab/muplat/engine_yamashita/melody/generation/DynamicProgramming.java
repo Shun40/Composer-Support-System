@@ -1,6 +1,9 @@
 package engine_yamashita.melody.generation;
 
+import static gui.constants.UniversalConstants.*;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DynamicProgramming {
 	// DPに必要なパラメータや情報
@@ -60,21 +63,22 @@ public class DynamicProgramming {
 					// 音高概形による遷移制約
 					int variation = melodyLabels.get(i).getVariation();
 					int difference = melodyLabels.get(i).getDifference();
+					double restriction_coefficient = 0.5; // 経路制約に使う制限係数(0.0でその経路を禁止する)
 					if(variation == 0) {
-						if(j != k) a *= 0.0; // 音高の下降および上昇を禁止
+						if(j != k) a *= restriction_coefficient; // 音高の下降および上昇を抑制
 					}
 					if(variation == -1) {
-						if(j <= k) a *= 0.0; // 音高の保持および上昇を禁止
+						if(j <= k) a *= 0.0; // 音高の保持および上昇を抑制
 						else {
-							if(difference <= 2 && Math.abs(j - k) > 2) a *= 0.0;
-							if(difference > 2 && Math.abs(j - k) <= 2) a *= 0.0;
+							if(difference <= 2 && Math.abs(j - k) > 2) a *= restriction_coefficient;
+							if(difference > 2 && Math.abs(j - k) <= 2) a *= restriction_coefficient;
 						}
 					}
 					if(variation == 1) {
-						if(j >= k) a *= 0.0; // 音高の保持および下降を禁止
+						if(j >= k) a *= 0.0; // 音高の保持および下降を抑制
 						else {
-							if(difference <= 2 && Math.abs(j - k) > 2) a *= 0.0;
-							if(difference > 2 && Math.abs(j - k) <= 2) a *= 0.0;
+							if(difference <= 2 && Math.abs(j - k) > 2) a *= restriction_coefficient;
+							if(difference > 2 && Math.abs(j - k) <= 2) a *= restriction_coefficient;
 						}
 					}
 
@@ -88,6 +92,10 @@ public class DynamicProgramming {
 				double b =
 						rangeAppearanceProbability.getProbability(k)
 						* chordAppearanceProbability.getProbability(melodyLabels.get(i).getChord(), k);
+				// 非和声音を考慮した出現確率補正
+				b *= correctNonChordToneAboutDuration(melodyLabels.get(i), k);
+				b *= correctNonChordToneAboutStart(melodyLabels.get(i), k);
+
 				delta[i][k] = max_j * b;
 				psi[i][k] = argmax_j;
 			}
@@ -113,5 +121,53 @@ public class DynamicProgramming {
 			X[i] += minPitch;
 			melodyLabels.get(i).setPitch(X[i]);
 		}
+	}
+
+	// 音価の大きい音に非和声音が出現しにくくなるよう補正する
+	private double correctNonChordToneAboutDuration(MelodyLabel melodyLabel, int pitch) {
+		String chord = melodyLabel.getChord();
+		int duration = melodyLabel.getDuration();
+		boolean isChordTone = isChordTone(chord, minPitch + pitch);
+		// 4分音符よりも長い音価に非和声音が割当てられるのを抑制
+		if(!isChordTone && duration > PPQ) return 0.25;
+		else return 1.0;
+	}
+
+	// 小節の頭に非和声音が出現しにくくなるよう補正する
+	private double correctNonChordToneAboutStart(MelodyLabel melodyLabel, int pitch) {
+		String chord = melodyLabel.getChord();
+		int position = melodyLabel.getPosition();
+		boolean isChordTone = isChordTone(chord, minPitch + pitch);
+		// 小節の頭に非和声音が割当てられるのを抑制
+		if(!isChordTone && (position % (PPQ * 4)) == 0) return 0.25;
+		else return 1.0;
+	}
+
+	private boolean isChordTone(String chord, int pitch) {
+		boolean isChordTone = false;
+		switch(chord) {
+		case "C":
+			isChordTone = Arrays.asList(55, 60, 64, 67, 72, 76, 79).contains(pitch);
+			break;
+		case "Dm":
+			isChordTone = Arrays.asList(57, 62, 65, 69, 74, 77, 81).contains(pitch);
+			break;
+		case "Em":
+			isChordTone = Arrays.asList(55, 59, 64, 67, 71, 76, 79, 83).contains(pitch);
+			break;
+		case "F":
+			isChordTone = Arrays.asList(57, 60, 65, 69, 72, 77, 81).contains(pitch);
+			break;
+		case "G":
+			isChordTone = Arrays.asList(55, 59, 62, 67, 71, 74, 79, 83).contains(pitch);
+			break;
+		case "Am":
+			isChordTone = Arrays.asList(57, 60, 64, 69, 72, 76, 81).contains(pitch);
+			break;
+		case "Bmb5":
+			isChordTone = Arrays.asList(59, 62, 65, 71, 74, 77, 83).contains(pitch);
+			break;
+		}
+		return isChordTone;
 	}
 }

@@ -81,7 +81,46 @@ public class MelodyAnalyzer {
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.WORD, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
-			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+			MelodyPattern measure1, measure2, measure3;
+			double similarity;
+			switch(targetMeasure) {
+			case 3:
+				measure1 = getMelodyPattern(getLastNote(getInMeasureNotes(0, melodyNotes)), getInMeasureNotes(1, melodyNotes));
+				measure2 = getMelodyPattern(getLastNote(getInMeasureNotes(1, melodyNotes)), getInMeasureNotes(2, melodyNotes));
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure2);
+				System.out.println(similarity);
+				if(similarity > 0.5) { // 1小節目と2小節目が似ている時
+					// AABB, AABCに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.AABB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				} else { // 1小節目と2小節目が似ていない時
+					// ABABに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				}
+				break;
+			case 4:
+				measure1 = getMelodyPattern(getLastNote(getInMeasureNotes(0, melodyNotes)), getInMeasureNotes(1, melodyNotes));
+				measure2 = getMelodyPattern(getLastNote(getInMeasureNotes(1, melodyNotes)), getInMeasureNotes(2, melodyNotes));
+				measure3 = getMelodyPattern(getLastNote(getInMeasureNotes(2, melodyNotes)), getInMeasureNotes(3, melodyNotes));
+				// ABAB適用可能性チェック
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure3);
+				System.out.println(similarity);
+				if(similarity > 0.5) {
+					// ABABに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+					break;
+				}
+				// AABB, AABC適用可能性チェック
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure2);
+				System.out.println(similarity);
+				if(similarity > 0.5) {
+					// AABCに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.AABC, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+					break;
+				}
+			default:
+				msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABCD, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				break;
+			}
 			// CFアルゴリズムのスコア計算
 			cfScores = calcCfScores(melodyLabels);
 			// ソート
@@ -167,7 +206,46 @@ public class MelodyAnalyzer {
 			// PCアルゴリズムのリズムパターン類似度計算
 			pcRhythmSimilarities = calcPcSimilarities(DictionaryType.PHRASE, SimilarityType.RHYTHM, previous, current);
 			// MSアルゴリズムのリズムパターン類似度計算
-			msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+			MelodyPattern measure1, measure2, measure3;
+			double similarity;
+			switch(targetMeasure) {
+			case 3:
+				measure1 = getMelodyPattern(getLastNote(getInMeasureNotes(0, melodyNotes)), getInMeasureNotes(1, melodyNotes));
+				measure2 = getMelodyPattern(getLastNote(getInMeasureNotes(1, melodyNotes)), getInMeasureNotes(2, melodyNotes));
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure2);
+				System.out.println(similarity);
+				if(similarity > 0.5) { // 1小節目と2小節目が似ている時
+					// AABB, AABCに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.AABB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				} else { // 1小節目と2小節目が似ていない時
+					// ABABに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				}
+				break;
+			case 4:
+				measure1 = getMelodyPattern(getLastNote(getInMeasureNotes(0, melodyNotes)), getInMeasureNotes(1, melodyNotes));
+				measure2 = getMelodyPattern(getLastNote(getInMeasureNotes(1, melodyNotes)), getInMeasureNotes(2, melodyNotes));
+				measure3 = getMelodyPattern(getLastNote(getInMeasureNotes(2, melodyNotes)), getInMeasureNotes(3, melodyNotes));
+				// ABAB適用可能性チェック
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure3);
+				System.out.println(similarity);
+				if(similarity > 0.5) {
+					// ABABに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABAB, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+					break;
+				}
+				// AABB, AABC適用可能性チェック
+				similarity = DPMatching.calcRhythmSimilarity(measure1, measure2);
+				System.out.println(similarity);
+				if(similarity > 0.5) {
+					// AABCに展開
+					msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.AABC, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+					break;
+				}
+			default:
+				msRhythmSimilarities = calcMsSimilarities(MelodyStructureType.ABCD, SimilarityType.RHYTHM, previous, current, targetMeasure, melodyNotes);
+				break;
+			}
 			// CFアルゴリズムのスコア計算
 			cfScores = calcCfScores(melodyLabels);
 			// ソート
@@ -321,12 +399,14 @@ public class MelodyAnalyzer {
 				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 2, melodyNotes)), getInMeasureNotes(targetMeasure - 1, melodyNotes));
 			}
 			break;
+		/*
 		case ABCC:
 			if(targetMeasure == 4) {
 				// (targetMeasure - 1)小節目のメロディ情報を抽出
 				reference = getMelodyPattern(getLastNote(getInMeasureNotes(targetMeasure - 2, melodyNotes)), getInMeasureNotes(targetMeasure - 1, melodyNotes));
 			}
 			break;
+		*/
 		case ABCD:
 			break;
 		default:
@@ -375,7 +455,7 @@ public class MelodyAnalyzer {
 				switch(chord) {
 				// コードがトニックの場合
 				case "C":
-					chordTone = new ArrayList<Integer>(Arrays.asList(55, 60, 64, 67, 72, 76, 79));
+					chordTone = new ArrayList<Integer>(Arrays.asList(60, 72));
 					break;
 				// コードがドミナントまたはサブドミナントの場合
 				default:

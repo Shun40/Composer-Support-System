@@ -58,9 +58,9 @@ public class UniversalConstants {
 	public static final String[] WHITE_KEY_INTERVALS = {"B", "A", "G", "F", "E", "D", "C"};
 	public static final String[] BLACK_KEY_INTERVALS = {"A#", "G#", "F#", "D#", "C#"};
 	public static final Integer[] CAN_USE_PITCHES = {
-		55, 57, 59,
-		60, 62, 64, 65, 67, 69, 71,
-		72, 74, 76, 77, 79, 81, 83
+		55, 57, 59, // G3, A3, B3
+		60, 62, 64, 65, 67, 69, 71, // C4, D4, E4, F4, G4, A4, B4
+		72, 74, 76, 77, 79, 81, 83 // C5, D5, E5, F5, G5, A5, B5
 	};
 
 	public static enum Algorithm {
@@ -89,7 +89,7 @@ public class UniversalConstants {
 		ABAB, // A-B-A'-B'
 		AABB, // A-A'-B-B'
 		AABC, // A-A'-B-C
-		ABCC, // A-B-C-C'
+		//ABCC, // A-B-C-C'
 		ABCD  // A-B-C-D
 	};
 
