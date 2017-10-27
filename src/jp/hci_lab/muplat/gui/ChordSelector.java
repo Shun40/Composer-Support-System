@@ -10,13 +10,11 @@ import javafx.scene.control.ChoiceBox;
  */
 public class ChordSelector extends ChoiceBox<String> {
 	private int index;
-	private boolean setupFinished;
 	private ChordSelectorPair parent;
 
 	public ChordSelector(int index, int x, int y, ChordSelectorPair parent) {
 		super();
 		this.index = index;
-		this.setupFinished = false;
 		this.parent = parent;
 		setupComboBox();
 		setupPoint(x, y);
@@ -26,7 +24,6 @@ public class ChordSelector extends ChoiceBox<String> {
 	public void setupComboBox() {
 		setItems(chords);
 		setValue(initValue);
-		setChord(initValue, index);
 	}
 
 	public void setupPoint(int x, int y) {
@@ -37,16 +34,8 @@ public class ChordSelector extends ChoiceBox<String> {
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends String> ov, String oldVal, String newVal)->{
-				setChord(newVal, index);
+				parent.makeAccompaniment(newVal, index);
 			}
 		);
-		setupFinished = true;
-	}
-
-	public void setChord(String chord, int index) {
-		parent.setChord(chord, index);
-		if(setupFinished) {
-			parent.makeAccompaniment(chord, index);
-		}
 	}
 }

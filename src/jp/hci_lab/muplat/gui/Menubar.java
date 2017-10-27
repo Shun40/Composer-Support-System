@@ -1,6 +1,7 @@
 package gui;
 import static gui.constants.MenubarConstants.*;
 
+import gui.constants.UniversalConstants.ChordProgression;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -84,5 +85,21 @@ public class Menubar extends MenuBar {
 		});
 		menu2.getItems().addAll(item2_1, item2_2, new SeparatorMenuItem(), item2_3, item2_4);
 		getMenus().addAll(menu2);
+
+		Menu menu3 = new Menu("コード進行");
+		MenuItem[] item3 = new MenuItem[ChordProgression.values().length];
+		for(int n = 0; n < item3.length; n++) {
+			item3[n] = new MenuItem(ChordProgression.values()[n].toString());
+			item3[n].setUserData(n);
+			item3[n].setMnemonicParsing(false);
+			MenuItem self = item3[n];
+			item3[n].setOnAction(new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					parent.setChordProgression((int)self.getUserData());
+				}
+			});
+			menu3.getItems().add(item3[n]);
+		}
+		getMenus().addAll(menu3);
 	}
 }

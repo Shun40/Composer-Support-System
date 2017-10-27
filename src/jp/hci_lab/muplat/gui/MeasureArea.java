@@ -22,7 +22,6 @@ import javafx.scene.text.Font;
 
 public class MeasureArea extends Group {
 	private int measureCount;
-	private ChordPair chords[];
 	private Rectangle[] measureFrames;
 	private Label[] measureLabels;
 	private final ToggleGroup toggleGroup;
@@ -38,7 +37,6 @@ public class MeasureArea extends Group {
 		this.parent = parent;
 		setClip(new Rectangle(MEASURE_WIDTH * SHOW_MEASURE_COUNT + 0.5, 64 + 0.5)); // 実際に表示する領域サイズ
 		setupPoint(x, y);
-		setupChords();
 		setupMeasureFrames();
 		setupMeasureLabels();
 		setupPredictionTargetButtons();
@@ -52,13 +50,6 @@ public class MeasureArea extends Group {
 	public void setupPoint(int x, int y) {
 		setLayoutX(x);
 		setLayoutY(y);
-	}
-
-	public void setupChords() {
-		chords = new ChordPair[measureCount];
-		for(int measure = 0; measure < measureCount; measure++) {
-			chords[measure] = new ChordPair();
-		}
 	}
 
 	public void setupMeasureFrames() {
@@ -192,10 +183,11 @@ public class MeasureArea extends Group {
 		parent.makeAccompaniment(chord, measure, index);
 	}
 
-	public String getChord(int measure, int index) {
-		return chords[measure - 1].getChord(index);
-	}
 	public void setChord(String chord, int measure, int index) {
-		this.chords[measure - 1].setChord(chord, index);
+		chordSelectorPairs[measure - 1].setChord(chord, index);
+	}
+
+	public String getChord(int measure, int index) {
+		return chordSelectorPairs[measure - 1].getChord(index);
 	}
 }

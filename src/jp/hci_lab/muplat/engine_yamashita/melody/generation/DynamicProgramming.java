@@ -5,6 +5,8 @@ import static gui.constants.UniversalConstants.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import gui.constants.UniversalConstants.Algorithm;
+
 public class DynamicProgramming {
 	// DPに必要なパラメータや情報
 	private RangeAppearanceProbability rangeAppearanceProbability;
@@ -25,7 +27,7 @@ public class DynamicProgramming {
 		numPitch = (maxPitch - minPitch) + 1;
 	}
 
-	public void makeMelodyByDP(ArrayList<MelodyLabel> melodyLabels) {
+	public void makeMelodyByDP(ArrayList<MelodyLabel> melodyLabels, ArrayList<Algorithm> algorithms) {
 		int N = melodyLabels.size() - 1; // 先頭dummy分-1
 
 		// 音高列X
@@ -93,8 +95,10 @@ public class DynamicProgramming {
 						rangeAppearanceProbability.getProbability(k)
 						* chordAppearanceProbability.getProbability(melodyLabels.get(i).getChord(), k);
 				// 非和声音を考慮した出現確率補正
-				b *= correctNonChordToneAboutDuration(melodyLabels.get(i), k);
-				b *= correctNonChordToneAboutStart(melodyLabels.get(i), k);
+				if(algorithms.contains(Algorithm.MN)) {
+					b *= correctNonChordToneAboutDuration(melodyLabels.get(i), k);
+					b *= correctNonChordToneAboutStart(melodyLabels.get(i), k);
+				}
 
 				delta[i][k] = max_j * b;
 				psi[i][k] = argmax_j;

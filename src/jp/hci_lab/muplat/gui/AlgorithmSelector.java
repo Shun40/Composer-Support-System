@@ -2,8 +2,11 @@ package gui;
 import java.util.ArrayList;
 
 import gui.constants.UniversalConstants.Algorithm;
+import gui.constants.UniversalConstants.MelodyStructurePattern;
+import javafx.collections.FXCollections;
 import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 
@@ -13,12 +16,14 @@ import javafx.scene.text.Font;
  */
 public class AlgorithmSelector extends Group {
 	private CheckBox[] checkBoxes;
+	private ChoiceBox<MelodyStructurePattern> choiceBox;
 
 	public AlgorithmSelector(Algorithm algorithm, int x, int y) {
 		super();
 		setupPoint(x, y);
 		setupLabel();
 		setupCheckBoxes();
+		setupChoiceBox();
 	}
 
 	public void setupPoint(int x, int y) {
@@ -47,6 +52,15 @@ public class AlgorithmSelector extends Group {
 		}
 	}
 
+	public void setupChoiceBox() {
+		choiceBox = new ChoiceBox<MelodyStructurePattern>();
+		choiceBox.setItems(FXCollections.observableArrayList(MelodyStructurePattern.values()));
+		choiceBox.setValue(MelodyStructurePattern.ABCD);
+		choiceBox.setLayoutX(150);
+		choiceBox.setLayoutY(22);
+		getChildren().add(choiceBox);
+	}
+
 	public ArrayList<Algorithm> getSelectedAlgorithms() {
 		ArrayList<Algorithm> algorithms = new ArrayList<Algorithm>();
 		for(CheckBox checkBox : checkBoxes) {
@@ -55,5 +69,9 @@ public class AlgorithmSelector extends Group {
 			}
 		}
 		return algorithms;
+	}
+
+	public MelodyStructurePattern getSelectedMelodyStructurePattern() {
+		return choiceBox.getValue();
 	}
 }

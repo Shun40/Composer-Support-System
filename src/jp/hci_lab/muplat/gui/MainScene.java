@@ -16,6 +16,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
 import engine_yamashita.Accompaniment;
+import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
 import engine_yamashita.melody.reference.MelodyPattern;
@@ -99,8 +100,8 @@ public class MainScene extends Scene {
 		uiController.close();
 	}
 
-	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation) {
-		return uiController.prediction(predictionInformation);
+	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation, AlgorithmInformation algorithmInformation) {
+		return uiController.prediction(predictionInformation, algorithmInformation);
 	}
 
 	public void incWordDictionaryFrequency(String wordId) {
@@ -113,6 +114,10 @@ public class MainScene extends Scene {
 
 	public Accompaniment makeAccompaniment(String chord) {
 		return uiController.makeAccompaniment(chord);
+	}
+
+	public void setChordProgression(int index) {
+		pianoroll.setChordProgression(index);
 	}
 
 	// 本当はエンジン側で読み込み処理をやるべきだが, とりあえずGUI側で簡易な読み込み処理を実装

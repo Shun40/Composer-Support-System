@@ -6,12 +6,13 @@ import java.util.ArrayList;
 
 import engine_yamashita.melody.reference.MelodyPattern;
 import gui.Note;
+import gui.constants.UniversalConstants.Algorithm;
 
 public class MelodyMaker {
 	public MelodyMaker() {
 	}
 
-	public ArrayList<MelodyLabel> makeMelody(MelodyPattern context, MelodyPattern word, Note justBeforeNote, ArrayList<String> chordProgression, String justBeforeChord) {
+	public ArrayList<MelodyLabel> makeMelody(MelodyPattern context, MelodyPattern word, Note justBeforeNote, ArrayList<String> chordProgression, String justBeforeChord, ArrayList<Algorithm> algorithms) {
 		ArrayList<MelodyLabel> melodyLabels = new ArrayList<MelodyLabel>();
 
 		// 直前音符の情報
@@ -46,7 +47,7 @@ public class MelodyMaker {
 		}
 
 		DynamicProgramming dynamicProgramming = new DynamicProgramming();
-		dynamicProgramming.makeMelodyByDP(melodyLabels);
+		dynamicProgramming.makeMelodyByDP(melodyLabels, algorithms);
 
 		return melodyLabels;
 	}

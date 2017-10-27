@@ -32,9 +32,14 @@ public class ChordSelectorPair extends Group {
 	}
 
 	public void setChord(String chord, int index) {
-		parent.setChord(chord, measure, index);
+		chordSelectors[index].setValue(chord);
 	}
 
+	public String getChord(int index) {
+		return chordSelectors[index].getValue();
+	}
+
+	// コンボボックスからコードが指定された時に伴奏を更新するために呼ぶ
 	public void makeAccompaniment(String chord, int index) {
 		parent.makeAccompaniment(chord, measure, index);
 	}

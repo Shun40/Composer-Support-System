@@ -5,9 +5,12 @@ import static gui.constants.UniversalConstants.*;
 import java.util.ArrayList;
 
 import engine_yamashita.Accompaniment;
+import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
 import gui.constants.UniversalConstants.Algorithm;
+import gui.constants.UniversalConstants.ChordProgression;
+import gui.constants.UniversalConstants.MelodyStructurePattern;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -264,11 +267,13 @@ public class Pianoroll extends Group {
 			chordProgression[i].setChord(measureArea.getChord(i+1, 1), 1);
 		}
 		// 選択アルゴリズム
-		ArrayList<Algorithm> algorithms = algorithmSelector.getSelectedAlgorithms();
+		ArrayList<Algorithm> selectedAlgorithms = algorithmSelector.getSelectedAlgorithms();
+		MelodyStructurePattern selectedMelodyStructurePattern = algorithmSelector.getSelectedMelodyStructurePattern();
 
 		// 予測変換
-		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression, algorithms);
-		return parent.prediction(predictionInformation);
+		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression);
+		AlgorithmInformation algorithmInformation = new AlgorithmInformation(selectedAlgorithms, selectedMelodyStructurePattern);
+		return parent.prediction(predictionInformation, algorithmInformation);
 	}
 
 	public void incWordDictionaryFrequency(String wordId) {
@@ -319,6 +324,15 @@ public class Pianoroll extends Group {
 			putNote(pitch, position, duration);
 		}
 		setCurrentTrack(1);
+	}
+
+	public void setChordProgression(int index) {
+		ChordProgression chordProgression = ChordProgression.values()[index];
+		String[] chords = chordProgression.toString().split("_");
+		for(int n = 0; n < chords.length; n++) {
+			System.out.println(chords[n]);
+			measureArea.setChord(chords[n], (n / 2) + 1, (n % 2));
+		}
 	}
 
 	public int getResolution() { return noteResolutionSelector.getIntValue(); }

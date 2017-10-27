@@ -14,6 +14,7 @@ import javax.sound.midi.Track;
 
 import engine_yamashita.Accompaniment;
 import engine_yamashita.AccompanimentMaker;
+import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.Melody;
 import engine_yamashita.PredictionInformation;
 import engine_yamashita.PredictionPattern;
@@ -157,11 +158,11 @@ public class UIController {
 		sequencer.close();
 	}
 
-	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation) {
+	public ArrayList<PredictionPattern> prediction(PredictionInformation predictionInformation, AlgorithmInformation algorithmInformation) {
 		ArrayList<PredictionPattern> predictionPatterns = new ArrayList<PredictionPattern>();
 
 		// メロディ分析
-		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(predictionInformation);
+		ArrayList<Melody> melodies = melodyAnalyzer.getMelodies(predictionInformation, algorithmInformation);
 
 		for(int n = 0; n < melodies.size(); n++) {
 			PredictionPattern predictionPattern = new PredictionPattern();

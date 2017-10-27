@@ -63,10 +63,19 @@ public class UniversalConstants {
 		72, 74, 76, 77, 79, 81, 83 // C5, D5, E5, F5, G5, A5, B5
 	};
 
+	public static enum ChordProgression {
+		C_C_F_F_G_G_C_C,
+		F_F_G_G_Em_Em_Am_Am,
+		Am_Am_F_F_G_G_C_C,
+		F_F_G_G_Am_Am_Am_Am,
+		C_C_Am_Am_Dm_Dm_G_G,
+		Am_Am_G_G_F_G_C_C
+	};
+
 	public static enum Algorithm {
 		PC, // Prediction Conversion
 		MS, // Melody Structure
-		CF  // Chord Function
+		MN  // Musical Naturality
 	};
 
 	public static enum ChordFunction {
@@ -85,12 +94,12 @@ public class UniversalConstants {
 		RHYTHM // リズムパターン
 	};
 
-	public static enum MelodyStructureType {
+	public static enum MelodyStructurePattern {
+		ABCD, // A-B-C-D
 		ABAB, // A-B-A'-B'
 		AABB, // A-A'-B-B'
 		AABC, // A-A'-B-C
-		//ABCC, // A-B-C-C'
-		ABCD  // A-B-C-D
+		ABCC  // A-B-C-C'
 	};
 
 	public static final int PPQ = 480; // 4分音符のTick数
