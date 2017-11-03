@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
-
+import MIDI.MIDIConstants;
 import engine_yamashita.Accompaniment;
 import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.PredictionInformation;
@@ -60,7 +58,7 @@ public class MainScene extends Scene {
 	}
 
 	public void setupPianoroll() {
-		pianoroll = new Pianoroll(DEFAULT_MEASURE, DEFAULT_OCTAVE, DEFAULT_BPM, this);
+		pianoroll = new Pianoroll(DEFAULT_MEASURE, DEFAULT_OCTAVE, MIDIConstants.DEFAULT_BPM, this);
 		((Group)getRoot()).getChildren().add(pianoroll);
 	}
 
@@ -69,23 +67,15 @@ public class MainScene extends Scene {
 	}
 
 	public void addNoteToEngine(Note note) {
-		uiController.addNoteToEngine(note);
+		uiController.addNoteToSequencer(note);
 	}
 
 	public void removeNoteFromEngine(Note note) {
-		uiController.removeNoteFromEngine(note);
+		uiController.removeNoteFromSequencer(note);
 	}
 
 	public void clearNoteFromEngine() {
-		uiController.clearNoteFromEngine();
-	}
-
-	public void setTrackMute(int track, boolean mute) {
-		uiController.setTrackMute(track, mute);
-	}
-
-	public void setTrackSolo(int track, boolean solo) {
-		uiController.setTrackSolo(track, solo);
+		uiController.clearNoteFromSequencer();
 	}
 
 	public void play() {
@@ -187,23 +177,7 @@ public class MainScene extends Scene {
 
 	// 本当はエンジン側で保存処理をやるべきだが, とりあえずGUI側で簡易な保存処理を実装
 	public void saveMidiFile() {
-		Sequence sequence = uiController.getSequence();
-
-		final FileChooser fc = new FileChooser();
-		fc.setTitle("MIDIファイルに保存");
-		fc.setInitialFileName((new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".mid");
-		fc.getExtensionFilters().addAll(
-			new ExtensionFilter("MIDI Files", "*.mid"),
-			new ExtensionFilter("All Files", "+.+")
-		);
-		File saveFile = fc.showSaveDialog(null);
-		if(saveFile != null) {
-			try {
-				MidiSystem.write(sequence, 1, saveFile); // タイプはマルチトラックフォーマットの1を指定
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		uiController.saveMidiFile();
 	}
 
 	public void readWordDictionaryFile() {

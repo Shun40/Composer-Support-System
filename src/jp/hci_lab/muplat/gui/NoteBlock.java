@@ -4,6 +4,7 @@ import static gui.constants.UniversalConstants.*;
 
 import java.util.Arrays;
 
+import MIDI.MIDIConstants;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -43,8 +44,8 @@ public class NoteBlock extends Rectangle {
 		int track    = parent.getCurrentTrack();
 		int program  = PROGRAM_NUMBERS[track - 1];
 		int pitch    = (int)((MAX_OCTAVE + 2) * 12 - ((getY() - 0.5) / getHeight()) - 1);
-		int position = (int)((PPQ / 4) * ((getX() - 0.5) / 10));
-		int duration = (int)((getWidth() / BEAT_WIDTH) * PPQ);
+		int position = (int)((MIDIConstants.PPQ / 4) * ((getX() - 0.5) / 10));
+		int duration = (int)((getWidth() / BEAT_WIDTH) * MIDIConstants.PPQ);
 		int velocity = 100;
 		note = new Note(track, program, pitch, position, duration, velocity, this);
 		// 発音

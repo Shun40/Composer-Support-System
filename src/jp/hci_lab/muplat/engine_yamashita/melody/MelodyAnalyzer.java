@@ -1,9 +1,8 @@
 package engine_yamashita.melody;
 
-import static gui.constants.UniversalConstants.*;
-
 import java.util.ArrayList;
 
+import MIDI.MIDIConstants;
 import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.Melody;
 import engine_yamashita.PredictionInformation;
@@ -396,7 +395,7 @@ public class MelodyAnalyzer {
 		int[] positions = new int[melody.size()];
 		int[] durations = new int[melody.size()];
 		for(int i = 0; i < melody.size(); i++) {
-			positions[i] = melody.get(i).getPosition() % (PPQ * 4);
+			positions[i] = melody.get(i).getPosition() % (MIDIConstants.PPQ * 4);
 			durations[i] = melody.get(i).getDuration();
 		}
 
@@ -412,7 +411,7 @@ public class MelodyAnalyzer {
 		ArrayList<Note> inMeasureNotes = new ArrayList<Note>();
 		for(int i = 0; i < melodyNotes.size(); i++) {
 			int position = melodyNotes.get(i).getPosition();
-			if((position / (PPQ * 4)) + 1 == targetMeasure) {
+			if((position / (MIDIConstants.PPQ * 4)) + 1 == targetMeasure) {
 				inMeasureNotes.add(melodyNotes.get(i));
 			}
 		}

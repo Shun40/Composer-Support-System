@@ -1,10 +1,10 @@
 package gui;
 
 import static gui.constants.PatternAreaConstants.*;
-import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
+import MIDI.MIDIConstants;
 import engine_yamashita.PredictionPattern;
 import javafx.scene.Group;
 import javafx.scene.control.TextField;
@@ -112,7 +112,7 @@ public class PatternArea extends Group {
 		for(Note note : melody) {
 			int track    = note.getTrack();
 			int pitch    = note.getPitch();
-			int position = note.getPosition() + (PPQ * 4) * (targetMeasure - 1);
+			int position = note.getPosition() + (MIDIConstants.PPQ * 4) * (targetMeasure - 1);
 			int duration = note.getDuration();
 			parent.setCurrentTrack(track);
 			parent.putNote(pitch, position, duration);

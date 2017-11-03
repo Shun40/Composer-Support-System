@@ -1,10 +1,9 @@
 package engine_yamashita.melody.generation;
 
-import static gui.constants.UniversalConstants.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import MIDI.MIDIConstants;
 import gui.constants.UniversalConstants.Algorithm;
 
 public class DynamicProgramming {
@@ -133,7 +132,7 @@ public class DynamicProgramming {
 		int duration = melodyLabel.getDuration();
 		boolean isChordTone = isChordTone(chord, minPitch + pitch);
 		// 4分音符よりも長い音価に非和声音が割当てられるのを抑制
-		if(!isChordTone && duration > PPQ) return 0.25;
+		if(!isChordTone && duration > MIDIConstants.PPQ) return 0.25;
 		else return 1.0;
 	}
 
@@ -143,7 +142,7 @@ public class DynamicProgramming {
 		int position = melodyLabel.getPosition();
 		boolean isChordTone = isChordTone(chord, minPitch + pitch);
 		// 小節の頭に非和声音が割当てられるのを抑制
-		if(!isChordTone && (position % (PPQ * 4)) == 0) return 0.25;
+		if(!isChordTone && (position % (MIDIConstants.PPQ * 4)) == 0) return 0.25;
 		else return 1.0;
 	}
 

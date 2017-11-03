@@ -1,9 +1,8 @@
 package engine_yamashita.melody.generation;
 
-import static gui.constants.UniversalConstants.*;
-
 import java.util.ArrayList;
 
+import MIDI.MIDIConstants;
 import engine_yamashita.melody.reference.MelodyPattern;
 import gui.Note;
 import gui.constants.UniversalConstants.Algorithm;
@@ -41,8 +40,8 @@ public class MelodyMaker {
 			int position = word.get(i).getPosition();
 			int duration = word.get(i).getDuration();
 			String chord = "N.C.";
-			if(position / (PPQ * 2) == 0) chord = chordProgression.get(0);
-			if(position / (PPQ * 2) == 1) chord = chordProgression.get(1);
+			if(position / (MIDIConstants.PPQ * 2) == 0) chord = chordProgression.get(0);
+			if(position / (MIDIConstants.PPQ * 2) == 1) chord = chordProgression.get(1);
 			melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
 		}
 

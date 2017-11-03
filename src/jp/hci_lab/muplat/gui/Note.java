@@ -1,6 +1,8 @@
 package gui;
 import static gui.constants.UniversalConstants.*;
 
+import MIDI.MIDIConstants;
+
 /**
  * ノートが持つ音楽的情報のクラス
  * @author Shun Yamashita
@@ -29,8 +31,8 @@ public class Note {
 		int y = (int)(parent.getY() - 0.5);
 		int oldPitch = pitch;
 		int newPitch = (int)((MAX_OCTAVE + 2) * 12 - (y / parent.getHeight()) - 1);
-		position = (PPQ / 4) * (x / 10);
-		duration = (int)((parent.getWidth() / BEAT_WIDTH) * PPQ);
+		position = (MIDIConstants.PPQ / 4) * (x / 10);
+		duration = (int)((parent.getWidth() / BEAT_WIDTH) * MIDIConstants.PPQ);
 		// 音高が変化したら再発音
 		if(oldPitch != newPitch) {
 			// 無発音

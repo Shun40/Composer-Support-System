@@ -4,6 +4,7 @@ import static gui.constants.UniversalConstants.*;
 
 import java.util.ArrayList;
 
+import MIDI.MIDIConstants;
 import engine_yamashita.Accompaniment;
 import engine_yamashita.AlgorithmInformation;
 import engine_yamashita.PredictionInformation;
@@ -34,12 +35,9 @@ public class Pianoroll extends Group {
 	private PlayButton playButton;
 	private EditArea editArea;
 	private Keyboard keyboard;
-	//private InstrumentSelector instrumentSelector;
 	private MeasureArea measureArea;
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
-	private TrackMuteSelector trackMuteSelector;
-	private TrackSoloSelector trackSoloSelector;
 	private PatternArea patternArea;
 	private AlgorithmSelector algorithmSelector;
 
@@ -56,11 +54,8 @@ public class Pianoroll extends Group {
 		setupPlayButton();
 		setupEditArea();
 		setupKeyboard();
-		//setupInstrumentSelector();
 		setupHScrollBar();
 		setupVScrollBar();
-		//setupMuteTrackSelector();
-		//setupSoloTrackSelector();
 		setupPatternArea();
 		setupMeasureArea();
 		setupAlgorithmSelector();
@@ -126,23 +121,6 @@ public class Pianoroll extends Group {
 		});
 		vScrollBar.setValue(50.0); // 真ん中らへんの音程(C4~C5あたり)を表示するよう垂直方向スクロール値を設定
 		getChildren().add(vScrollBar);
-	}
-
-	/*
-	public void setupInstrumentSelector() {
-		instrumentSelector = new InstrumentSelector(INSTRUMENT_SELECTOR_X, INSTRUMENT_SELECTOR_Y, this);
-		getChildren().add(instrumentSelector);
-	}
-	*/
-
-	public void setupMuteTrackSelector() {
-		trackMuteSelector = new TrackMuteSelector(TRACK_MUTE_SELECTOR_X, TRACK_MUTE_SELECTOR_Y, this);
-		getChildren().add(trackMuteSelector);
-	}
-
-	public void setupSoloTrackSelector() {
-		trackSoloSelector = new TrackSoloSelector(TRACK_SOLO_SELECTOR_X, TRACK_SOLO_SELECTOR_Y, this);
-		getChildren().add(trackSoloSelector);
 	}
 
 	public void setupPatternArea() {
@@ -304,21 +282,21 @@ public class Pianoroll extends Group {
 		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, drumTrack);
 		for(int i = 0; i < pianoPart.size(); i++) {
 			int pitch    = pianoPart.get(i).getPitch();
-			int position = pianoPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int position = pianoPart.get(i).getPosition() + (MIDIConstants.PPQ * 4) * (targetMeasure - 1) + MIDIConstants.PPQ * (targetBeat1 - 1);
 			int duration = pianoPart.get(i).getDuration();
 			setCurrentTrack(pianoTrack);
 			putNote(pitch, position, duration);
 		}
 		for(int i = 0; i < bassPart.size(); i++) {
 			int pitch    = bassPart.get(i).getPitch();
-			int position = bassPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int position = bassPart.get(i).getPosition() + (MIDIConstants.PPQ * 4) * (targetMeasure - 1) + MIDIConstants.PPQ * (targetBeat1 - 1);
 			int duration = bassPart.get(i).getDuration();
 			setCurrentTrack(bassTrack);
 			putNote(pitch, position, duration);
 		}
 		for(int i = 0; i < drumPart.size(); i++) {
 			int pitch    = drumPart.get(i).getPitch();
-			int position = drumPart.get(i).getPosition() + (PPQ * 4) * (targetMeasure - 1) + PPQ * (targetBeat1 - 1);
+			int position = drumPart.get(i).getPosition() + (MIDIConstants.PPQ * 4) * (targetMeasure - 1) + MIDIConstants.PPQ * (targetBeat1 - 1);
 			int duration = drumPart.get(i).getDuration();
 			setCurrentTrack(drumTrack);
 			putNote(pitch, position, duration);
@@ -354,9 +332,6 @@ public class Pianoroll extends Group {
 		this.currentTrack = currentTrack;
 		editArea.changeCurrentTrack(currentTrack);
 		keyboard.changeInstrument(currentTrack, PROGRAM_NUMBERS[currentTrack - 1]);
-		//instrumentSelector.setSelectedTrack(currentTrack);
 	}
-	public void setTrackMute(int track, boolean mute) { parent.setTrackMute(track, mute); }
-	public void setTrackSolo(int track, boolean solo) { parent.setTrackSolo(track, solo); }
 	public int getPredictionTargetMeasure() { return measureArea.getPredictionTarget(); }
 }
