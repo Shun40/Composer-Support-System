@@ -1,26 +1,29 @@
 package gui;
-import static gui.constants.MainConstants.*;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.stage.Stage;
+import midi.Synth;
+import system.AppConstants;
 
 /**
- * システムを実行するMainクラス
+ * システムのMainクラス
  * @author Shun Yamashita
  */
 public class Main extends Application {
-	private MainScene scene;
+	private AppScene scene;
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		new UISynth();
+		new Synth();
 
 		Group root = new Group();
-		scene = new MainScene(root, CLIENT_AREA_WIDTH + WINDOW_OFFSET_WIDTH, CLIENT_AREA_HEIGHT + WINDOW_OFFSET_HEIGHT);
+		int width = GuiConstants.AppSize.WIDTH;
+		int height = GuiConstants.AppSize.HEIGHT;
+		scene = new AppScene(root, width, height);
 
-		stage.setTitle("muplat");
+		stage.setTitle(AppConstants.APP_NAME);
 		stage.setResizable(false);
 		stage.setOnCloseRequest(req -> close());
 		stage.setScene(scene);
@@ -29,7 +32,7 @@ public class Main extends Application {
 
 	public void close() {
 		scene.close();
-		UISynth.close();
+		Synth.close();
 		Platform.exit();
 	}
 

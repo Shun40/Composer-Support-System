@@ -1,0 +1,85 @@
+package engine;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import gui.component.pianoroll.note.NoteModel;
+
+public class AccompanimentMaker {
+	public AccompanimentMaker() {
+	}
+
+	public List<NoteModel> makePianoPart(String chord) {
+		List<NoteModel> pianoPart = new ArrayList<NoteModel>();
+		List<Integer> chordPitches = new ArrayList<Integer>();
+
+		switch(chord) {
+		case "C": chordPitches.addAll(Arrays.asList(60, 64, 67)); break;
+		case "CM7": chordPitches.addAll(Arrays.asList(60, 64, 67, 71)); break;
+		case "Dm": chordPitches.addAll(Arrays.asList(62, 65, 69)); break;
+		case "Dm7": chordPitches.addAll(Arrays.asList(62, 65, 69, 72)); break;
+		case "Em": chordPitches.addAll(Arrays.asList(64, 67, 71)); break;
+		case "Em7": chordPitches.addAll(Arrays.asList(64, 67, 71, 74)); break;
+		case "F": chordPitches.addAll(Arrays.asList(65, 69, 72)); break;
+		case "FM7": chordPitches.addAll(Arrays.asList(65, 69, 72, 76)); break;
+		case "G": chordPitches.addAll(Arrays.asList(67, 71, 74)); break;
+		case "G7": chordPitches.addAll(Arrays.asList(67, 71, 74, 77)); break;
+		case "Am": chordPitches.addAll(Arrays.asList(69, 72, 76)); break;
+		case "Am7": chordPitches.addAll(Arrays.asList(69, 72, 76, 79)); break;
+		case "Bmb5": chordPitches.addAll(Arrays.asList(71, 74, 77)); break;
+		case "Bm7b5": chordPitches.addAll(Arrays.asList(71, 74, 77, 81)); break;
+		}
+		for(int n = 0; n < chordPitches.size(); n++) {
+			pianoPart.add(new NoteModel(1, 82, chordPitches.get(n), 0, 960, 100));
+		}
+		return pianoPart;
+	}
+
+	public List<NoteModel> makeBassPart(String chord) {
+		List<NoteModel> bassPart = new ArrayList<NoteModel>();
+		int rootTone = 0;
+
+		if(chord.equals("N.C.")) return bassPart;
+
+		switch(chord) {
+		case "C":
+		case "CM7":
+			rootTone = 48; break;
+		case "Dm":
+		case "Dm7":
+			rootTone = 50; break;
+		case "Em":
+		case "Em7":
+			rootTone = 52; break;
+		case "F":
+		case "FM7":
+			rootTone = 53; break;
+		case "G":
+		case "G7":
+			rootTone = 55; break;
+		case "Am":
+		case "Am7":
+			rootTone = 57; break;
+		case "Bmb5":
+		case "Bm7b5":
+			rootTone = 59; break;
+		}
+		for(int i = 0; i < 4; i++) {
+			bassPart.add(new NoteModel(9, 34, rootTone, 240 * i, 240, 100));
+		}
+		return bassPart;
+	}
+
+	public List<NoteModel> makeDrumPart() {
+		List<NoteModel> drumPart = new ArrayList<NoteModel>();
+
+		drumPart.add(new NoteModel(10, 1, 36, 0, 120, 100));
+		drumPart.add(new NoteModel(10, 1, 38, 480, 120, 100));
+		drumPart.add(new NoteModel(10, 1, 42, 0, 120, 100));
+		drumPart.add(new NoteModel(10, 1, 42, 240, 120, 100));
+		drumPart.add(new NoteModel(10, 1, 42, 480, 120, 100));
+		drumPart.add(new NoteModel(10, 1, 42, 720, 120, 100));
+		return drumPart;
+	}
+}
