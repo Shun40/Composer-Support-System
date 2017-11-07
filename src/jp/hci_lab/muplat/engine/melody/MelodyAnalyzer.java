@@ -15,6 +15,7 @@ import engine.melody.reference.MelodyPattern;
 import gui.component.pianoroll.note.Note;
 import gui.component.pianoroll.note.NoteModel;
 import midi.MidiConstants;
+import midi.MidiUtil;
 import system.AppConstants;
 
 /**
@@ -110,10 +111,10 @@ public class MelodyAnalyzer {
 				int frequency = wordDictionary.get(rank[m]).getFrequency();
 				Melody melody = new Melody(index, id, name, frequency);
 				for(int n = 1; n < melodyLabels.get(rank[m]).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
-					int track = 1;
-					int program = 0;
+					int track = AppConstants.MelodySettings.MELODY_TRACK;
+					int program = AppConstants.MelodySettings.MELODY_PROGRAM;
 					int pitch = melodyLabels.get(rank[m]).get(n).getPitch();
-					int position = melodyLabels.get(rank[m]).get(n).getPosition();
+					int position = melodyLabels.get(rank[m]).get(n).getPosition() + (targetMeasure - 1) * MidiUtil.getDurationOf1Measure();
 					int duration = melodyLabels.get(rank[m]).get(n).getDuration();
 					int velocity = 100;
 					melody.add(new NoteModel(track, program, pitch, position, duration, velocity));
@@ -185,10 +186,10 @@ public class MelodyAnalyzer {
 				int frequency = phraseDictionary.get(rank[m]).getFrequency();
 				Melody melody = new Melody(index, id, name, frequency);
 				for(int n = 1; n < melodyLabels.get(rank[m]).size(); n++) { // 先頭には直前音符の情報が入っているので1から始める
-					int track = 1;
-					int program = 0;
+					int track = AppConstants.MelodySettings.MELODY_TRACK;
+					int program = AppConstants.MelodySettings.MELODY_PROGRAM;
 					int pitch = melodyLabels.get(rank[m]).get(n).getPitch();
-					int position = melodyLabels.get(rank[m]).get(n).getPosition();
+					int position = melodyLabels.get(rank[m]).get(n).getPosition() + (targetMeasure - 1) * MidiUtil.getDurationOf1Measure();
 					int duration = melodyLabels.get(rank[m]).get(n).getDuration();
 					int velocity = 100;
 					melody.add(new NoteModel(track, program, pitch, position, duration, velocity));

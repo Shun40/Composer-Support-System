@@ -2,12 +2,15 @@ package gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.Accompaniment;
+import engine.AccompanimentMaker;
 import engine.AlgorithmInformation;
 import engine.PredictionInformation;
 import engine.PredictionPattern;
+import file.FileUtil;
+import file.MupFileData;
 import gui.component.AlgorithmBar;
 import gui.component.BpmSelector;
+import gui.component.Menubar;
 import gui.component.PlayButton;
 import gui.component.ResolutionSelector;
 import gui.component.StopButton;
@@ -21,18 +24,17 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollBar;
-import midi.MidiConstants;
 import system.AppConstants;
+import system.UIController;
 
 /**
- * GUIコンポーネントをまとめて持つクラス
+ * GUIコンポーネントを持つクラス
  * @author Shun Yamashita
  */
-public class GuiManager extends Group {
-	private int bpm;
-	private int currentTrack;
-	private AppScene owner;
+public class GuiManager extends Scene {
+	private UIController uiController;
 
 	private ResolutionSelector resolutionSelector;
 	private BpmSelector bpmSelector;
@@ -40,17 +42,16 @@ public class GuiManager extends Group {
 	private PlayButton playButton;
 	private Pianoroll pianoroll;
 	private Keyboard keyboard;
+	private AlgorithmBar algorithmBar;
+	private PatternBar patternBar;
 	private MeasureBar measureBar;
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
-	private PatternBar patternBar;
-	private AlgorithmBar algorithmBar;
 
-	public GuiManager(AppScene parent) {
-		super();
-		bpm = AppConstants.Settings.DEFAULT_BPM;
-		currentTrack = 1;
-		this.owner = parent;
+	public GuiManager(Group root, int width, int height) {
+		super(root, width, height);
+		uiController = new UIController();
+		setupMenuBar();
 		setupResolutionSelector();
 		setupBpmSelector();
 		setupStopButton();
@@ -62,46 +63,63 @@ public class GuiManager extends Group {
 		setupMeasurebar();
 		setupHScrollBar();
 		setupVScrollBar();
+		readWordDictionary(AppConstants.DEFAULT_WORD_DICTIONARY_FILE);
+		readPhraseDictionary(AppConstants.DEFAULT_PHRASE_DICTIONARY_FILE);
+	}
+
+	public void setupMenuBar() {
+		Menubar menubar = new Menubar(this);
+		((Group)getRoot()).getChildren().add(menubar);
 	}
 
 	public void setupResolutionSelector() {
 		resolutionSelector = new ResolutionSelector(this);
-		getChildren().add(resolutionSelector);
+		((Group)getRoot()).getChildren().add(resolutionSelector);
 	}
 
 	public void setupBpmSelector() {
-		bpmSelector = new BpmSelector(bpm, this);
-		getChildren().add(bpmSelector);
+		bpmSelector = new BpmSelector(this);
+		((Group)getRoot()).getChildren().add(bpmSelector);
 	}
 
 	public void setupStopButton() {
 		stopButton = new StopButton(this);
-		getChildren().add(stopButton);
+		((Group)getRoot()).getChildren().add(stopButton);
 	}
 
 	public void setupPlayButton() {
 		playButton = new PlayButton(this);
-		getChildren().add(playButton);
+		((Group)getRoot()).getChildren().add(playButton);
 	}
 
 	public void setupPianoroll() {
 		pianoroll = new Pianoroll(this);
-		getChildren().add(pianoroll);
-	}
-
-	public void setupMeasurebar() {
-		measureBar = new MeasureBar(this);
-		getChildren().add(measureBar);
+		((Group)getRoot()).getChildren().add(pianoroll);
 	}
 
 	public void setupKeyboard() {
 		keyboard = new Keyboard();
-		getChildren().add(keyboard);
+		((Group)getRoot()).getChildren().add(keyboard);
+	}
+
+	public void setupMeasurebar() {
+		measureBar = new MeasureBar(this);
+		((Group)getRoot()).getChildren().add(measureBar);
+	}
+
+	public void setupAlgorithmBar() {
+		algorithmBar = new AlgorithmBar();
+		((Group)getRoot()).getChildren().add(algorithmBar);
+	}
+
+	public void setupPatternBar() {
+		patternBar = new PatternBar(this);
+		((Group)getRoot()).getChildren().add(patternBar);
 	}
 
 	public void setupHScrollBar() {
 		hScrollBar = new ScrollBar();
-		hScrollBar.setOrientation(Orientation.HORIZONTAL);;
+		hScrollBar.setOrientation(Orientation.HORIZONTAL);
 		hScrollBar.setLayoutX(GuiConstants.Pianoroll.X);
 		hScrollBar.setLayoutY(GuiConstants.Pianoroll.Y + GuiConstants.Pianoroll.MEASURE_HEIGHT * AppConstants.Settings.SHOW_OCTAVES + 1);
 		hScrollBar.setPrefWidth(GuiConstants.Pianoroll.MEASURE_WIDTH * AppConstants.Settings.SHOW_MEASURES + 1);
@@ -109,7 +127,7 @@ public class GuiManager extends Group {
 		hScrollBar.valueProperty().addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
 			hTranslate();
 		});
-		getChildren().add(hScrollBar);
+		((Group)getRoot()).getChildren().add(hScrollBar);
 	}
 
 	public void setupVScrollBar() {
@@ -123,31 +141,27 @@ public class GuiManager extends Group {
 			vTranslate();
 		});
 		vScrollBar.setValue(50.0); // 真ん中らへんの音程(C4~C5あたり)を表示するよう垂直方向スクロール値を設定
-		getChildren().add(vScrollBar);
+		((Group)getRoot()).getChildren().add(vScrollBar);
 	}
 
-	public void setupAlgorithmBar() {
-		algorithmBar = new AlgorithmBar();
-		getChildren().add(algorithmBar);
-	}
-
-	public void setupPatternBar() {
-		patternBar = new PatternBar(this);
-		getChildren().add(patternBar);
-	}
-
+	/**
+	 * 水平方向のコンポーネント移動
+	 */
 	public void hTranslate() {
 		double incPerUnit = -(GuiConstants.Pianoroll.MEASURE_WIDTH * (AppConstants.Settings.MEASURES - AppConstants.Settings.SHOW_MEASURES)) / 100.0;
-		double hScrollBarVal = hScrollBar.getValue();
-		int move = (int)(incPerUnit * hScrollBarVal);
+		double scrollBarVal = hScrollBar.getValue();
+		int move = (int)(incPerUnit * scrollBarVal);
 		pianoroll.translateX(move);
 		measureBar.translate(move);
 	}
 
+	/**
+	 * 垂直方向のコンポーネント移動
+	 */
 	public void vTranslate() {
 		double incPerUnit = -(GuiConstants.Pianoroll.MEASURE_HEIGHT * (AppConstants.Settings.OCTAVES - AppConstants.Settings.SHOW_OCTAVES)) / 100.0;
-		double vScrollBarVal = vScrollBar.getValue();
-		int move = (int)(incPerUnit * vScrollBarVal);
+		double scrollBarVal = vScrollBar.getValue();
+		int move = (int)(incPerUnit * scrollBarVal);
 		pianoroll.translateY(move);
 		keyboard.translate(move);
 	}
@@ -157,23 +171,21 @@ public class GuiManager extends Group {
 	}
 
 	public void stop() {
-		//if(pianoroll.getPlayTimeline() == null) return;
-
 		// エンジンへの停止指示
-		owner.stop();
-
+		uiController.stop();
+		// GUIへの停止指示
 		pianoroll.stop();
+		// 再生実行後の処理
 		setupAfterPlay();
 	}
 
 	public void play() {
+		// 再生実行前の処理
 		setupBeforePlay();
-
 		// エンジンへの再生指示
-		owner.setBpm(bpm);
-		owner.play();
-
-		pianoroll.playAnimation(bpm);
+		uiController.play();
+		// GUIへの再生指示
+		pianoroll.playAnimation(bpmSelector.getBpm());
 	}
 
 	public void setupBeforePlay() {
@@ -191,28 +203,33 @@ public class GuiManager extends Group {
 		stopButton.setDisable(true);
 		playButton.setDisable(false);
 		pianoroll.setupAfterPlay();
-		pianoroll.changeCurrentTrack(currentTrack);
 		hScrollBar.setValue(0.0);
 	}
 
-	public void putNote(int pitch, int position, int duration) {
-		pianoroll.putNote(pitch, position, duration);
+	public void putNote(NoteModel noteModel) {
+		int track = noteModel.getTrack();
+		int program = noteModel.getProgram();
+		int pitch = noteModel.getPitch();
+		int position = noteModel.getPosition();
+		int duration = noteModel.getDuration();
+		int velocity = noteModel.getVelocity();
+		pianoroll.putNote(track, program, pitch, position, duration, velocity);
 	}
 
 	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
 		pianoroll.removeNoteInMeasure(targetMeasure, targetTrack);
 	}
 
-	public void removeNoteIn2Beat(int targetMeasure, int targetBeat1, int targetBeat2, int targetTrack) {
-		pianoroll.removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, targetTrack);
+	public void removeNoteIn2Beats(int targetMeasure, int targetBeat, int targetTrack) {
+		pianoroll.removeNoteIn2Beats(targetMeasure, targetBeat, targetTrack);
 	}
 
 	public void addNoteToSequencer(Note note) {
-		owner.addNoteToSequencer(note);
+		uiController.addNoteToSequencer(note);
 	}
 
 	public void removeNoteFromSequencer(Note note) {
-		owner.removeNoteFromSequencer(note);
+		uiController.removeNoteFromSequencer(note);
 	}
 
 	public void clearNoteFromPianoroll() {
@@ -220,12 +237,28 @@ public class GuiManager extends Group {
 	}
 
 	public void clearNoteFromSequencer() {
-		owner.clearNoteFromSequencer();
+		uiController.clearNoteFromSequencer();
 	}
 
-	/*
-	 * メロディの予測変換を行う
-	 */
+	public void makeAccompaniment(String chord, int targetMeasure, int targetBeat) {
+		List<NoteModel> chordPart = AccompanimentMaker.makeChordPart(chord, targetMeasure, targetBeat);
+		List<NoteModel> bassPart = AccompanimentMaker.makeBassPart(chord, targetMeasure, targetBeat);
+		List<NoteModel> drumPart = AccompanimentMaker.makeDrumPart(targetMeasure, targetBeat);
+		removeNoteIn2Beats(targetMeasure, targetBeat, AppConstants.AccompanimentSettings.CHORD_TRACK);
+		removeNoteIn2Beats(targetMeasure, targetBeat, AppConstants.AccompanimentSettings.BASS_TRACK);
+		removeNoteIn2Beats(targetMeasure, targetBeat, AppConstants.AccompanimentSettings.DRUM_TRACK);
+		for(NoteModel noteModel : chordPart) {
+			putNote(noteModel);
+		}
+		for(NoteModel noteModel : bassPart) {
+			putNote(noteModel);
+		}
+		for(NoteModel noteModel : drumPart) {
+			putNote(noteModel);
+		}
+		pianoroll.updateNoteView();
+	}
+
 	public List<PredictionPattern> prediction() {
 		// 予測変換に必要な情報を取得
 		// 予測変換対象小節
@@ -251,61 +284,15 @@ public class GuiManager extends Group {
 		// 予測変換
 		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression);
 		AlgorithmInformation algorithmInformation = new AlgorithmInformation(selectedAlgorithms, selectedMelodyStructurePattern);
-		return owner.prediction(predictionInformation, algorithmInformation);
-	}
-
-	public void incWordDictionaryFrequency(String wordId) {
-		owner.incFrequencyOfWordDictionary(wordId);
-	}
-
-	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
-		owner.incFrequencyOfPhraseDictionary(contextId, wordId);
+		return uiController.prediction(predictionInformation, algorithmInformation);
 	}
 
 	public void setPredictionPatternList(int targetMeasure) {
 		patternBar.setPredictionPatternList(targetMeasure);
 	}
 
-	public void makeAccompaniment(String chord, int measure, int beat) {
-		Accompaniment accompaniment = owner.makeAccompaniment(chord);
-		List<NoteModel> pianoPart = accompaniment.getPianoPart();
-		List<NoteModel> bassPart = accompaniment.getBassPart();
-		List<NoteModel> drumPart = accompaniment.getDrumPart();
-		int pianoTrack = 2;
-		int bassTrack = 9;
-		int drumTrack = 10;
-		int targetMeasure = measure;
-		int targetBeat1 = beat;
-		int targetBeat2 = beat + 1;
-		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, pianoTrack);
-		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, bassTrack);
-		removeNoteIn2Beat(targetMeasure, targetBeat1, targetBeat2, drumTrack);
-		for(int i = 0; i < pianoPart.size(); i++) {
-			int pitch    = pianoPart.get(i).getPitch();
-			int position = pianoPart.get(i).getPosition() + (MidiConstants.PPQ * 4) * (targetMeasure - 1) + MidiConstants.PPQ * (targetBeat1 - 1);
-			int duration = pianoPart.get(i).getDuration();
-			setCurrentTrack(pianoTrack);
-			putNote(pitch, position, duration);
-		}
-		for(int i = 0; i < bassPart.size(); i++) {
-			int pitch    = bassPart.get(i).getPitch();
-			int position = bassPart.get(i).getPosition() + (MidiConstants.PPQ * 4) * (targetMeasure - 1) + MidiConstants.PPQ * (targetBeat1 - 1);
-			int duration = bassPart.get(i).getDuration();
-			setCurrentTrack(bassTrack);
-			putNote(pitch, position, duration);
-		}
-		for(int i = 0; i < drumPart.size(); i++) {
-			int pitch    = drumPart.get(i).getPitch();
-			int position = drumPart.get(i).getPosition() + (MidiConstants.PPQ * 4) * (targetMeasure - 1) + MidiConstants.PPQ * (targetBeat1 - 1);
-			int duration = drumPart.get(i).getDuration();
-			setCurrentTrack(drumTrack);
-			putNote(pitch, position, duration);
-		}
-		setCurrentTrack(1);
-	}
-
-	public void setChordProgression(int index) {
-		AppConstants.ChordProgression chordProgression = AppConstants.ChordProgression.values()[index];
+	public void setChordProgression(int chordProgressionIndex) {
+		AppConstants.ChordProgression chordProgression = AppConstants.ChordProgression.values()[chordProgressionIndex];
 		String[] chords = chordProgression.toString().split("_");
 		for(int n = 0; n < chords.length; n++) {
 			if(n % 2 == 0) {
@@ -314,6 +301,64 @@ public class GuiManager extends Group {
 				measureBar.setChord(chords[n], (n / 2) + 1, 3); // 3~4拍目
 			}
 		}
+	}
+
+	public void readMupFile() {
+		MupFileData mupFileData = FileUtil.readMupFile();
+		setBpmToPianoroll(mupFileData.getBpm());
+		setBpmToSequencer(mupFileData.getBpm());
+		clearNoteFromPianoroll();
+		clearNoteFromSequencer();
+		for(NoteModel noteModel : mupFileData.getNoteModels()) {
+			putNote(noteModel);
+		}
+	}
+
+	public void writeMupFile() {
+		int bpm = getBpm();
+		List<Note> notes = getNotes();
+		List<NoteModel> noteModels = new ArrayList<NoteModel>();
+		for(Note note : notes) {
+			noteModels.add(note.getModel());
+		}
+		MupFileData mupFileData = new MupFileData(bpm, noteModels);
+		FileUtil.writeMupFile(mupFileData);
+	}
+
+	public void writeMidiFile() {
+		uiController.writeMidiFile();
+	}
+
+	public void readWordDictionary() {
+		uiController.readWordDictionary();
+	}
+
+	public void readWordDictionary(String filename) {
+		uiController.readWordDictionary(filename);
+	}
+
+	public void readPhraseDictionary() {
+		uiController.readPhraseDictionary();
+	}
+
+	public void readPhraseDictionary(String filename) {
+		uiController.readPhraseDictionary(filename);
+	}
+
+	public void showWordDictionary() {
+		uiController.showWordDictionary();
+	}
+
+	public void showPhraseDictionary() {
+		uiController.showPhraseDictionary();
+	}
+
+	public void incWordDictionaryFrequency(String wordId) {
+		uiController.incFrequencyOfWordDictionary(wordId);
+	}
+
+	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
+		uiController.incFrequencyOfPhraseDictionary(contextId, wordId);
 	}
 
 	public int getResolution() {
@@ -337,26 +382,22 @@ public class GuiManager extends Group {
 	}
 
 	public int getBpm() {
-		return bpm;
+		return bpmSelector.getBpm();
 	}
 
-	public void setBpm(int bpm) {
-		this.bpm = bpm;
-		bpmSelector.changeBpm(bpm);
-		owner.setBpm(bpm);
+	public void setBpmToPianoroll(int bpm) {
+		bpmSelector.setBpm(bpm);
 	}
 
-	public int getCurrentTrack() {
-		return currentTrack;
-	}
-
-	public void setCurrentTrack(int currentTrack) {
-		this.currentTrack = currentTrack;
-		pianoroll.changeCurrentTrack(currentTrack);
-		keyboard.changeInstrument(currentTrack, MidiConstants.PROGRAM_NUMBERS[currentTrack - 1]);
+	public void setBpmToSequencer(int bpm) {
+		uiController.setBpm(bpm);
 	}
 
 	public int getPredictionTargetMeasure() {
 		return measureBar.getPredictionTarget();
+	}
+
+	public void close() {
+		uiController.close();
 	}
 }

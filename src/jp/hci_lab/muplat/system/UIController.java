@@ -3,8 +3,6 @@ package system;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.Accompaniment;
-import engine.AccompanimentMaker;
 import engine.AlgorithmInformation;
 import engine.Melody;
 import engine.PredictionInformation;
@@ -80,16 +78,6 @@ public class UIController {
 		}
 
 		return predictionPatterns;
-	}
-
-	public Accompaniment makeAccompaniment(String chord) {
-		Accompaniment accompaniment = new Accompaniment();
-		AccompanimentMaker accompanimentMaker = new AccompanimentMaker();
-		accompaniment.setPianoPart(accompanimentMaker.makePianoPart(chord));
-		accompaniment.setBassPart(accompanimentMaker.makeBassPart(chord));
-		accompaniment.setDrumPart(accompanimentMaker.makeDrumPart());
-
-		return accompaniment;
 	}
 
 	public void readWordDictionary() {

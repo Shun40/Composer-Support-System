@@ -1,7 +1,7 @@
 package gui.component.keyboard.key;
 
-import midi.MidiConstants;
 import midi.MidiUtil;
+import system.AppConstants;
 
 public class KeyModel {
 	private int track;
@@ -10,8 +10,8 @@ public class KeyModel {
 	private final String keyname;
 
 	public KeyModel(int pitch) {
-		track = 1;
-		program = MidiConstants.PROGRAM_NUMBERS[track - 1];
+		track = AppConstants.MelodySettings.MELODY_TRACK;
+		program = AppConstants.MelodySettings.MELODY_PROGRAM;
 		this.pitch = pitch;
 		keyname = MidiUtil.getIntervalWithOctave(pitch);
 	}

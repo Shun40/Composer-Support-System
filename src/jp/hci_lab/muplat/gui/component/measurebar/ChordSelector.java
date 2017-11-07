@@ -9,8 +9,8 @@ import javafx.beans.value.ObservableValue;
  * @author Shun Yamashita
  */
 public class ChordSelector extends ChoiceBoxBase<String> {
-	private int measure;
-	private int beat;
+	private final int measure;
+	private final int beat;
 	private MeasureBar owner;
 
 	public ChordSelector(int measure, int beat, int x, int y, MeasureBar owner) {

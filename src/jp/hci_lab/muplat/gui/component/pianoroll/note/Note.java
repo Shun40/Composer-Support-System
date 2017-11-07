@@ -40,10 +40,6 @@ public class Note {
 		owner.removeNoteFromSequencer(this);
 	}
 
-	public int getCurrentTrack() {
-		return owner.getCurrentTrack();
-	}
-
 	public int getResolution() {
 		return owner.getResolution();
 	}

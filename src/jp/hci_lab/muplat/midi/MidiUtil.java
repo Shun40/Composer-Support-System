@@ -1,5 +1,7 @@
 package midi;
 
+import java.util.Arrays;
+
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 
@@ -35,6 +37,17 @@ public class MidiUtil {
 	 */
 	public static int getTick(int position) {
 		return ((position % MidiConstants.PPQ) / (MidiConstants.PPQ / 4)) + 1;
+	}
+
+	/**
+	 * ノートの発音位置を返す
+	 * @param measure ノートの小節
+	 * @param beat ノートの拍
+	 * @param tick ノートのティック
+	 * @return ノートの発音位置
+	 */
+	public static int getPosition(int measure, int beat, int tick) {
+		return (measure - 1) * getDurationOf1Measure() + (beat - 1) * MidiConstants.PPQ + tick;
 	}
 
 	/**
@@ -94,6 +107,40 @@ public class MidiUtil {
 	public static AppConstants.KeyType getKeyType(String interval) {
 		if(interval.contains("#") || interval.contains("♭")) return AppConstants.KeyType.BLACK;
 		else return AppConstants.KeyType.WHITE;
+	}
+
+	/**
+	 * 和声音かどうか調べる
+	 * @param chord コード
+	 * @param pitch ノート番号
+	 * @return 和声音ならばtrue, 非和声音ならばfalse
+	 */
+	public static boolean isChordTone(String chord, int pitch) {
+		boolean isChordTone = false;
+		switch(chord) {
+		case "C":
+			isChordTone = Arrays.asList(55, 60, 64, 67, 72, 76, 79).contains(pitch);
+			break;
+		case "Dm":
+			isChordTone = Arrays.asList(57, 62, 65, 69, 74, 77, 81).contains(pitch);
+			break;
+		case "Em":
+			isChordTone = Arrays.asList(55, 59, 64, 67, 71, 76, 79, 83).contains(pitch);
+			break;
+		case "F":
+			isChordTone = Arrays.asList(57, 60, 65, 69, 72, 77, 81).contains(pitch);
+			break;
+		case "G":
+			isChordTone = Arrays.asList(55, 59, 62, 67, 71, 74, 79, 83).contains(pitch);
+			break;
+		case "Am":
+			isChordTone = Arrays.asList(57, 60, 64, 69, 72, 76, 81).contains(pitch);
+			break;
+		case "Bmb5":
+			isChordTone = Arrays.asList(59, 62, 65, 71, 74, 77, 83).contains(pitch);
+			break;
+		}
+		return isChordTone;
 	}
 
 	/**

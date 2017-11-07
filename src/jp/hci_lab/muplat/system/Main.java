@@ -1,27 +1,25 @@
-package gui;
+package system;
 
+import gui.GuiConstants;
+import gui.GuiManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.stage.Stage;
 import midi.Synth;
-import system.AppConstants;
 
 /**
- * システムのMainクラス
+ * Mainクラス
  * @author Shun Yamashita
  */
 public class Main extends Application {
-	private AppScene scene;
+	private GuiManager scene;
 
 	@Override
 	public void start(Stage stage) throws Exception {
 		new Synth();
 
-		Group root = new Group();
-		int width = GuiConstants.AppSize.WIDTH;
-		int height = GuiConstants.AppSize.HEIGHT;
-		scene = new AppScene(root, width, height);
+		scene = new GuiManager(new Group(), GuiConstants.AppSize.WIDTH, GuiConstants.AppSize.HEIGHT);
 
 		stage.setTitle(AppConstants.APP_NAME);
 		stage.setResizable(false);

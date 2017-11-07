@@ -97,8 +97,8 @@ public final class GuiConstants {
 	public static class Note {
 		public static final float MIN_X = 0 + 0.5f;
 		public static final float MIN_Y = 0 + 0.5f;
-		public static final float MAX_X = MIN_X + GuiConstants.Pianoroll.MEASURE_WIDTH * AppConstants.Settings.MEASURES + 0.5f;
-		public static final float MAX_Y = MIN_Y + GuiConstants.Pianoroll.MEASURE_HEIGHT * AppConstants.Settings.OCTAVES + 0.5f;
+		public static final float MAX_X = GuiConstants.Pianoroll.MEASURE_WIDTH * AppConstants.Settings.MEASURES + 0.5f;
+		public static final float MAX_Y = GuiConstants.Pianoroll.MEASURE_HEIGHT * AppConstants.Settings.OCTAVES + 0.5f;
 		public static final String STYLE = "-fx-stroke: #000000;-fx-stroke-type: centered;";
 		public static final Color[] LIGHT_COLORS = {
 			Color.FUCHSIA, // track 1
@@ -165,6 +165,10 @@ public final class GuiConstants {
 		public static final int X = 110;
 		public static final int Y = 73;
 		public static final String STYLE = "-fx-stroke: #000000;-fx-stroke-type: centered;";
+		/** 小節選択時のカラーコード */
+		public static final String SELECTED_COLORCODE = "#7FFFD4";
+		/** 小節非選択時のカラーコード */
+		public static final String UNSELECTED_COLORCODE = "#FFFFFF";
 	}
 
 	public static class ChordSelector {

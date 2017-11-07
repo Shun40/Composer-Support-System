@@ -1,6 +1,6 @@
 package gui.component.measurebar;
-import gui.GuiConstants;
 import gui.GuiManager;
+import gui.GuiConstants;
 import gui.component.base.GroupBase;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
@@ -143,14 +143,12 @@ public class MeasureBar extends GroupBase {
 
 	public void updatePredictionTarget(int targetMeasure) {
 		toggleGroup.selectToggle(predictionTargetButtons[targetMeasure - 1]);
-		measureRectangles[targetMeasure - 1].setStyle("-fx-stroke: #7FFFD4;-fx-stroke-type: centered;");
-		measureRectangles[targetMeasure - 1].setStyle("-fx-fill: #7FFFD4;" + GuiConstants.Measurebar.STYLE);
+		measureRectangles[targetMeasure - 1].setStyle("-fx-fill: " + GuiConstants.Measurebar.SELECTED_COLORCODE + ";" + GuiConstants.Measurebar.STYLE);
 		owner.setPredictionPatternList(targetMeasure);
 	}
 
 	public void resetPredictionTarget(int targetMeasure) {
-		measureRectangles[targetMeasure - 1].setStyle("-fx-stroke: #FFFFFF;-fx-stroke-type: centered;");
-		measureRectangles[targetMeasure - 1].setStyle("-fx-fill: #FFFFFF;" + GuiConstants.Measurebar.STYLE);
+		measureRectangles[targetMeasure - 1].setStyle("-fx-fill: " + GuiConstants.Measurebar.UNSELECTED_COLORCODE + ";" + GuiConstants.Measurebar.STYLE);
 	}
 
 	public int getPredictionTarget() {
@@ -164,7 +162,7 @@ public class MeasureBar extends GroupBase {
 	public void setChord(String chord, int measure, int beat) {
 		switch(beat) {
 		case 1:
-			chordSelectors[(measure - 1) * 2].setChord(chord);
+			chordSelectors[(measure - 1) * 2 + 0].setChord(chord);
 			break;
 		case 3:
 			chordSelectors[(measure - 1) * 2 + 1].setChord(chord);
@@ -176,7 +174,7 @@ public class MeasureBar extends GroupBase {
 		String chord = null;
 		switch(beat) {
 		case 1:
-			chord = chordSelectors[(measure - 1) * 2].getChord();
+			chord = chordSelectors[(measure - 1) * 2 + 0].getChord();
 			break;
 		case 3:
 			chord = chordSelectors[(measure - 1) * 2 + 1].getChord();

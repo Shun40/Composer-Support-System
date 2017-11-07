@@ -32,6 +32,7 @@ public class NoteView extends RectangleBase {
 		setPoint(x + 0.5, y + 0.5);
 		setSize(width, height);
 		setupColor();
+		updateView();
 		setupEventListener();
 		// 発音
 		if(isPronounceable) {
@@ -40,7 +41,7 @@ public class NoteView extends RectangleBase {
 	}
 
 	public void setupColor() {
-		int track = owner.getCurrentTrack();
+		int track = owner.getModel().getTrack();
 		Stop[] stops = new Stop[] { new Stop(0.0, GuiConstants.Note.DARK_COLORS[track - 1]), new Stop(1.0, GuiConstants.Note.LIGHT_COLORS[track - 1]) };
 		LinearGradient grad = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
 		setFill(grad);
@@ -186,9 +187,9 @@ public class NoteView extends RectangleBase {
 		}
 	}
 
-	public void updateView(int currentTrack) {
+	public void updateView() {
 		int track = owner.getModel().getTrack();
-		if(track == currentTrack) {
+		if(track == AppConstants.MelodySettings.MELODY_TRACK) {
 			// ノートを不透明にして前面に描画する
 			toFront();
 			setOpacity(1.0);

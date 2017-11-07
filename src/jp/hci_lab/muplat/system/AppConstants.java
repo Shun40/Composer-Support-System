@@ -91,4 +91,26 @@ public class AppConstants {
 				72, 74, 76, 77, 79, 81, 83 // C5, D5, E5, F5, G5, A5, B5
 		));
 	}
+
+	public static class MelodySettings {
+		/** メロディパートのトラック番号 */
+		public static final int MELODY_TRACK = 1;
+		/** メロディパートのプログラム番号 */
+		public static final int MELODY_PROGRAM = 74;
+	}
+
+	public static class AccompanimentSettings {
+		/** コードパートのトラック番号 */
+		public static final int CHORD_TRACK = 2;
+		/** コードパートのプログラム番号 */
+		public static final int CHORD_PROGRAM = 1;
+		/** ベースパートのトラック番号 */
+		public static final int BASS_TRACK = 9;
+		/** ベースパートのプログラム番号 */
+		public static final int BASS_PROGRAM = 34;
+		/** ドラムパートのトラック番号 */
+		public static final int DRUM_TRACK = 10;
+		/** ドラムパートのプログラム番号 */
+		public static final int DRUM_PROGRAM = 128; // 1以上の値ならなんでもOK
+	}
 }

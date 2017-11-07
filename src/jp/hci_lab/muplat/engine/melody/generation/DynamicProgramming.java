@@ -1,9 +1,9 @@
 package engine.melody.generation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import midi.MidiConstants;
+import midi.MidiUtil;
 import system.AppConstants;
 
 public class DynamicProgramming {
@@ -130,7 +130,7 @@ public class DynamicProgramming {
 	private double correctNonChordToneAboutDuration(MelodyLabel melodyLabel, int pitch) {
 		String chord = melodyLabel.getChord();
 		int duration = melodyLabel.getDuration();
-		boolean isChordTone = isChordTone(chord, minPitch + pitch);
+		boolean isChordTone = MidiUtil.isChordTone(chord, minPitch + pitch);
 		// 4分音符よりも長い音価に非和声音が割当てられるのを抑制
 		if(!isChordTone && duration > MidiConstants.PPQ) return 0.25;
 		else return 1.0;
@@ -140,37 +140,9 @@ public class DynamicProgramming {
 	private double correctNonChordToneAboutStart(MelodyLabel melodyLabel, int pitch) {
 		String chord = melodyLabel.getChord();
 		int position = melodyLabel.getPosition();
-		boolean isChordTone = isChordTone(chord, minPitch + pitch);
+		boolean isChordTone = MidiUtil.isChordTone(chord, minPitch + pitch);
 		// 小節の頭に非和声音が割当てられるのを抑制
 		if(!isChordTone && (position % (MidiConstants.PPQ * 4)) == 0) return 0.25;
 		else return 1.0;
-	}
-
-	private boolean isChordTone(String chord, int pitch) {
-		boolean isChordTone = false;
-		switch(chord) {
-		case "C":
-			isChordTone = Arrays.asList(55, 60, 64, 67, 72, 76, 79).contains(pitch);
-			break;
-		case "Dm":
-			isChordTone = Arrays.asList(57, 62, 65, 69, 74, 77, 81).contains(pitch);
-			break;
-		case "Em":
-			isChordTone = Arrays.asList(55, 59, 64, 67, 71, 76, 79, 83).contains(pitch);
-			break;
-		case "F":
-			isChordTone = Arrays.asList(57, 60, 65, 69, 72, 77, 81).contains(pitch);
-			break;
-		case "G":
-			isChordTone = Arrays.asList(55, 59, 62, 67, 71, 74, 79, 83).contains(pitch);
-			break;
-		case "Am":
-			isChordTone = Arrays.asList(57, 60, 64, 69, 72, 76, 81).contains(pitch);
-			break;
-		case "Bmb5":
-			isChordTone = Arrays.asList(59, 62, 65, 71, 74, 77, 83).contains(pitch);
-			break;
-		}
-		return isChordTone;
 	}
 }

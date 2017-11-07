@@ -3,15 +3,14 @@ package gui.component.patternbar;
 import java.util.List;
 
 import engine.PredictionPattern;
-import gui.GuiConstants;
 import gui.GuiManager;
+import gui.GuiConstants;
 import gui.component.base.ButtonBase;
 import gui.component.base.GroupBase;
 import gui.component.base.TextFieldBase;
 import gui.component.pianoroll.note.NoteModel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import midi.MidiConstants;
 import system.AppConstants;
 
 /**
@@ -120,17 +119,11 @@ public class PatternBar extends GroupBase {
 
 	public void arrange(PredictionPattern pattern) {
 		int targetMeasure = owner.getPredictionTargetMeasure();
-		owner.removeNoteInMeasure(targetMeasure, 1); // メロディトラックのノートを消去
+		owner.removeNoteInMeasure(targetMeasure, AppConstants.MelodySettings.MELODY_TRACK); // メロディトラックのノートを消去
 		List<NoteModel> melody = pattern.getMelody();
 		for(NoteModel noteModel : melody) {
-			int track = noteModel.getTrack();
-			int pitch = noteModel.getPitch();
-			int position = noteModel.getPosition() + (MidiConstants.PPQ * 4) * (targetMeasure - 1);
-			int duration = noteModel.getDuration();
-			owner.setCurrentTrack(track);
-			owner.putNote(pitch, position, duration);
+			owner.putNote(noteModel);
 		}
-		owner.setCurrentTrack(1);
 	}
 
 	public void setPredictionPatternList(int targetMeasure) {

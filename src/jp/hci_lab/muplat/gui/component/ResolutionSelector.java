@@ -1,7 +1,7 @@
 package gui.component;
 
-import gui.GuiConstants;
 import gui.GuiManager;
+import gui.GuiConstants;
 import gui.component.base.ChoiceBoxBase;
 import javafx.beans.value.ObservableValue;
 

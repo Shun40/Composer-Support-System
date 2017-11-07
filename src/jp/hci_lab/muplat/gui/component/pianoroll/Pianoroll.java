@@ -2,8 +2,9 @@ package gui.component.pianoroll;
 import java.util.ArrayList;
 import java.util.List;
 
-import gui.GuiConstants;
 import gui.GuiManager;
+import gui.GuiConstants;
+import gui.GuiUtil;
 import gui.component.base.GroupBase;
 import gui.component.pianoroll.note.Note;
 import javafx.animation.Interpolator;
@@ -17,7 +18,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.util.Duration;
-import midi.MidiConstants;
 import midi.MidiUtil;
 import system.AppConstants;
 
@@ -120,14 +120,23 @@ public class Pianoroll extends GroupBase {
 		owner.clearNoteFromSequencer();
 	}
 
-	public void putNote(int pitch, int x, int y, int width, int height, boolean isPronounceable) {
+	/**
+	 * GUI側から呼ばれる
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param isPronounceable
+	 */
+	public void putNote(int x, int y, int width, int height) {
 		// ノート生成
-		int track = getCurrentTrack();
-		int program = MidiConstants.PROGRAM_NUMBERS[track - 1];
-		int position = (x / (GuiConstants.Pianoroll.BEAT_WIDTH / 4)) * (MidiConstants.PPQ / 4);
-		int duration = (width / (GuiConstants.Pianoroll.BEAT_WIDTH / 4)) * (MidiConstants.PPQ / 4);
+		int track = AppConstants.MelodySettings.MELODY_TRACK;
+		int program = AppConstants.MelodySettings.MELODY_PROGRAM;
+		int pitch = GuiUtil.calcPitch(y);
+		int position = GuiUtil.calcPosition(x);
+		int duration = GuiUtil.calcDuration(width);
 		int velocity = 100;
-		Note note = new Note(track, program, pitch, position, duration, velocity, x, y, width, height, isPronounceable, this);
+		Note note = new Note(track, program, pitch, position, duration, velocity, x, y, width, height, true, this);
 		// ノート平行移動
 		double hIncPerUnit = -(GuiConstants.Pianoroll.MEASURE_WIDTH * (AppConstants.Settings.MEASURES - AppConstants.Settings.SHOW_MEASURES)) / 100.0;
 		double vIncPerUnit = -(GuiConstants.Pianoroll.MEASURE_HEIGHT * (AppConstants.Settings.OCTAVES - AppConstants.Settings.SHOW_OCTAVES)) / 100.0;
@@ -142,16 +151,38 @@ public class Pianoroll extends GroupBase {
 		// ノートをGUIとシーケンサへ追加
 		addNoteToPianoroll(note);
 		addNoteToSequencer(note);
-		System.out.println(pitch + ", " + position + ", " + ", " + duration + ", " + x + ", " + y);
 	}
 
-	// ファイルからノートを読み込んで置く際に呼ばれる
-	public void putNote(int pitch, int position, int duration) {
-		int x = (GuiConstants.Pianoroll.BEAT_WIDTH / 4) * (position / (MidiConstants.PPQ / 4));
-		int y = GuiConstants.Grid.HEIGHT * (((AppConstants.Settings.MAX_OCTAVE + 2) * 12 - 1) - pitch);
-		int width = (GuiConstants.Pianoroll.BEAT_WIDTH / 4) * (duration / (MidiConstants.PPQ / 4));
+	/**
+	 * エンジン側から呼ばれる
+	 * @param track
+	 * @param program
+	 * @param pitch
+	 * @param position
+	 * @param duration
+	 * @param velocity
+	 */
+	public void putNote(int track, int program, int pitch, int position, int duration, int velocity) {
+		// ノート生成
+		int x = GuiUtil.calcX(position);
+		int y = GuiUtil.calcY(pitch);
+		int width = GuiUtil.calcWidth(duration);
 		int height = GuiConstants.Grid.HEIGHT;
-		putNote(pitch, x, y, width, height, false);
+		Note note = new Note(track, program, pitch, position, duration, velocity, x, y, width, height, false, this);
+		// ノート平行移動
+		double hIncPerUnit = -(GuiConstants.Pianoroll.MEASURE_WIDTH * (AppConstants.Settings.MEASURES - AppConstants.Settings.SHOW_MEASURES)) / 100.0;
+		double vIncPerUnit = -(GuiConstants.Pianoroll.MEASURE_HEIGHT * (AppConstants.Settings.OCTAVES - AppConstants.Settings.SHOW_OCTAVES)) / 100.0;
+		double hScrollBarVal = owner.getHScrollBarValue();
+		double vScrollBarVal = owner.getVScrollBarValue();
+		int hMove = (int)(hIncPerUnit * hScrollBarVal);
+		int vMove = (int)(vIncPerUnit * vScrollBarVal);
+		note.getView().setTranslateX(hMove);
+		note.getView().setTranslateY(vMove);
+		// ノートの発音フラグをリセット
+		note.getView().setIsPronounceable(true);
+		// ノートをGUIとシーケンサへ追加
+		addNoteToPianoroll(note);
+		addNoteToSequencer(note);
 	}
 
 	public void removeNoteInMeasure(int targetMeasure, int targetTrack) {
@@ -169,17 +200,17 @@ public class Pianoroll extends GroupBase {
 		}
 	}
 
-	public void removeNoteIn2Beat(int targetMeasure, int targetBeat1, int targetBeat2, int targetTrack) {
+	public void removeNoteIn2Beats(int targetMeasure, int targetBeat, int targetTrack) {
 		List<Note> removeNotes = new ArrayList<Note>();
 		for(Note note : notes) {
 			int measure = MidiUtil.getMeasure(note.getModel().getPosition());
 			int track = note.getModel().getTrack();
 			if(measure == targetMeasure && track == targetTrack) {
 				int beat = MidiUtil.getBeat(note.getModel().getPosition());
-				if(beat == targetBeat1){
+				if(beat == targetBeat){
 					removeNotes.add(note);
 				}
-				if(beat == targetBeat2) {
+				if(beat == targetBeat + 1) {
 					removeNotes.add(note);
 				}
 			}
@@ -190,10 +221,9 @@ public class Pianoroll extends GroupBase {
 		}
 	}
 
-	public void changeCurrentTrack(int currentTrack) {
-		// トラック番号に応じてノートの見た目を変更する
+	public void updateNoteView() {
 		for(Note note : notes) {
-			note.getView().updateView(currentTrack);
+			note.getView().updateView();
 		}
 	}
 
@@ -245,9 +275,6 @@ public class Pianoroll extends GroupBase {
 		playTimeline.stop();
 	}
 
-	public int getCurrentTrack() {
-		return owner.getCurrentTrack();
-	}
 
 	public int getResolution() {
 		return owner.getResolution();

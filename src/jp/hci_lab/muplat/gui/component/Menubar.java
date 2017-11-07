@@ -1,6 +1,6 @@
 package gui.component;
 
-import gui.AppScene;
+import gui.GuiManager;
 import gui.GuiConstants;
 import gui.component.base.MenubarBase;
 import javafx.application.Platform;
@@ -16,9 +16,9 @@ import system.AppConstants;
  * @author Shun Yamashita
  */
 public class Menubar extends MenubarBase {
-	private AppScene owner;
+	private GuiManager owner;
 
-	public Menubar(AppScene owner) {
+	public Menubar(GuiManager owner) {
 		super();
 		this.owner = owner;
 		setSize(GuiConstants.Menubar.WIDTH, GuiConstants.Menubar.HEIGHT);

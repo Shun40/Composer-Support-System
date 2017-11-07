@@ -1,6 +1,7 @@
 package gui.component.pianoroll;
 
 import gui.GuiConstants;
+import gui.GuiUtil;
 import gui.component.base.GroupBase;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
@@ -130,7 +131,7 @@ public class Sheet extends GroupBase {
 
 	private void release(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // 左クリック
-			MidiUtil.toneOff(owner.getCurrentTrack()); // 無発音
+			MidiUtil.toneOff(AppConstants.MelodySettings.MELODY_TRACK); // 無発音
 		}
 	}
 
@@ -142,13 +143,15 @@ public class Sheet extends GroupBase {
 	}
 
 	private void putNote(MouseEvent e) {
-		int pitch = calcPitch((int)e.getY());
-		if(!AppConstants.Settings.AVAILABLE_PITCHES.contains(pitch)) return;
+		// クリックされた座標が無効なピッチだったら何もしない
+		if(!AppConstants.Settings.AVAILABLE_PITCHES.contains(GuiUtil.calcPitch((int)e.getY()))) {
+			return;
+		}
 		int width = GuiConstants.Pianoroll.BEAT_WIDTH / (owner.getResolution() / 4);
 		int height = GuiConstants.Pianoroll.MEASURE_HEIGHT / 12;
 		int putX = (int)e.getX() / width * width;
 		int putY = (int)e.getY() / height * height;
-		owner.putNote(pitch, putX, putY, width, height, true);
+		owner.putNote(putX, putY, width, height);
 	}
 
 	public void updateResolution(int resolution) {
