@@ -2,9 +2,9 @@ package gui.component.patternbar;
 
 import java.util.List;
 
-import engine.PredictionPattern;
-import gui.GuiManager;
+import engine.melody.CandidateMelody;
 import gui.GuiConstants;
+import gui.GuiManager;
 import gui.component.base.ButtonBase;
 import gui.component.base.GroupBase;
 import gui.component.base.TextFieldBase;
@@ -91,18 +91,18 @@ public class PatternBar extends GroupBase {
 	public void prediction() {
 		int targetMeasure = owner.getPredictionTargetMeasure();
 		patternSelectors[targetMeasure - 1].getItems().clear(); // 一度リストの中身を空にする
-		List<PredictionPattern> patterns = owner.prediction();
-		for(PredictionPattern pattern : patterns) {
-			patternSelectors[targetMeasure - 1].addList(pattern);
+		List<CandidateMelody> melodies = owner.prediction();
+		for(CandidateMelody melody : melodies) {
+			patternSelectors[targetMeasure - 1].addList(melody);
 		}
 	}
 
 	public void decision() {
 		int targetMeasure = owner.getPredictionTargetMeasure();
-		PredictionPattern pattern = patternSelectors[targetMeasure - 1].getSelectionModel().getSelectedItem();
-		if(pattern == null) return;
+		CandidateMelody melody = patternSelectors[targetMeasure - 1].getSelectionModel().getSelectedItem();
+		if(melody == null) return;
 
-		String wordId = pattern.getId();
+		String wordId = melody.getId();
 		if(targetMeasure == 1) { // 単語辞書の頻度更新
 			owner.incWordDictionaryFrequency(wordId);
 		} else {
@@ -114,13 +114,12 @@ public class PatternBar extends GroupBase {
 			}
 		}
 		lastDecidedId[targetMeasure - 1] = wordId;
-		lastDecidedName[targetMeasure - 1].setText(pattern.getName());
+		lastDecidedName[targetMeasure - 1].setText(melody.getName());
 	}
 
-	public void arrange(PredictionPattern pattern) {
+	public void arrange(CandidateMelody melody) {
 		int targetMeasure = owner.getPredictionTargetMeasure();
 		owner.removeNoteInMeasure(targetMeasure, AppConstants.MelodySettings.MELODY_TRACK); // メロディトラックのノートを消去
-		List<NoteModel> melody = pattern.getMelody();
 		for(NoteModel noteModel : melody) {
 			owner.putNote(noteModel);
 		}

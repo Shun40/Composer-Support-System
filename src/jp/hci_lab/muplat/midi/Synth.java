@@ -10,7 +10,7 @@ import javax.sound.midi.Synthesizer;
  */
 
 public class Synth {
-	public static Synthesizer synthesizer;
+	private static Synthesizer synthesizer;
 
 	public Synth() {
 		try {

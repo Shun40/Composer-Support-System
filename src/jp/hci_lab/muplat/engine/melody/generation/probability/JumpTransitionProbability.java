@@ -1,4 +1,4 @@
-package engine.melody.generation;
+package engine.melody.generation.probability;
 
 public class JumpTransitionProbability {
 	private double[][] probabilities;

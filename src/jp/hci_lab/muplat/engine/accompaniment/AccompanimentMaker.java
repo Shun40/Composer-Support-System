@@ -1,4 +1,4 @@
-package engine;
+package engine.accompaniment;
 
 import java.util.ArrayList;
 import java.util.Arrays;

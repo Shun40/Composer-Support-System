@@ -3,16 +3,13 @@ package engine.melody.generation;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.melody.reference.MelodyPattern;
-import gui.component.pianoroll.note.Note;
-import midi.MidiConstants;
+import engine.melody.RelativeMelody;
+import gui.component.pianoroll.note.NoteModel;
+import midi.MidiUtil;
 import system.AppConstants;
 
 public class MelodyMaker {
-	public MelodyMaker() {
-	}
-
-	public List<MelodyLabel> makeMelody(MelodyPattern context, MelodyPattern word, Note justBeforeNote, List<String> chordProgression, String justBeforeChord, List<AppConstants.Algorithm> algorithms) {
+	public static List<MelodyLabel> makeMelody(RelativeMelody context, RelativeMelody word, NoteModel justBeforeNote, List<String> chordProgression, String justBeforeChord, List<AppConstants.Algorithm> algorithms) {
 		List<MelodyLabel> melodyLabels = new ArrayList<MelodyLabel>();
 
 		// 直前音符の情報
@@ -25,12 +22,12 @@ public class MelodyMaker {
 			int duration = 0;
 			melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
 		} else {
-			int pitch = justBeforeNote.getModel().getPitch();
+			int pitch = justBeforeNote.getPitch();
 			String chord = justBeforeChord;
 			int variation = context.get(context.size() - 1).getVariation();
 			int difference = context.get(context.size() - 1).getDifference();
-			int position = justBeforeNote.getModel().getPosition();
-			int duration = justBeforeNote.getModel().getDuration();
+			int position = justBeforeNote.getPosition();
+			int duration = justBeforeNote.getDuration();
 			melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
 		}
 
@@ -41,8 +38,12 @@ public class MelodyMaker {
 			int position = word.get(i).getPosition();
 			int duration = word.get(i).getDuration();
 			String chord = "N.C.";
-			if(position / (MidiConstants.PPQ * 2) == 0) chord = chordProgression.get(0);
-			if(position / (MidiConstants.PPQ * 2) == 1) chord = chordProgression.get(1);
+			if(position / MidiUtil.getDurationOf2Beats() == 0) {
+				chord = chordProgression.get(0);
+			}
+			if(position / MidiUtil.getDurationOf2Beats() == 1) {
+				chord = chordProgression.get(1);
+			}
 			melodyLabels.add(new MelodyLabel(pitch, chord, variation, difference, position, duration));
 		}
 

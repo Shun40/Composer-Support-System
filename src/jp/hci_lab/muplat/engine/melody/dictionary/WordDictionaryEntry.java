@@ -1,14 +1,14 @@
 package engine.melody.dictionary;
 
-import engine.melody.reference.MelodyPattern;
+import engine.melody.RelativeMelody;
 
 public class WordDictionaryEntry {
-	private int index;
-	private String name;
-	private MelodyPattern word;
+	private final int index;
+	private final String name;
+	private final RelativeMelody word;
 	private int frequency;
 
-	public WordDictionaryEntry(int index, String name, MelodyPattern word, int frequency) {
+	public WordDictionaryEntry(int index, String name, RelativeMelody word, int frequency) {
 		this.index = index;
 		this.name = name;
 		this.word = word;
@@ -19,8 +19,19 @@ public class WordDictionaryEntry {
 		frequency++;
 	}
 
-	public int getIndex() { return index; }
-	public String getName() { return name; }
-	public MelodyPattern getWord() { return word; }
-	public int getFrequency() { return frequency; }
+	public int getIndex() {
+		return index;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public RelativeMelody getWord() {
+		return word;
+	}
+
+	public int getFrequency() {
+		return frequency;
+	}
 }

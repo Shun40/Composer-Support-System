@@ -4,9 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import engine.melody.reference.MelodyPattern;
+import engine.melody.RelativeMelody;
+import engine.melody.RelativeNote;
 import file.FileUtil;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -49,14 +53,14 @@ public class WordDictionary extends ArrayList<WordDictionaryEntry> {
 	private void loadDictionary(List<String> lines) {
 		clear();
 		int index = 0;
-		HashMap<String, MelodyPattern> map = new HashMap<String, MelodyPattern>();
+		Map<String, RelativeMelody> map = new HashMap<String, RelativeMelody>();
 		for(int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			String type = line.split(":")[0];
 			String data = line.split(":")[1];
 			switch(type) {
 			case "pattern":
-				map.put(data, new MelodyPattern(data));
+				map.put(data, new RelativeMelody(data));
 				break;
 			case "data":
 				String patternName = data.split(",")[0];
@@ -64,7 +68,7 @@ public class WordDictionary extends ArrayList<WordDictionaryEntry> {
 				int difference = Integer.parseInt(data.split(",")[2]);
 				int position = Integer.parseInt(data.split(",")[3]);
 				int duration = Integer.parseInt(data.split(",")[4]);
-				map.get(patternName).add(variation, difference, position, duration);
+				map.get(patternName).add(new RelativeNote(variation, difference, position, duration));
 				break;
 			case "record":
 				String recordName = data.split(",")[0];
@@ -78,7 +82,7 @@ public class WordDictionary extends ArrayList<WordDictionaryEntry> {
 	}
 
 	public void showDictionary() {
-		Dialog dialog = new Dialog<>();
+		Dialog<Object> dialog = new Dialog<Object>();
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 		dialog.setTitle("単語辞書内容");
 		dialog.setHeaderText("単語辞書に登録されているパターンの一覧です.");
@@ -86,16 +90,19 @@ public class WordDictionary extends ArrayList<WordDictionaryEntry> {
 		dialog.setResizable(true);
 
 		// テーブル作成
-		TableView<WordEntry> table = new TableView<>();
+		TableView<WordEntry> table = new TableView<WordEntry>();
 		TableColumn<WordEntry, String> index = new TableColumn<WordEntry, String>("インデックス");
-		index.setCellValueFactory(new PropertyValueFactory<>("index"));
+		index.setCellValueFactory(new PropertyValueFactory<WordEntry, String>("index"));
 		TableColumn<WordEntry, String> name = new TableColumn<WordEntry, String>("パターン名");
-		name.setCellValueFactory(new PropertyValueFactory<>("name"));
+		name.setCellValueFactory(new PropertyValueFactory<WordEntry, String>("name"));
 		TableColumn<WordEntry, String> word = new TableColumn<WordEntry, String>("ワード");
-		word.setCellValueFactory(new PropertyValueFactory<>("word"));
+		word.setCellValueFactory(new PropertyValueFactory<WordEntry, String>("word"));
 		TableColumn<WordEntry, String> frequency = new TableColumn<WordEntry, String>("選択回数");
-		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
-		table.getColumns().setAll(index, name, word, frequency);
+		frequency.setCellValueFactory(new PropertyValueFactory<WordEntry, String>("frequency"));
+		table.getColumns().add(index);
+		table.getColumns().add(name);
+		table.getColumns().add(word);
+		table.getColumns().add(frequency);
 
 		ObservableList<WordEntry> records = FXCollections.observableArrayList();
 		for(int i = 0; i < this.size(); i++) {
@@ -110,16 +117,28 @@ public class WordDictionary extends ArrayList<WordDictionaryEntry> {
 		dialog.showAndWait();
 	}
 
-	private class WordEntry {
-		private final String index;
-		private final String name;
-		private final String word;
-		private final String frequency;
+	public class WordEntry {
+		private final StringProperty index;
+		private final StringProperty name;
+		private final StringProperty word;
+		private final StringProperty frequency;
 		public WordEntry(String index, String name, String word, String frequency) {
-			this.index = index;
-			this.name = name;
-			this.word = word;
-			this.frequency = frequency;
+			this.index = new SimpleStringProperty(index);
+			this.name = new SimpleStringProperty(name);
+			this.word = new SimpleStringProperty(word);
+			this.frequency = new SimpleStringProperty(frequency);
+		}
+		public StringProperty indexProperty() {
+			return index;
+		}
+		public StringProperty nameProperty() {
+			return name;
+		}
+		public StringProperty wordProperty() {
+			return word;
+		}
+		public StringProperty frequencyProperty() {
+			return frequency;
 		}
 	}
 }

@@ -2,6 +2,10 @@ package engine.melody.generation;
 
 import java.util.List;
 
+import engine.melody.generation.probability.ChordAppearanceProbability;
+import engine.melody.generation.probability.JumpTransitionProbability;
+import engine.melody.generation.probability.RangeAppearanceProbability;
+import engine.melody.generation.probability.RangeTransitionProbability;
 import midi.MidiConstants;
 import midi.MidiUtil;
 import system.AppConstants;

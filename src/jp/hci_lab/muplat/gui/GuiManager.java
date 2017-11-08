@@ -2,10 +2,10 @@ package gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.AccompanimentMaker;
-import engine.AlgorithmInformation;
-import engine.PredictionInformation;
-import engine.PredictionPattern;
+import engine.AlgorithmParameter;
+import engine.PredictionParameter;
+import engine.accompaniment.AccompanimentMaker;
+import engine.melody.CandidateMelody;
 import file.FileUtil;
 import file.MupFileData;
 import gui.component.AlgorithmBar;
@@ -27,15 +27,14 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollBar;
 import system.AppConstants;
-import system.UIController;
+import system.AppManager;
 
 /**
  * GUIコンポーネントを持つクラス
  * @author Shun Yamashita
  */
 public class GuiManager extends Scene {
-	private UIController uiController;
-
+	private AppManager owner;
 	private ResolutionSelector resolutionSelector;
 	private BpmSelector bpmSelector;
 	private StopButton stopButton;
@@ -48,9 +47,9 @@ public class GuiManager extends Scene {
 	private ScrollBar hScrollBar;
 	private ScrollBar vScrollBar;
 
-	public GuiManager(Group root, int width, int height) {
-		super(root, width, height);
-		uiController = new UIController();
+	public GuiManager(AppManager owner) {
+		super(new Group(), GuiConstants.AppSize.WIDTH, GuiConstants.AppSize.HEIGHT);
+		this.owner = owner;
 		setupMenuBar();
 		setupResolutionSelector();
 		setupBpmSelector();
@@ -63,8 +62,6 @@ public class GuiManager extends Scene {
 		setupMeasurebar();
 		setupHScrollBar();
 		setupVScrollBar();
-		readWordDictionary(AppConstants.DEFAULT_WORD_DICTIONARY_FILE);
-		readPhraseDictionary(AppConstants.DEFAULT_PHRASE_DICTIONARY_FILE);
 	}
 
 	public void setupMenuBar() {
@@ -172,7 +169,7 @@ public class GuiManager extends Scene {
 
 	public void stop() {
 		// エンジンへの停止指示
-		uiController.stop();
+		owner.stop();
 		// GUIへの停止指示
 		pianoroll.stop();
 		// 再生実行後の処理
@@ -183,7 +180,7 @@ public class GuiManager extends Scene {
 		// 再生実行前の処理
 		setupBeforePlay();
 		// エンジンへの再生指示
-		uiController.play();
+		owner.play();
 		// GUIへの再生指示
 		pianoroll.playAnimation(bpmSelector.getBpm());
 	}
@@ -225,11 +222,11 @@ public class GuiManager extends Scene {
 	}
 
 	public void addNoteToSequencer(Note note) {
-		uiController.addNoteToSequencer(note);
+		owner.addNoteToSequencer(note);
 	}
 
 	public void removeNoteFromSequencer(Note note) {
-		uiController.removeNoteFromSequencer(note);
+		owner.removeNoteFromSequencer(note);
 	}
 
 	public void clearNoteFromPianoroll() {
@@ -237,7 +234,7 @@ public class GuiManager extends Scene {
 	}
 
 	public void clearNoteFromSequencer() {
-		uiController.clearNoteFromSequencer();
+		owner.clearNoteFromSequencer();
 	}
 
 	public void makeAccompaniment(String chord, int targetMeasure, int targetBeat) {
@@ -259,16 +256,14 @@ public class GuiManager extends Scene {
 		pianoroll.updateNoteView();
 	}
 
-	public List<PredictionPattern> prediction() {
-		// 予測変換に必要な情報を取得
+	public List<CandidateMelody> prediction() {
 		// 予測変換対象小節
 		int targetMeasure = getPredictionTargetMeasure();
-		// メロディ音符
-		List<Note> melodyNotes = new ArrayList<Note>();
+		// メロディ
+		List<NoteModel> melody = new ArrayList<NoteModel>();
 		for(Note note : pianoroll.getNotes()) {
-			int track = note.getModel().getTrack();
-			if(track == 1) {
-				melodyNotes.add(note);
+			if(note.getModel().getTrack() == 1) {
+				melody.add(note.getModel());
 			}
 		}
 		// コード進行
@@ -280,11 +275,10 @@ public class GuiManager extends Scene {
 		// 選択アルゴリズム
 		List<AppConstants.Algorithm> selectedAlgorithms = algorithmBar.getSelectedAlgorithms();
 		AppConstants.MelodyStructurePattern selectedMelodyStructurePattern = algorithmBar.getSelectedMelodyStructurePattern();
-
 		// 予測変換
-		PredictionInformation predictionInformation = new PredictionInformation(targetMeasure, melodyNotes, chordProgression);
-		AlgorithmInformation algorithmInformation = new AlgorithmInformation(selectedAlgorithms, selectedMelodyStructurePattern);
-		return uiController.prediction(predictionInformation, algorithmInformation);
+		PredictionParameter predictionParameter = new PredictionParameter(targetMeasure, melody, chordProgression);
+		AlgorithmParameter algorithmParameter = new AlgorithmParameter(selectedAlgorithms, selectedMelodyStructurePattern);
+		return owner.prediction(predictionParameter, algorithmParameter);
 	}
 
 	public void setPredictionPatternList(int targetMeasure) {
@@ -326,39 +320,39 @@ public class GuiManager extends Scene {
 	}
 
 	public void writeMidiFile() {
-		uiController.writeMidiFile();
+		owner.writeMidiFile();
 	}
 
 	public void readWordDictionary() {
-		uiController.readWordDictionary();
+		owner.readWordDictionary();
 	}
 
 	public void readWordDictionary(String filename) {
-		uiController.readWordDictionary(filename);
+		owner.readWordDictionary(filename);
 	}
 
 	public void readPhraseDictionary() {
-		uiController.readPhraseDictionary();
+		owner.readPhraseDictionary();
 	}
 
 	public void readPhraseDictionary(String filename) {
-		uiController.readPhraseDictionary(filename);
+		owner.readPhraseDictionary(filename);
 	}
 
 	public void showWordDictionary() {
-		uiController.showWordDictionary();
+		owner.showWordDictionary();
 	}
 
 	public void showPhraseDictionary() {
-		uiController.showPhraseDictionary();
+		owner.showPhraseDictionary();
 	}
 
 	public void incWordDictionaryFrequency(String wordId) {
-		uiController.incFrequencyOfWordDictionary(wordId);
+		owner.incFrequencyOfWordDictionary(wordId);
 	}
 
 	public void incPhraseDictionaryFrequency(String contextId, String wordId) {
-		uiController.incFrequencyOfPhraseDictionary(contextId, wordId);
+		owner.incFrequencyOfPhraseDictionary(contextId, wordId);
 	}
 
 	public int getResolution() {
@@ -390,14 +384,10 @@ public class GuiManager extends Scene {
 	}
 
 	public void setBpmToSequencer(int bpm) {
-		uiController.setBpm(bpm);
+		owner.setBpmToSequencer(bpm);
 	}
 
 	public int getPredictionTargetMeasure() {
 		return measureBar.getPredictionTarget();
-	}
-
-	public void close() {
-		uiController.close();
 	}
 }

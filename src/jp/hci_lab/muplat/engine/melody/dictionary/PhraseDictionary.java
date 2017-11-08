@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import engine.melody.MelodyAnalyzer;
-import engine.melody.reference.MelodyPattern;
+import engine.melody.RelativeMelody;
+import engine.melody.RelativeNote;
 import file.FileUtil;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -21,13 +24,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
-	private HashMap<String, MelodyPattern> map;
-	private MelodyAnalyzer parent;
+	private Map<String, RelativeMelody> map;
 
-	public PhraseDictionary(MelodyAnalyzer parent) {
+	public PhraseDictionary() {
 		super();
-		map = new HashMap<String, MelodyPattern>();
-		this.parent = parent;
+		map = new HashMap<String, RelativeMelody>();
 	}
 
 	public void incPatternFrequency(String contextId, String wordId) {
@@ -41,8 +42,8 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 		}
 		if(!isExist) {
 			int index = size();
-			MelodyPattern context = map.get(contextId);
-			MelodyPattern word = map.get(wordId);
+			RelativeMelody context = map.get(contextId);
+			RelativeMelody word = map.get(wordId);
 			String name = getNewPhraseEntryName(context, word);
 			int frequency = 2;
 			add(new PhraseDictionaryEntry(index, name, context, word, frequency));
@@ -53,7 +54,7 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 		get(index).incFrequency();
 	}
 
-	private String getNewPhraseEntryName(MelodyPattern context, MelodyPattern word) {
+	private String getNewPhraseEntryName(RelativeMelody context, RelativeMelody word) {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("新しい例文辞書エントリの登録");
 		dialog.setHeaderText("新しい例文辞書エントリの名前を入力して下さい.");
@@ -90,7 +91,7 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 			String data = line.split(":")[1];
 			switch(type) {
 			case "pattern":
-				map.put(data, new MelodyPattern(data));
+				map.put(data, new RelativeMelody(data));
 				break;
 			case "data":
 				String patternName = data.split(",")[0];
@@ -98,7 +99,7 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 				int difference = Integer.parseInt(data.split(",")[2]);
 				int position = Integer.parseInt(data.split(",")[3]);
 				int duration = Integer.parseInt(data.split(",")[4]);
-				map.get(patternName).add(variation, difference, position, duration);
+				map.get(patternName).add(new RelativeNote(variation, difference, position, duration));
 				break;
 			case "record":
 				String recordName = data.split(",")[0];
@@ -114,7 +115,7 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 	}
 
 	public void showDictionary() {
-		Dialog dialog = new Dialog<>();
+		Dialog<Object> dialog = new Dialog<Object>();
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 		dialog.setTitle("例文辞書内容");
 		dialog.setHeaderText("例文辞書に登録されているパターンの一覧です.");
@@ -122,18 +123,22 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 		dialog.setResizable(true);
 
 		// テーブル作成
-		TableView<PhraseEntry> table = new TableView<>();
+		TableView<PhraseEntry> table = new TableView<PhraseEntry>();
 		TableColumn<PhraseEntry, String> index = new TableColumn<PhraseEntry, String>("インデックス");
-		index.setCellValueFactory(new PropertyValueFactory<>("index"));
+		index.setCellValueFactory(new PropertyValueFactory<PhraseEntry, String>("index"));
 		TableColumn<PhraseEntry, String> name = new TableColumn<PhraseEntry, String>("パターン名");
-		name.setCellValueFactory(new PropertyValueFactory<>("name"));
+		name.setCellValueFactory(new PropertyValueFactory<PhraseEntry, String>("name"));
 		TableColumn<PhraseEntry, String> context = new TableColumn<PhraseEntry, String>("コンテクスト");
-		context.setCellValueFactory(new PropertyValueFactory<>("context"));
+		context.setCellValueFactory(new PropertyValueFactory<PhraseEntry, String>("context"));
 		TableColumn<PhraseEntry, String> word = new TableColumn<PhraseEntry, String>("ワード");
-		word.setCellValueFactory(new PropertyValueFactory<>("word"));
+		word.setCellValueFactory(new PropertyValueFactory<PhraseEntry, String>("word"));
 		TableColumn<PhraseEntry, String> frequency = new TableColumn<PhraseEntry, String>("選択回数");
-		frequency.setCellValueFactory(new PropertyValueFactory<>("frequency"));
-		table.getColumns().setAll(index, name, context, word, frequency);
+		frequency.setCellValueFactory(new PropertyValueFactory<PhraseEntry, String>("frequency"));
+		table.getColumns().add(index);
+		table.getColumns().add(name);
+		table.getColumns().add(context);
+		table.getColumns().add(word);
+		table.getColumns().add(frequency);
 
 		ObservableList<PhraseEntry> records = FXCollections.observableArrayList();
 		for(int i = 0; i < this.size(); i++) {
@@ -149,18 +154,33 @@ public class PhraseDictionary extends ArrayList<PhraseDictionaryEntry> {
 		dialog.showAndWait();
 	}
 
-	private class PhraseEntry {
-		private final String index;
-		private final String name;
-		private final String context;
-		private final String word;
-		private final String frequency;
+	public class PhraseEntry {
+		private final StringProperty index;
+		private final StringProperty name;
+		private final StringProperty context;
+		private final StringProperty word;
+		private final StringProperty frequency;
 		public PhraseEntry(String index, String name, String context, String word, String frequency) {
-			this.index = index;
-			this.name = name;
-			this.context = context;
-			this.word = word;
-			this.frequency = frequency;
+			this.index = new SimpleStringProperty(index);
+			this.name = new SimpleStringProperty(name);
+			this.context = new SimpleStringProperty(context);
+			this.word = new SimpleStringProperty(word);
+			this.frequency = new SimpleStringProperty(frequency);
+		}
+		public StringProperty indexProperty() {
+			return index;
+		}
+		public StringProperty nameProperty() {
+			return name;
+		}
+		public StringProperty contextProperty() {
+			return context;
+		}
+		public StringProperty wordProperty() {
+			return word;
+		}
+		public StringProperty frequencyProperty() {
+			return frequency;
 		}
 	}
 }

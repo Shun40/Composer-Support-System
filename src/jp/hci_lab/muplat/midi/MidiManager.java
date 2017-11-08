@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
@@ -54,17 +53,10 @@ public class MidiManager {
 	 * シーケンサのBPMを設定する
 	 * @param bpm 設定するBPM値
 	 */
-	public void setBpm(int bpm) {
-		try {
-			MetaMessage bpmChange = new MetaMessage();
-			int l = 60 * 1000000 / bpm;
-			bpmChange.setMessage(0x51, new byte[]{ (byte)(l / 65536), (byte)(l % 65536 / 256), (byte)(l % 256) }, 3);
-			MidiEvent bpmChangeEvent = new MidiEvent(bpmChange, 0);
-			for(Track track : sequence.getTracks()) {
-				track.add(bpmChangeEvent);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void setBpmToSequencer(int bpm) {
+		MidiEvent bpmChangeEvent = MidiUtil.createBpmChangeEvent(bpm);
+		for(Track track : sequence.getTracks()) {
+			track.add(bpmChangeEvent);
 		}
 	}
 

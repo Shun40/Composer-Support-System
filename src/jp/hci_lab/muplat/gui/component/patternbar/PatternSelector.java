@@ -1,5 +1,5 @@
 package gui.component.patternbar;
-import engine.PredictionPattern;
+import engine.melody.CandidateMelody;
 import gui.component.base.ListViewBase;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,8 +12,8 @@ import javafx.util.Callback;
  * パターンを指定するリストビューのクラス
  * @author Shun Yamashita
  */
-public class PatternSelector extends ListViewBase<PredictionPattern> {
-	private ObservableList<PredictionPattern> patternList;
+public class PatternSelector extends ListViewBase<CandidateMelody> {
+	private ObservableList<CandidateMelody> patternList;
 	private PatternBar owner;
 
 	public PatternSelector(int x, int y, PatternBar owner) {
@@ -28,9 +28,9 @@ public class PatternSelector extends ListViewBase<PredictionPattern> {
 	public void setupList() {
 		patternList = FXCollections.observableArrayList();
 		setItems(patternList);
-		setCellFactory(new Callback<ListView<PredictionPattern>, ListCell<PredictionPattern>>() {
+		setCellFactory(new Callback<ListView<CandidateMelody>, ListCell<CandidateMelody>>() {
 			@Override
-			public ListCell<PredictionPattern> call(ListView<PredictionPattern> arg0) {
+			public ListCell<CandidateMelody> call(ListView<CandidateMelody> arg0) {
 				return new CustomCell();
 			}
 		});
@@ -38,7 +38,7 @@ public class PatternSelector extends ListViewBase<PredictionPattern> {
 
 	public void setupEventListener() {
 		getSelectionModel().selectedItemProperty().addListener(
-			(ObservableValue<? extends PredictionPattern> ov, PredictionPattern oldVal, PredictionPattern newVal)->{
+			(ObservableValue<? extends CandidateMelody> ov, CandidateMelody oldVal, CandidateMelody newVal)->{
 				if(newVal != null) {
 					owner.arrange(newVal);
 				}
@@ -46,16 +46,16 @@ public class PatternSelector extends ListViewBase<PredictionPattern> {
 		);
 	}
 
-	public void addList(PredictionPattern predictionPattern) {
-		patternList.add(predictionPattern);
+	public void addList(CandidateMelody candidateMelody) {
+		patternList.add(candidateMelody);
 	}
 
 	/*
 	 * ListView<ArrangePattern>表示用セルのクラス
 	 */
-	private static class CustomCell extends ListCell<PredictionPattern> {
+	private static class CustomCell extends ListCell<CandidateMelody> {
 		@Override
-		protected void updateItem(PredictionPattern me, boolean empty) {
+		protected void updateItem(CandidateMelody me, boolean empty) {
 			super.updateItem(me, empty);
 			if(!empty) {
 				setText(me.getName());

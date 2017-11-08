@@ -2,6 +2,7 @@ package midi;
 
 import java.util.Arrays;
 
+import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 
@@ -200,6 +201,25 @@ public class MidiUtil {
 			e.printStackTrace();
 		}
 		return noteOffEvent;
+	}
+
+	/**
+	 * MIDIテンポチェンジイベントを生成する
+	 * @param bpm BPM
+	 * @return テンポチェンジイベント
+	 */
+	public static MidiEvent createBpmChangeEvent(int bpm) {
+		MetaMessage bpmChangeMessage = null;
+		MidiEvent bpmChangeEvent = null;
+		try {
+			bpmChangeMessage = new MetaMessage();
+			int l = 60 * 1000000 / bpm;
+			bpmChangeMessage.setMessage(0x51, new byte[]{ (byte)(l / 65536), (byte)(l % 65536 / 256), (byte)(l % 256) }, 3);
+			bpmChangeEvent = new MidiEvent(bpmChangeMessage, 0);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return bpmChangeEvent;
 	}
 
 	/**
