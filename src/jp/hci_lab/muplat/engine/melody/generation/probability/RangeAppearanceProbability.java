@@ -1,5 +1,9 @@
 package engine.melody.generation.probability;
 
+/**
+ * 音域による音高出現確率クラス
+ * @author Shun Yamashita
+ */
 public class RangeAppearanceProbability {
 	private double[] probabilities;
 	private int minPitch;

@@ -1,5 +1,9 @@
 package engine.melody.generation.probability;
 
+/**
+ * 2音間の跳躍音高差による音高遷移確率クラス
+ * @author Shun Yamashita
+ */
 public class JumpTransitionProbability {
 	private double[][] probabilities;
 	private int minPitch;

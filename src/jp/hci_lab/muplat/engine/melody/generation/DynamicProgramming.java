@@ -136,8 +136,11 @@ public class DynamicProgramming {
 		int duration = melodyLabel.getDuration();
 		boolean isChordTone = MidiUtil.isChordTone(chord, minPitch + pitch);
 		// 4分音符よりも長い音価に非和声音が割当てられるのを抑制
-		if(!isChordTone && duration > MidiConstants.PPQ) return 0.25;
-		else return 1.0;
+		if(!isChordTone && duration > MidiConstants.PPQ) {
+			return 0.1;
+		} else {
+			return 1.0;
+		}
 	}
 
 	// 小節の頭に非和声音が出現しにくくなるよう補正する
@@ -146,7 +149,10 @@ public class DynamicProgramming {
 		int position = melodyLabel.getPosition();
 		boolean isChordTone = MidiUtil.isChordTone(chord, minPitch + pitch);
 		// 小節の頭に非和声音が割当てられるのを抑制
-		if(!isChordTone && (position % (MidiConstants.PPQ * 4)) == 0) return 0.25;
-		else return 1.0;
+		if(!isChordTone && (position % MidiUtil.getDurationOf1Measure()) == 0) {
+			return 0.1;
+		} else {
+			return 1.0;
+		}
 	}
 }

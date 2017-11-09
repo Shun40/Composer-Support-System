@@ -1,5 +1,9 @@
 package engine.melody.generation.probability;
 
+/**
+ * コードによる和声音・非和声音の音高出現確率クラス
+ * @author Shun Yamashita
+ */
 public class ChordAppearanceProbability {
 	private double[] probabilities;
 	private int minPitch;

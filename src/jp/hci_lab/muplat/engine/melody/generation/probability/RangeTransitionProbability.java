@@ -1,5 +1,9 @@
 package engine.melody.generation.probability;
 
+/**
+ * 音域による音高遷移確率クラス
+ * @author Shun Yamashita
+ */
 public class RangeTransitionProbability {
 	private double[][] probabilities;
 	private int minPitch;
