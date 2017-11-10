@@ -66,25 +66,7 @@ public class DynamicProgramming {
 					// 遷移確率計算
 					double a = rangeTransitionProbability.getProbability(j, k) * jumpTransitionProbability.getProbability(j, k);
 					// 音高概形による遷移制約
-					int difference = labels.get(i).getDifference();
-					double restriction_coefficient = 0.5; // 経路制約に使う制限係数(0.0でその経路を禁止する)
-					if(difference == 0) {
-						if(j != k) a *= restriction_coefficient; // 音高の下降および上昇を抑制
-					}
-					if(difference < 0) {
-						if(j <= k) a *= 0.0; // 音高の保持および上昇を抑制
-						else {
-							if(difference <= 2 && Math.abs(j - k) > 2) a *= restriction_coefficient;
-							if(difference > 2 && Math.abs(j - k) <= 2) a *= restriction_coefficient;
-						}
-					}
-					if(difference > 0) {
-						if(j >= k) a *= 0.0; // 音高の保持および下降を抑制
-						else {
-							if(difference <= 2 && Math.abs(j - k) > 2) a *= restriction_coefficient;
-							if(difference > 2 && Math.abs(j - k) <= 2) a *= restriction_coefficient;
-						}
-					}
+					a *= correctRouteRestriction(labels.get(i), j, k);
 
 					score = delta[i-1][j] * a;
 					if(max_j <= score) {
@@ -127,6 +109,42 @@ public class DynamicProgramming {
 			X[i] += minPitch;
 			labels.get(i).setPitch(X[i]);
 		}
+	}
+
+	// 相対音高の形をなぞる経路となるよう補正する
+	private double correctRouteRestriction(CandidateLabel label, int previousPitch, int currentPitch) {
+		double coefficient = 1.0;
+		int difference = label.getDifference();
+		if(difference == 0) { // 音高を保持する経路
+			if(previousPitch != currentPitch) {
+				coefficient = 0.5; // 音高の下降および上昇を抑制
+			}
+		}
+		if(difference < 0) { // 音高が下降する経路
+			if(previousPitch <= currentPitch) {
+				coefficient = 0.0; // 音高の保持および上昇を禁止
+			} else {
+				if(Math.abs(difference) <= 2 && Math.abs(previousPitch - currentPitch) > 2) {
+					coefficient = 0.5;
+				}
+				if(Math.abs(difference) > 2 && Math.abs(previousPitch - currentPitch) <= 2) {
+					coefficient = 0.5;
+				}
+			}
+		}
+		if(difference > 0) { // 音高が上昇する経路
+			if(previousPitch >= currentPitch) {
+				coefficient = 0.0; // 音高の保持および下降を禁止
+			} else {
+				if(Math.abs(difference) <= 2 && Math.abs(previousPitch - currentPitch) > 2) {
+					coefficient = 0.5;
+				}
+				if(Math.abs(difference) > 2 && Math.abs(previousPitch - currentPitch) <= 2) {
+					coefficient = 0.5;
+				}
+			}
+		}
+		return coefficient;
 	}
 
 	// 音価の大きい音に非和声音が出現しにくくなるよう補正する
