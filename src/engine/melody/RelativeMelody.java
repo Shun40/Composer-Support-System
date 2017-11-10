@@ -14,12 +14,6 @@ public class RelativeMelody extends ArrayList<RelativeNote> {
 		this.id = id;
 	}
 
-	/*
-	public void add(int variation, int difference, int position, int duration) {
-		add(new RelativeNote(variation, difference, position, duration));
-	}
-	*/
-
 	public String getId() {
 		return id;
 	}

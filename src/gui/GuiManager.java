@@ -6,6 +6,8 @@ import engine.AlgorithmParameter;
 import engine.PredictionParameter;
 import engine.accompaniment.AccompanimentMaker;
 import engine.melody.CandidateMelody;
+import engine.melody.ChordProgression;
+import engine.melody.Melody;
 import file.FileUtil;
 import file.MupFileData;
 import gui.component.AlgorithmBar;
@@ -260,14 +262,14 @@ public class GuiManager extends Scene {
 		// 予測変換対象小節
 		int targetMeasure = getPredictionTargetMeasure();
 		// メロディ
-		List<NoteModel> melody = new ArrayList<NoteModel>();
+		Melody melody = new Melody();
 		for(Note note : pianoroll.getNotes()) {
-			if(note.getModel().getTrack() == 1) {
+			if(note.getModel().getTrack() == AppConstants.MelodySettings.MELODY_TRACK) {
 				melody.add(note.getModel());
 			}
 		}
 		// コード進行
-		List<String> chordProgression = new ArrayList<String>();
+		ChordProgression chordProgression = new ChordProgression();
 		for(int i = 0; i < AppConstants.Settings.MEASURES; i++) {
 			chordProgression.add(measureBar.getChord(i + 1, 1)); // (i+1)小節目の1~2拍のコード
 			chordProgression.add(measureBar.getChord(i + 1, 3)); // (i+1)小節目の3~4拍のコード

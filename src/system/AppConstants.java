@@ -86,10 +86,17 @@ public class AppConstants {
 		public static final int MIN_BPM = 20;
 		/** 有効なノート番号群 */
 		public static final List<Integer> AVAILABLE_PITCHES = new ArrayList<Integer>(Arrays.asList(
-				55, 57, 59, // G3, A3, B3
-				60, 62, 64, 65, 67, 69, 71, // C4, D4, E4, F4, G4, A4, B4
-				72, 74, 76, 77, 79, 81, 83 // C5, D5, E5, F5, G5, A5, B5
+				// G3, A3, B3
+				55, 57, 59,
+				// C4, D4, E4, F4, G4, A4, B4
+				60, 62, 64, 65, 67, 69, 71,
+				// C5, D5, E5, F5, G5, A5, B5
+				72, 74, 76, 77, 79, 81, 83
 		));
+		/** 有効なノート番号の最大値 */
+		public static final int AVAILABLE_MAX_PITCH = AVAILABLE_PITCHES.get(AVAILABLE_PITCHES.size() - 1);
+		/** 有効なノート番号の最小値 */
+		public static final int AVAILABLE_MIN_PITCH = AVAILABLE_PITCHES.get(0);
 	}
 
 	public static class MelodySettings {
@@ -112,5 +119,10 @@ public class AppConstants {
 		public static final int DRUM_TRACK = 10;
 		/** ドラムパートのプログラム番号 */
 		public static final int DRUM_PROGRAM = 128; // 1以上の値ならなんでもOK
+	}
+
+	public static class AlgorithmSettings {
+		/** MSアルゴリズムの重み */
+		public static final double MS_WEIGHT = 1.0;
 	}
 }

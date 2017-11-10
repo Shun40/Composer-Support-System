@@ -1,8 +1,7 @@
 package engine;
 
-import java.util.List;
-
-import gui.component.pianoroll.note.NoteModel;
+import engine.melody.ChordProgression;
+import engine.melody.Melody;
 
 /**
  * 候補メロディ生成に必要なパラメータ情報を持つクラス
@@ -12,11 +11,11 @@ public class PredictionParameter {
 	/** 候補メロディ生成対象の小節 */
 	private final int targetMeasure;
 	/** ユーザによって入力されたメロディ */
-	private final List<NoteModel> melody;
+	private final Melody melody;
 	/** ユーザによって入力されたコード進行 */
-	private final List<String> chordProgression;
+	private final ChordProgression chordProgression;
 
-	public PredictionParameter(int targetMeasure, List<NoteModel> melody, List<String> chordProgression) {
+	public PredictionParameter(int targetMeasure, Melody melody, ChordProgression chordProgression) {
 		this.targetMeasure = targetMeasure;
 		this.melody = melody;
 		this.chordProgression = chordProgression;
@@ -26,11 +25,11 @@ public class PredictionParameter {
 		return targetMeasure;
 	}
 
-	public List<NoteModel> getMelody() {
+	public Melody getMelody() {
 		return melody;
 	}
 
-	public List<String> getChordProgression() {
+	public ChordProgression getChordProgression() {
 		return chordProgression;
 	}
 }

@@ -6,13 +6,9 @@ package engine.melody.generation.probability;
  */
 public class ChordAppearanceProbability {
 	private double[] probabilities;
-	private int minPitch;
-	private int maxPitch;
 
 	public ChordAppearanceProbability() {
 		probabilities = new double[29];
-		minPitch = 55;
-		maxPitch = 83;
 		resetProbability();
 	}
 
@@ -128,6 +124,4 @@ public class ChordAppearanceProbability {
 		setProbabilityForChord(chord);
 		return probabilities[x];
 	}
-	public int getMinPitch() { return minPitch; }
-	public int getMaxPitch() { return maxPitch; }
 }

@@ -1,18 +1,16 @@
 package engine.melody.generation.probability;
 
+import system.AppConstants;
+
 /**
  * 音域による音高出現確率クラス
  * @author Shun Yamashita
  */
 public class RangeAppearanceProbability {
 	private double[] probabilities;
-	private int minPitch;
-	private int maxPitch;
 
 	public RangeAppearanceProbability() {
 		probabilities = new double[29];
-		minPitch = 55;
-		maxPitch = 83;
 		for(int x = 55; x <= 83; x++) {
 			double probability = 0.0;
 			if(55 <= x && x <= 58) probability = 0.50;
@@ -30,13 +28,11 @@ public class RangeAppearanceProbability {
 			if(x == 75) probability = 0.70;
 			if(76 <= x && x <= 79) probability = 0.60;
 			if(80 <= x && x <= 83) probability = 0.50;
-			probabilities[x - minPitch] = probability;
+			probabilities[x - AppConstants.Settings.AVAILABLE_MIN_PITCH] = probability;
 		}
 	}
 
 	public double getProbability(int x) {
 		return probabilities[x];
 	}
-	public int getMinPitch() { return minPitch; }
-	public int getMaxPitch() { return maxPitch; }
 }

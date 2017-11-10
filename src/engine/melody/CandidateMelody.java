@@ -1,14 +1,10 @@
 package engine.melody;
 
-import java.util.ArrayList;
-
-import gui.component.pianoroll.note.NoteModel;
-
 /**
  * エンジンによって生成された候補メロディのクラス
  * @author Shun Yamashita
  */
-public class CandidateMelody extends ArrayList<NoteModel> {
+public class CandidateMelody extends Melody {
 	/** 参照元辞書エントリのインデックス */
 	private final int index;
 	/** 参照元辞書エントリのID */

@@ -1,18 +1,16 @@
 package engine.melody.generation.probability;
 
+import system.AppConstants;
+
 /**
  * 音域による音高遷移確率クラス
  * @author Shun Yamashita
  */
 public class RangeTransitionProbability {
 	private double[][] probabilities;
-	private int minPitch;
-	private int maxPitch;
 
 	public RangeTransitionProbability() {
 		probabilities = new double[29][29];
-		minPitch = 55;
-		maxPitch = 83;
 		for(int Xn_1 = 55; Xn_1 <= 83; Xn_1++) {
 			for(int Xn = 55; Xn <= 83; Xn++) {
 				double probability = 0.0;
@@ -31,15 +29,15 @@ public class RangeTransitionProbability {
 				if(Xn == 75) probability = 0.02;
 				if(76 <= Xn && Xn <= 79) probability = 0.01;
 				if(80 <= Xn && Xn <= 83) probability = 0.005;
-				probabilities[Xn_1 - minPitch][Xn - minPitch] = probability;
+				probabilities[Xn_1 - AppConstants.Settings.AVAILABLE_MIN_PITCH][Xn - AppConstants.Settings.AVAILABLE_MIN_PITCH] = probability;
 			}
 		}
 	}
 
 	public void printProbability() {
-		for(int Xn_1 = maxPitch; Xn_1 >= minPitch; Xn_1--) {
+		for(int Xn_1 = AppConstants.Settings.AVAILABLE_MAX_PITCH; Xn_1 >= AppConstants.Settings.AVAILABLE_MIN_PITCH; Xn_1--) {
 			System.out.print(Xn_1 + "|");
-			for(int Xn = minPitch; Xn <= maxPitch; Xn++) {
+			for(int Xn = AppConstants.Settings.AVAILABLE_MIN_PITCH; Xn <= AppConstants.Settings.AVAILABLE_MAX_PITCH; Xn++) {
 				System.out.print(String.format("%f", getProbability(Xn_1, Xn)) + "  ");
 			}
 			System.out.println();
@@ -49,6 +47,4 @@ public class RangeTransitionProbability {
 	public double getProbability(int Xn_1, int Xn) {
 		return probabilities[Xn_1][Xn];
 	}
-	public int getMinPitch() { return minPitch; }
-	public int getMaxPitch() { return maxPitch; }
 }
