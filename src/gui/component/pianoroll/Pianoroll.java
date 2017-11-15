@@ -2,8 +2,8 @@ package gui.component.pianoroll;
 import java.util.ArrayList;
 import java.util.List;
 
-import gui.GuiManager;
 import gui.GuiConstants;
+import gui.GuiManager;
 import gui.GuiUtil;
 import gui.component.base.GroupBase;
 import gui.component.pianoroll.note.Note;
@@ -237,7 +237,11 @@ public class Pianoroll extends GroupBase {
 
 	public void setupAfterPlay() {
 		for(Note note : notes) {
-			note.getView().setDisable(false);
+			if(note.getModel().getTrack() == AppConstants.MelodySettings.MELODY_TRACK) {
+				note.getView().setDisable(false);
+			} else {
+				note.getView().setDisable(true);
+			}
 		}
 		sheet.setDisable(false);
 		playLine.setLayoutX(0);

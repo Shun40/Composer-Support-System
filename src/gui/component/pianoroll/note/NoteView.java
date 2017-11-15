@@ -83,8 +83,10 @@ public class NoteView extends RectangleBase {
 				MidiUtil.toneOn(owner.getModel().getTrack(), owner.getModel().getProgram(), owner.getModel().getPitch(), owner.getModel().getVelocity());
 			}
 		} else { // 右クリック
-			owner.removeNoteFromPianoroll();
-			owner.removeNoteFromSequencer();
+			if(owner.getModel().getTrack() == AppConstants.MelodySettings.MELODY_TRACK) {
+				owner.removeNoteFromPianoroll();
+				owner.removeNoteFromSequencer();
+			}
 		}
 	}
 

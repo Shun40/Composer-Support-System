@@ -50,7 +50,7 @@ public class AlgorithmBar extends GroupBase {
 	public void setupChoiceBox() {
 		choiceBox = new ChoiceBoxBase<AppConstants.MelodyStructurePattern>();
 		choiceBox.setup(FXCollections.observableArrayList(AppConstants.MelodyStructurePattern.values()), AppConstants.MelodyStructurePattern.ABCD);
-		choiceBox.setPoint(150, 22);
+		choiceBox.setPoint(200, 22);
 		getChildren().add(choiceBox);
 	}
 

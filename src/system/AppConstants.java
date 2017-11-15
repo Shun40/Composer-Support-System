@@ -45,7 +45,9 @@ public class AppConstants {
 		/** Melody Structure */
 		MS,
 		/** Musical Naturality */
-		MN
+		MN,
+		/** Range Balance */
+		RB
 	};
 
 	/** メロディ構造パターン */
@@ -124,5 +126,7 @@ public class AppConstants {
 	public static class AlgorithmSettings {
 		/** MSアルゴリズムの重み */
 		public static final double MS_WEIGHT = 1.0;
+		/** RBアルゴリズムの重み */
+		public static final double RB_WEIGHT = 1.0;
 	}
 }

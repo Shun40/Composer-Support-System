@@ -2,10 +2,12 @@ package engine.melody.generation;
 
 import java.util.List;
 
+import engine.melody.Melody;
 import engine.melody.generation.probability.ChordAppearanceProbability;
 import engine.melody.generation.probability.JumpTransitionProbability;
 import engine.melody.generation.probability.RangeAppearanceProbability;
 import engine.melody.generation.probability.RangeTransitionProbability;
+import gui.component.pianoroll.note.NoteModel;
 import midi.MidiConstants;
 import midi.MidiUtil;
 import system.AppConstants;
@@ -30,7 +32,7 @@ public class DynamicProgramming {
 		numPitch = (maxPitch - minPitch) + 1;
 	}
 
-	public void makeMelody(List<CandidateLabel> labels, List<AppConstants.Algorithm> algorithms) {
+	public void makeMelody(List<CandidateLabel> labels, Melody melody, List<AppConstants.Algorithm> algorithms) {
 		int N = labels.size() - 1; // 先頭dummy分-1
 
 		// 音高列X
@@ -75,13 +77,15 @@ public class DynamicProgramming {
 					}
 				}
 				// 出現確率計算
-				double b =
-						rangeAppearanceProbability.getProbability(k)
-						* chordAppearanceProbability.getProbability(labels.get(i).getChord(), k);
+				double b = rangeAppearanceProbability.getProbability(k) * chordAppearanceProbability.getProbability(labels.get(i).getChord(), k);
 				// 非和声音を考慮した出現確率補正
 				if(algorithms.contains(AppConstants.Algorithm.MN)) {
 					b *= correctNonChordToneAboutDuration(labels.get(i), k);
 					b *= correctNonChordToneAboutStart(labels.get(i), k);
+				}
+				// 局所的な音域を考慮した出現確率補正
+				if(algorithms.contains(AppConstants.Algorithm.RB)) {
+					b *= correctLocalRange(melody, k);
 				}
 
 				delta[i][k] = max_j * b;
@@ -171,5 +175,49 @@ public class DynamicProgramming {
 		} else {
 			return 1.0;
 		}
+	}
+
+	// 局所的な音域から大きく外れなくなるよう補正する
+	private double correctLocalRange(Melody melody, int pitch) {
+		if(melody.isEmpty()) {
+			return 1.0;
+		}
+		// メロディ全体の音高の重み付き平均を求める
+		int temp1 = 0; // 分子
+		int temp2 = 0; // 分母
+		double ave = 0.0; // 重み付き平均
+		for(NoteModel note : melody) {
+			// 分子計算
+			int weight = note.getDuration() / (MidiConstants.PPQ / 4); // 発音時間長で重み付けする
+			temp1 += note.getPitch() * weight;
+			// 分母計算
+			temp2 += weight;
+		}
+		ave = (double)temp1 / (double)temp2;
+
+		// 標準偏差を求める
+		double temp3 = 0;
+		double dev = 0.0;
+		for(NoteModel note : melody) {
+			temp3 += Math.pow(note.getPitch() - ave, 2);
+		}
+		dev = Math.sqrt(temp3 / melody.size());
+
+		// 標準偏差が小さい（音高の変化が小さい）と音高変化の大きい候補メロディが提示出来なくなる
+		// よって標準偏差がしきい値よりも小さい場合は1.0を返し, 正規分布による影響を与えないようにする
+		if(dev <= 3.0) {
+			return 1.0;
+		}
+
+		// 正規分布が出力する音高出現確率を正規化して返す
+		double[] prob = new double[numPitch];
+		double max = 0.0;
+		for(int n = 0; n < prob.length; n++) {
+			prob[n] = (1.0 / (Math.sqrt(2.0 * Math.PI) * dev)) * Math.exp(-(Math.pow(minPitch + n - ave, 2)) / (2.0 * Math.pow(dev, 2)));
+			if(max <= prob[n]) {
+				max = prob[n];
+			}
+		}
+		return prob[pitch] / max;
 	}
 }

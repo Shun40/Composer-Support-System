@@ -14,6 +14,26 @@ public class Melody extends ArrayList<NoteModel> {
 		super();
 	}
 
+	public int getMinPitch() {
+		int minPitch = 128;
+		for(NoteModel note : this) {
+			if(minPitch >= note.getPitch()) {
+				minPitch = note.getPitch();
+			}
+		}
+		return minPitch;
+	}
+
+	public int getMaxPitch() {
+		int maxPitch = -1;
+		for(NoteModel note : this) {
+			if(maxPitch <= note.getPitch()) {
+				maxPitch = note.getPitch();
+			}
+		}
+		return maxPitch;
+	}
+
 	/**
 	 * 指定した小節に含まれるメロディを返す
 	 * @param measure 小節
