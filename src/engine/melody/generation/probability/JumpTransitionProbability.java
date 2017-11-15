@@ -4,6 +4,7 @@ import system.AppConstants;
 
 /**
  * 2音間の跳躍音高差による音高遷移確率クラス
+ * 確率値の参考: "音楽要素の分解再構成に基づく日本語歌詞からの旋律自動作曲", 深山ら
  * @author Shun Yamashita
  */
 public class JumpTransitionProbability {

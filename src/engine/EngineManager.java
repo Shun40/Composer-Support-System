@@ -85,11 +85,11 @@ public class EngineManager {
 		double[] rbScores = calcRbScores(melody, labelsList);
 		// ソート
 		for(int m = 0; m < dictionary.size(); m++) {
-			System.out.print((m + 1) + ": ");
-			System.out.print("Freq: " + dictionary.get(m).getFrequency() + ", ");
-			System.out.print("PC: " + (pcPitchSimilarities[m].getScore() + pcRhythmSimilarities[m].getScore()) + ", ");
-			System.out.print("MS: " + (AppConstants.AlgorithmSettings.MS_WEIGHT * msRhythmSimilarities[m].getScore()) + ", ");
-			System.out.println("RB: " + (AppConstants.AlgorithmSettings.RB_WEIGHT * rbScores[m]));
+			//System.out.print((m + 1) + ": ");
+			//System.out.print("Freq: " + dictionary.get(m).getFrequency() + ", ");
+			//System.out.print("PC: " + (pcPitchSimilarities[m].getScore() + pcRhythmSimilarities[m].getScore()) + ", ");
+			//System.out.print("MS: " + (AppConstants.AlgorithmSettings.MS_WEIGHT * msRhythmSimilarities[m].getScore()) + ", ");
+			//System.out.println("RB: " + (AppConstants.AlgorithmSettings.RB_WEIGHT * rbScores[m]));
 			for(int n = m; n < dictionary.size(); n++) {
 				double sum_m = 0.0, sum_n = 0.0;
 				if(selectedAlgorithms.contains(AppConstants.Algorithm.PC)) {
