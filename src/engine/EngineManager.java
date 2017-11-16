@@ -256,15 +256,7 @@ public class EngineManager {
 		}
 		dev = Math.sqrt(temp3 / melody.size());
 
-		// 標準偏差が小さい（音高の変化が小さい）と音高変化の大きい候補メロディが提示出来なくなる
-		// よって標準偏差がしきい値よりも小さい場合は0.0を返し, 正規分布による影響を与えないようにする
-		if(dev <= 3.0) {
-			double[] scores = new double[labelsList.size()];
-			for(int n = 0; n < scores.length; n++) {
-				scores[n] = 0.0;
-			}
-			return scores;
-		}
+		System.out.println(ave + ", " + dev);
 
 		double[] scores = new double[labelsList.size()];
 		double max = 0.0;
