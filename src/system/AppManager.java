@@ -22,9 +22,9 @@ public class AppManager {
 	private GuiManager guiManager;
 	private MidiManager midiManager;
 
-	public AppManager(Stage stage) {
+	public AppManager(Stage stage, AppConstants.Version version) {
 		// GUIはエンジンの情報を参照するので初期化はエンジン→GUIの順で
-		engineManager = new EngineManager();
+		engineManager = new EngineManager(version);
 		guiManager = new GuiManager(this);
 		midiManager = new MidiManager();
 

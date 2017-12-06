@@ -21,15 +21,17 @@ public class DynamicProgramming {
 	private int minPitch;
 	private int maxPitch;
 	private int numPitch;
+	private AppConstants.Version version;
 
-	public DynamicProgramming() {
-		rangeAppearanceProbability = new RangeAppearanceProbability();
-		chordAppearanceProbability = new ChordAppearanceProbability();
+	public DynamicProgramming(AppConstants.Version version) {
+		rangeAppearanceProbability = new RangeAppearanceProbability(version);
+		chordAppearanceProbability = new ChordAppearanceProbability(version);
 		rangeTransitionProbability = new RangeTransitionProbability();
 		jumpTransitionProbability = new JumpTransitionProbability();
 		minPitch = AppConstants.Settings.AVAILABLE_MIN_PITCH;
 		maxPitch = AppConstants.Settings.AVAILABLE_MAX_PITCH;
 		numPitch = (maxPitch - minPitch) + 1;
+		this.version = version;
 	}
 
 	public void makeMelody(List<CandidateLabel> labels, Melody melody, List<AppConstants.Algorithm> algorithms) {
@@ -121,7 +123,11 @@ public class DynamicProgramming {
 		int difference = label.getDifference();
 		if(difference == 0) { // 音高を保持する経路
 			if(previousPitch != currentPitch) {
-				coefficient = 0.5; // 音高の下降および上昇を抑制
+				if(version == AppConstants.Version.OLD) {
+					coefficient = 0.0; // 音高の下降および上昇を禁止
+				} else {
+					coefficient = 0.5; // 音高の下降および上昇を抑制
+				}
 			}
 		}
 		if(difference < 0) { // 音高が下降する経路
@@ -129,10 +135,18 @@ public class DynamicProgramming {
 				coefficient = 0.0; // 音高の保持および上昇を禁止
 			} else {
 				if(Math.abs(difference) <= 2 && Math.abs(previousPitch - currentPitch) > 2) {
-					coefficient = 0.5;
+					if(version == AppConstants.Version.OLD) {
+						coefficient = 0.0;
+					} else {
+						coefficient = 0.5;
+					}
 				}
 				if(Math.abs(difference) > 2 && Math.abs(previousPitch - currentPitch) <= 2) {
-					coefficient = 0.5;
+					if(version == AppConstants.Version.OLD) {
+						coefficient = 0.0;
+					} else {
+						coefficient = 0.5;
+					}
 				}
 			}
 		}
@@ -141,10 +155,18 @@ public class DynamicProgramming {
 				coefficient = 0.0; // 音高の保持および下降を禁止
 			} else {
 				if(Math.abs(difference) <= 2 && Math.abs(previousPitch - currentPitch) > 2) {
-					coefficient = 0.5;
+					if(version == AppConstants.Version.OLD) {
+						coefficient = 0.0;
+					} else {
+						coefficient = 0.5;
+					}
 				}
 				if(Math.abs(difference) > 2 && Math.abs(previousPitch - currentPitch) <= 2) {
-					coefficient = 0.5;
+					if(version == AppConstants.Version.OLD) {
+						coefficient = 0.0;
+					} else {
+						coefficient = 0.5;
+					}
 				}
 			}
 		}
@@ -164,13 +186,14 @@ public class DynamicProgramming {
 		}
 	}
 
-	// 小節の頭に非和声音が出現しにくくなるよう補正する
+	// コードチェンジのタイミングで非和声音が出現しにくくなるよう補正する
 	private double correctNonChordToneAboutStart(CandidateLabel label, int pitch) {
 		String chord = label.getChord();
 		int position = label.getPosition();
 		boolean isChordTone = MidiUtil.isChordTone(chord, minPitch + pitch);
-		// 小節の頭に非和声音が割当てられるのを抑制
-		if(!isChordTone && (position % MidiUtil.getDurationOf1Measure()) == 0) {
+		// コードチェンジのタイミングで非和声音が割当てられるのを抑制
+		int _position = position % MidiUtil.getDurationOf1Measure();
+		if(!isChordTone && (_position == 0 || _position == MidiUtil.getDurationOf2Beats())) {
 			return 0.1;
 		} else {
 			return 1.0;

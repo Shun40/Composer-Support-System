@@ -12,6 +12,12 @@ public class AppConstants {
 	/** デフォルトで読み込む例文辞書ファイルパス */
 	public static final String DEFAULT_PHRASE_DICTIONARY_FILE = "./phrase.dic";
 
+	/** アプリケーションの実行バージョン **/
+	public static enum Version {
+		OLD, // SIGMUS論文発表時のバージョン
+		NEW
+	};
+
 	/** 鍵盤種類 */
 	public static enum KeyType {
 		WHITE,

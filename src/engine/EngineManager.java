@@ -23,12 +23,15 @@ import system.AppConstants;
  * @author Shun Yamashita
  */
 public class EngineManager {
+	/** アプリケーション実行バージョン */
+	private AppConstants.Version version;
 	/** 単語辞書 */
 	private Dictionary wordDictionary;
 	/** 例文辞書 */
 	private Dictionary phraseDictionary;
 
-	public EngineManager() {
+	public EngineManager(AppConstants.Version version) {
+		this.version = version;
 		wordDictionary = new WordDictionary();
 		phraseDictionary = new PhraseDictionary();
 	}
@@ -45,8 +48,6 @@ public class EngineManager {
 		List<AppConstants.Algorithm> selectedAlgorithms = algorithmParameter.getSelectedAlgorithms();
 		// 選択メロディ構造パターン
 		AppConstants.MelodyStructurePattern selectedMelodyStructurePattern = algorithmParameter.getSelectedMelodyStructurePattern();
-
-		//showMelodyLine(melody);
 
 		// 1. 下準備
 		// 入力メロディのノートを発音位置が早い順にソート
@@ -72,7 +73,7 @@ public class EngineManager {
 		for(int n = 0; n < dictionary.size(); n++) {
 			RelativeMelody context = dictionary.get(rank[n]).getContext(); // 単語辞書の時はnullになる
 			RelativeMelody word = dictionary.get(rank[n]).getWord();
-			labelsList.add(MelodyMaker.makeMelody(context, word, melody, justBeforeNote, targetChordProgression, justBeforeChord, selectedAlgorithms));
+			labelsList.add(MelodyMaker.makeMelody(context, word, melody, justBeforeNote, targetChordProgression, justBeforeChord, selectedAlgorithms, version));
 		}
 
 		// 4. 類似度等のスコアを用いて候補メロディをソート
@@ -85,11 +86,6 @@ public class EngineManager {
 		double[] rbScores = calcRbScores(melody, labelsList);
 		// ソート
 		for(int m = 0; m < dictionary.size(); m++) {
-			//System.out.print((m + 1) + ": ");
-			//System.out.print("Freq: " + dictionary.get(m).getFrequency() + ", ");
-			//System.out.print("PC: " + (pcPitchSimilarities[m].getScore() + pcRhythmSimilarities[m].getScore()) + ", ");
-			//System.out.print("MS: " + (AppConstants.AlgorithmSettings.MS_WEIGHT * msRhythmSimilarities[m].getScore()) + ", ");
-			//System.out.println("RB: " + (AppConstants.AlgorithmSettings.RB_WEIGHT * rbScores[m]));
 			for(int n = m; n < dictionary.size(); n++) {
 				double sum_m = 0.0, sum_n = 0.0;
 				if(selectedAlgorithms.contains(AppConstants.Algorithm.PC)) {
@@ -137,7 +133,27 @@ public class EngineManager {
 			}
 			candidateMelodies.add(candidateMelody);
 		}
-		return candidateMelodies;
+
+		// 6. 出力する音符が全く同じになる候補メロディを除去する正規化
+		List<Integer> duplicateIndexList = new ArrayList<Integer>(); // 被ったメロディのインデックスを保持するリスト
+		for(int m = 0; m < candidateMelodies.size(); m++) {
+			for(int n = 0; n < candidateMelodies.size(); n++) {
+				if(m == n) continue;
+				if(duplicateIndexList.contains(m)) continue;
+				CandidateMelody melodyA = candidateMelodies.get(m);
+				CandidateMelody melodyB = candidateMelodies.get(n);
+				if(isEqualCandidateMelody(melodyA, melodyB)) {
+					duplicateIndexList.add(n);
+				}
+			}
+		}
+		List<CandidateMelody> _candidateMelodies = new ArrayList<CandidateMelody>();
+		for(int n = 0; n < candidateMelodies.size(); n++) {
+			if(duplicateIndexList.contains(n)) continue;
+			_candidateMelodies.add(candidateMelodies.get(n));
+		}
+
+		return _candidateMelodies;
 	}
 
 	private Similarity[] calcPcSimilarities(Dictionary dictionary, AppConstants.SimilarityType similarityType, RelativeMelody previous, RelativeMelody current) {
@@ -221,6 +237,7 @@ public class EngineManager {
 					similarity = DPMatching.calcRhythmSimilarity(target, pattern);
 					break;
 				}
+				//similarity = (similarity > 0.5) ? 1.0 : 0.0;
 				similarities[n] = new Similarity(0.0, similarity);
 			}
 		}
@@ -256,7 +273,7 @@ public class EngineManager {
 		}
 		dev = Math.sqrt(temp3 / melody.size());
 
-		System.out.println(ave + ", " + dev);
+		//System.out.println(ave + ", " + dev);
 
 		double[] scores = new double[labelsList.size()];
 		double max = 0.0;
@@ -284,27 +301,18 @@ public class EngineManager {
 		return scores;
 	}
 
-	private void showMelodyLine(Melody melody) {
-		int min = melody.getMinPitch();
-		int max = melody.getMaxPitch();
-		if(min == 128 || max == -1) {
-			return;
+	private boolean isEqualCandidateMelody(CandidateMelody melodyA, CandidateMelody melodyB) {
+		if(melodyA.size() != melodyB.size()) return false; // 音符の数が異なっていたら等しいメロディではない
+
+		boolean isEqual = true;
+		for(int i = 0; i < melodyA.size(); i++) {
+			NoteModel noteA = melodyA.get(i);
+			NoteModel noteB = melodyB.get(i);
+			if(noteA.getPitch() != noteB.getPitch()) isEqual = false;
+			if(noteA.getPosition() != noteB.getPosition()) isEqual = false;
+			if(noteA.getDuration() != noteB.getDuration()) isEqual = false;
 		}
-		for(int y = max; y >= min; y--) {
-			for(int x = 0; x < melody.size(); x++) {
-				System.out.print("|");
-				if(melody.get(x).getPitch() == y) {
-					for(int d = 0; d < melody.get(x).getDuration() / (MidiConstants.PPQ / 4); d++) {
-						System.out.print("*");
-					}
-				} else {
-					for(int d = 0; d < melody.get(x).getDuration() / (MidiConstants.PPQ / 4); d++) {
-						System.out.print("_");
-					}
-				}
-			}
-			System.out.println();
-		}
+		return isEqual;
 	}
 
 	public void readWordDictionary() {

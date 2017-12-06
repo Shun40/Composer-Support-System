@@ -11,7 +11,7 @@ import midi.MidiUtil;
 import system.AppConstants;
 
 public class MelodyMaker {
-	public static List<CandidateLabel> makeMelody(RelativeMelody context, RelativeMelody word, Melody melody, NoteModel justBeforeNote, ChordProgression chordProgression, String justBeforeChord, List<AppConstants.Algorithm> algorithms) {
+	public static List<CandidateLabel> makeMelody(RelativeMelody context, RelativeMelody word, Melody melody, NoteModel justBeforeNote, ChordProgression chordProgression, String justBeforeChord, List<AppConstants.Algorithm> algorithms, AppConstants.Version version) {
 		List<CandidateLabel> labels = new ArrayList<CandidateLabel>();
 
 		// 直前音符の情報
@@ -40,7 +40,7 @@ public class MelodyMaker {
 			labels.add(new CandidateLabel(difference, position, duration, pitch, chord));
 		}
 
-		DynamicProgramming dynamicProgramming = new DynamicProgramming();
+		DynamicProgramming dynamicProgramming = new DynamicProgramming(version);
 		dynamicProgramming.makeMelody(labels, melody, algorithms);
 
 		return labels;
