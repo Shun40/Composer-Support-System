@@ -273,9 +273,16 @@ public class EngineManager {
 		}
 		dev = Math.sqrt(temp3 / melody.size());
 
-		//System.out.println(ave + ", " + dev);
-
 		double[] scores = new double[labelsList.size()];
+
+		// 分散が0の場合はスコアを0としておく
+		if(dev == 0) {
+			for(int n = 0; n < scores.length; n++) {
+				scores[n] = 0.0;
+			}
+			return scores;
+		}
+
 		double max = 0.0;
 		for(int n = 0; n < scores.length; n++) {
 			temp1 = 0;
