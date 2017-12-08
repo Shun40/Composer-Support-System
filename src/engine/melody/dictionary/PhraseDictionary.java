@@ -101,9 +101,9 @@ public class PhraseDictionary extends Dictionary {
 				break;
 			case "data":
 				String patternName = data.split(",")[0];
-				int difference = Integer.parseInt(data.split(",")[1]) * Integer.parseInt(data.split(",")[2]);
-				int position = Integer.parseInt(data.split(",")[3]);
-				int duration = Integer.parseInt(data.split(",")[4]);
+				int difference = Integer.parseInt(data.split(",")[1]);
+				int position = Integer.parseInt(data.split(",")[2]);
+				int duration = Integer.parseInt(data.split(",")[3]);
 				map.get(patternName).add(new RelativeNote(difference, position, duration));
 				break;
 			case "record":
