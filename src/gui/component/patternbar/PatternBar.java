@@ -39,8 +39,9 @@ public class PatternBar extends GroupBase {
 
 	public void setupPredictionButton() {
 		ButtonBase predictionButton = new ButtonBase();
-		predictionButton.setText("予測変換");
+		predictionButton.setText("予測");
 		predictionButton.setPoint(0, 0);
+		predictionButton.setSize(145, 16);
 		predictionButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				prediction();
@@ -52,7 +53,8 @@ public class PatternBar extends GroupBase {
 	public void setupDecisionButton() {
 		ButtonBase decisionButton = new ButtonBase();
 		decisionButton.setText("決定");
-		decisionButton.setPoint(80, 0);
+		decisionButton.setPoint(155, 0);
+		decisionButton.setSize(145, 16);
 		decisionButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				decision();

@@ -187,7 +187,7 @@ public final class GuiConstants {
 
 	public static class AlgorithmBar {
 		public static final int X = 780;
-		public static final int Y = 42;
+		public static final int Y = 60;
 	}
 
 	public static class PatternBar {

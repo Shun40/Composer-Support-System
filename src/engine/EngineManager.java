@@ -92,11 +92,11 @@ public class EngineManager {
 					sum_m += pcPitchSimilarities[rank[m]].getScore() + pcRhythmSimilarities[rank[m]].getScore();
 					sum_n += pcPitchSimilarities[rank[n]].getScore() + pcRhythmSimilarities[rank[n]].getScore();
 				}
-				if(selectedAlgorithms.contains(AppConstants.Algorithm.MS)) {
+				if(version == AppConstants.Version.NEW && selectedAlgorithms.contains(AppConstants.Algorithm.MS)) {
 					sum_m += AppConstants.AlgorithmSettings.MS_WEIGHT * msRhythmSimilarities[rank[m]].getScore();
 					sum_n += AppConstants.AlgorithmSettings.MS_WEIGHT * msRhythmSimilarities[rank[n]].getScore();
 				}
-				if(selectedAlgorithms.contains(AppConstants.Algorithm.RB)) {
+				if(version == AppConstants.Version.NEW && selectedAlgorithms.contains(AppConstants.Algorithm.RB)) {
 					sum_m += AppConstants.AlgorithmSettings.RB_WEIGHT * rbScores[rank[m]];
 					sum_n += AppConstants.AlgorithmSettings.RB_WEIGHT * rbScores[rank[n]];
 				}
@@ -193,7 +193,7 @@ public class EngineManager {
 		double similarity = 0.0;
 
 		switch(melodyStructurePattern) {
-		case ABCD:
+		case NONE:
 			break;
 		case ABAB:
 			if(targetMeasure >= 3) {

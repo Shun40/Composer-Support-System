@@ -81,12 +81,12 @@ public class DynamicProgramming {
 				// 出現確率計算
 				double b = rangeAppearanceProbability.getProbability(k) * chordAppearanceProbability.getProbability(labels.get(i).getChord(), k);
 				// 非和声音を考慮した出現確率補正
-				if(algorithms.contains(AppConstants.Algorithm.MN)) {
+				if(version == AppConstants.Version.NEW && algorithms.contains(AppConstants.Algorithm.MN)) {
 					b *= correctNonChordToneAboutDuration(labels.get(i), k);
 					b *= correctNonChordToneAboutStart(labels.get(i), k);
 				}
 				// 局所的な音域を考慮した出現確率補正
-				if(algorithms.contains(AppConstants.Algorithm.RB)) {
+				if(version == AppConstants.Version.NEW && algorithms.contains(AppConstants.Algorithm.RB)) {
 					b *= correctLocalRange(melody, k);
 				}
 

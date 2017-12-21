@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AppConstants {
 	/** アプリケーション名 */
-	public static final String APP_NAME = "Composer-Support-System";
+	public static final String APP_NAME = "";
 	/** デフォルトで読み込む単語辞書ファイルパス */
 	public static final String DEFAULT_WORD_DICTIONARY_FILE = "./word.dic";
 	/** デフォルトで読み込む例文辞書ファイルパス */
@@ -48,17 +48,17 @@ public class AppConstants {
 	public static enum Algorithm {
 		/** Prediction Conversion */
 		PC,
-		/** Melody Structure */
-		MS,
 		/** Musical Naturality */
 		MN,
 		/** Range Balance */
-		RB
+		RB,
+		/** Melody Structure */
+		MS,
 	};
 
 	/** メロディ構造パターン */
 	public static enum MelodyStructurePattern {
-		ABCD, // A-B-C-D
+		NONE, // なし
 		ABAB, // A-B-A'-B'
 		AABB, // A-A'-B-B'
 		AABC, // A-A'-B-C

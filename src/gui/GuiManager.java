@@ -1,5 +1,6 @@
 package gui;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import engine.AlgorithmParameter;
@@ -275,7 +276,13 @@ public class GuiManager extends Scene {
 			chordProgression.add(measureBar.getChord(i + 1, 3)); // (i+1)小節目の3~4拍のコード
 		}
 		// 選択アルゴリズム
-		List<AppConstants.Algorithm> selectedAlgorithms = algorithmBar.getSelectedAlgorithms();
+		//List<AppConstants.Algorithm> selectedAlgorithms = algorithmBar.getSelectedAlgorithms();
+		List<AppConstants.Algorithm> selectedAlgorithms = new ArrayList<>(Arrays.asList(
+			AppConstants.Algorithm.PC,
+			AppConstants.Algorithm.MN,
+			AppConstants.Algorithm.RB,
+			AppConstants.Algorithm.MS
+		));
 		AppConstants.MelodyStructurePattern selectedMelodyStructurePattern = algorithmBar.getSelectedMelodyStructurePattern();
 		// 予測変換
 		PredictionParameter predictionParameter = new PredictionParameter(targetMeasure, melody, chordProgression);

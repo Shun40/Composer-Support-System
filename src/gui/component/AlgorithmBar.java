@@ -1,9 +1,5 @@
 package gui.component;
-import java.util.ArrayList;
-import java.util.List;
-
 import gui.GuiConstants;
-import gui.component.base.CheckBoxBase;
 import gui.component.base.ChoiceBoxBase;
 import gui.component.base.GroupBase;
 import gui.component.base.LabelBase;
@@ -16,23 +12,24 @@ import system.AppConstants;
  * @author Shun Yamashita
  */
 public class AlgorithmBar extends GroupBase {
-	private CheckBoxBase[] checkBoxes;
+	//private CheckBoxBase[] checkBoxes;
 	private ChoiceBoxBase<AppConstants.MelodyStructurePattern> choiceBox;
 
 	public AlgorithmBar() {
 		super();
 		setPoint(GuiConstants.AlgorithmBar.X, GuiConstants.AlgorithmBar.Y);
 		setupLabel();
-		setupCheckBoxes();
+		//setupCheckBoxes();
 		setupChoiceBox();
 	}
 
 	public void setupLabel() {
 		LabelBase label = new LabelBase();
-		label.setup("Algorithm", Font.font("Arial", 14));
+		label.setup("Melody Structure Pattern:", Font.font("Arial", 16));
 		getChildren().add(label);
 	}
 
+	/*
 	public void setupCheckBoxes() {
 		checkBoxes = new CheckBoxBase[AppConstants.Algorithm.values().length];
 		for(int n = 0; n < checkBoxes.length; n++) {
@@ -46,14 +43,16 @@ public class AlgorithmBar extends GroupBase {
 			getChildren().add(checkBoxes[n]);
 		}
 	}
+	*/
 
 	public void setupChoiceBox() {
 		choiceBox = new ChoiceBoxBase<AppConstants.MelodyStructurePattern>();
-		choiceBox.setup(FXCollections.observableArrayList(AppConstants.MelodyStructurePattern.values()), AppConstants.MelodyStructurePattern.ABCD);
-		choiceBox.setPoint(200, 22);
+		choiceBox.setup(FXCollections.observableArrayList(AppConstants.MelodyStructurePattern.values()), AppConstants.MelodyStructurePattern.NONE);
+		choiceBox.setPoint(190, 0);
 		getChildren().add(choiceBox);
 	}
 
+	/*
 	public List<AppConstants.Algorithm> getSelectedAlgorithms() {
 		List<AppConstants.Algorithm> algorithms = new ArrayList<AppConstants.Algorithm>();
 		for(CheckBoxBase checkBox : checkBoxes) {
@@ -63,6 +62,7 @@ public class AlgorithmBar extends GroupBase {
 		}
 		return algorithms;
 	}
+	*/
 
 	public AppConstants.MelodyStructurePattern getSelectedMelodyStructurePattern() {
 		return choiceBox.getValue();

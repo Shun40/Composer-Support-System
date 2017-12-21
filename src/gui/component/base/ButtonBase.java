@@ -21,4 +21,9 @@ public class ButtonBase extends Button {
 		setLayoutX(x);
 		setLayoutY(y);
 	}
+
+	public void setSize(int width, int height) {
+		setPrefWidth(width);
+		setPrefHeight(height);
+	}
 }
