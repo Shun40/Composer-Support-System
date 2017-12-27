@@ -1,6 +1,6 @@
 package gui.component.measurebar;
-import gui.GuiManager;
 import gui.GuiConstants;
+import gui.GuiManager;
 import gui.component.base.GroupBase;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
@@ -145,6 +145,7 @@ public class MeasureBar extends GroupBase {
 		toggleGroup.selectToggle(predictionTargetButtons[targetMeasure - 1]);
 		measureRectangles[targetMeasure - 1].setStyle("-fx-fill: " + GuiConstants.Measurebar.SELECTED_COLORCODE + ";" + GuiConstants.Measurebar.STYLE);
 		owner.setPredictionPatternList(targetMeasure);
+		owner.updatePlayPosition(targetMeasure);
 	}
 
 	public void resetPredictionTarget(int targetMeasure) {

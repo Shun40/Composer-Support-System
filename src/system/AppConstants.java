@@ -77,7 +77,7 @@ public class AppConstants {
 
 	public static class Settings {
 		/** 小節数 */
-		public static final int MEASURES = 8;
+		public static final int MEASURES = 4;
 		/** GUIで表示する小節数 */
 		public static final int SHOW_MEASURES = 4;
 		/** オクターブ数 */

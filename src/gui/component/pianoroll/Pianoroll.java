@@ -31,6 +31,7 @@ public class Pianoroll extends GroupBase {
 	private Sheet sheet;
 	private Line playLine;
 	private Timeline playTimeline;
+	private int playPosition;
 	private GuiManager owner;
 
 	public Pianoroll(GuiManager owner) {
@@ -227,12 +228,17 @@ public class Pianoroll extends GroupBase {
 		}
 	}
 
+	public void updatePlayPosition(int measure) {
+		playPosition = measure;
+		playLine.setLayoutX(GuiConstants.Pianoroll.MEASURE_WIDTH * (playPosition - 1));
+	}
+
 	public void setupBeforePlay() {
 		for(Note note : notes) {
 			note.getView().setDisable(true);
 		}
 		sheet.setDisable(true);
-		playLine.setLayoutX(0);
+		updatePlayPosition(playPosition);
 	}
 
 	public void setupAfterPlay() {
@@ -244,20 +250,20 @@ public class Pianoroll extends GroupBase {
 			}
 		}
 		sheet.setDisable(false);
-		playLine.setLayoutX(0);
+		updatePlayPosition(playPosition);
 	}
 
 	public void playAnimation(int bpm) {
 		float secPerBeat = 60.f / bpm;
 		float secPerMeasure = secPerBeat * 4;
-		float playTimeSec = secPerMeasure * AppConstants.Settings.MEASURES;
+		float playTimeSec = secPerMeasure * (AppConstants.Settings.MEASURES - (playPosition - 1));
 		playTimeline = new Timeline();
 		EventHandler<ActionEvent> onFinished = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				owner.stop();
 			}
 		};
-		KeyValue kvStart = new KeyValue(playLine.layoutXProperty(), 0);
+		KeyValue kvStart = new KeyValue(playLine.layoutXProperty(), GuiConstants.Pianoroll.MEASURE_WIDTH * (playPosition - 1));
 		KeyFrame kfStart = new KeyFrame(Duration.ZERO, kvStart);
 		KeyValue kvEnd = new KeyValue(playLine.layoutXProperty(), GuiConstants.Pianoroll.MEASURE_WIDTH * AppConstants.Settings.MEASURES);
 		KeyFrame kfEnd = new KeyFrame(Duration.millis(playTimeSec * 1000), onFinished, kvEnd);
@@ -271,7 +277,7 @@ public class Pianoroll extends GroupBase {
 		playTimeline.getKeyFrames().add(kfStart);
 		playTimeline.getKeyFrames().add(kfEnd);
 		playTimeline.setCycleCount(1);
-		playTimeline.setAutoReverse( true );
+		playTimeline.setAutoReverse(true);
 		playTimeline.play();
 	}
 
@@ -286,5 +292,9 @@ public class Pianoroll extends GroupBase {
 
 	public List<Note> getNotes() {
 		return notes;
+	}
+
+	public int getPlayPosition() {
+		return playPosition;
 	}
 }

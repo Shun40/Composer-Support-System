@@ -67,8 +67,8 @@ public class AppManager {
 		midiManager.clearNoteFromSequencer();
 	}
 
-	public void play() {
-		midiManager.play();
+	public void play(int playPosition) {
+		midiManager.play(playPosition);
 	}
 
 	public void stop() {

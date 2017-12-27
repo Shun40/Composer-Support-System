@@ -183,7 +183,7 @@ public class GuiManager extends Scene {
 		// 再生実行前の処理
 		setupBeforePlay();
 		// エンジンへの再生指示
-		owner.play();
+		owner.play(pianoroll.getPlayPosition());
 		// GUIへの再生指示
 		pianoroll.playAnimation(bpmSelector.getBpm());
 	}
@@ -304,6 +304,10 @@ public class GuiManager extends Scene {
 				measureBar.setChord(chords[n], (n / 2) + 1, 3); // 3~4拍目
 			}
 		}
+	}
+
+	public void updatePlayPosition(int measure) {
+		pianoroll.updatePlayPosition(measure);
 	}
 
 	public void readMupFile() {

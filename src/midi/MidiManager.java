@@ -119,7 +119,8 @@ public class MidiManager {
 	/**
 	 * シーケンスを再生する
 	 */
-	public void play() {
+	public void play(int playPosition) {
+		sequencer.setTickPosition((long)(sequence.getResolution() * 4) * (playPosition - 1));
 		try {
 			sequencer.start();
 		} catch(Exception e) {
