@@ -40,6 +40,10 @@ public class Note {
 		owner.removeNoteFromSequencer(this);
 	}
 
+	public boolean canExtendAndMove(NoteView noteView) {
+		return owner.canExtendAndMove(noteView);
+	}
+
 	public int getResolution() {
 		return owner.getResolution();
 	}

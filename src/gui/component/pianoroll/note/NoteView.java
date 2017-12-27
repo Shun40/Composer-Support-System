@@ -2,6 +2,7 @@ package gui.component.pianoroll.note;
 import gui.GuiConstants;
 import gui.component.base.RectangleBase;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.CycleMethod;
@@ -17,13 +18,16 @@ import system.AppConstants;
  */
 public class NoteView extends RectangleBase {
 	private boolean isPronounceable; // ノートが置かれた際に発音するかどうかのフラグ
-	private PressedPosition pressedPosition;
+	private OperationMode operationMode;
 	private Note owner;
-	private enum PressedPosition {
-		LEFT,
-		CENTER,
-		RIGHT
+	private enum OperationMode {
+		LEFT_RESIZE,
+		RIGHT_RESIZE,
+		MOVE
 	}
+	private int pressRelativeX; // 左クリックされた位置の相対x座標
+	private int prevRelativeX; // 直前の相対x座標
+	private int prevMove; // 直前の移動量
 
 	public NoteView(int x, int y, int width, int height, boolean isPronounceable, Note owner) {
 		super();
@@ -49,6 +53,11 @@ public class NoteView extends RectangleBase {
 	}
 
 	public void setupEventListener() {
+		setOnMouseMoved(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				NoteView.this.move(e);
+			}
+		});
 		setOnMousePressed(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				NoteView.this.press(e);
@@ -66,18 +75,21 @@ public class NoteView extends RectangleBase {
 		});
 	}
 
+	public void move(MouseEvent e) {
+		int x = (int)(e.getX() - getX());
+		if(0 <= x && x < 3) {
+			operationMode = OperationMode.LEFT_RESIZE;
+		} else if(getWidth() - 3 <= x && x <= getWidth()) {
+			operationMode = OperationMode.RIGHT_RESIZE;
+		} else {
+			operationMode = OperationMode.MOVE;
+		}
+		updateCursor();
+	}
+
 	public void press(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // 左クリック
-			int pressX = (int)(e.getX() - getX());
-			if(0 <= pressX && pressX < getWidth() / 3) {
-				pressedPosition = PressedPosition.LEFT;
-			}
-			if(getWidth() / 3 <= pressX && pressX < (getWidth() / 3) * 2) {
-				pressedPosition = PressedPosition.CENTER;
-			}
-			if((getWidth() / 3) * 2 <= pressX && pressX < getWidth()) {
-				pressedPosition = PressedPosition.RIGHT;
-			}
+			pressRelativeX = (int)(e.getX() - getX() + 0.5f);
 			// 発音
 			if(isPronounceable) {
 				MidiUtil.toneOn(owner.getModel().getTrack(), owner.getModel().getProgram(), owner.getModel().getPitch(), owner.getModel().getVelocity());
@@ -100,18 +112,110 @@ public class NoteView extends RectangleBase {
 
 	public void drag(MouseEvent e) {
 		if(e.getButton() == MouseButton.PRIMARY) { // 左クリック
+			// 水平方向のドラッグ
+			horizontalDrug(e);
 			int pitch = (int)((AppConstants.Settings.MAX_OCTAVE + 2) * 12 - ((e.getY() - 0.5) / getHeight()) - 1) + 1;
 			if(AppConstants.Settings.AVAILABLE_PITCHES.contains(pitch)) {
 				// 垂直方向のドラッグ
 				verticalDrug(e);
-				// 水平方向のドラッグ
-				horizontalDrug(e);
-				// ドラッグ操作後のノート情報の更新
-				updateModel();
-				// ノート追加
-				owner.addNoteToPianoroll();
-				owner.addNoteToSequencer();
 			}
+			// ドラッグ操作後のノート情報の更新
+			updateModel();
+			// ノート追加
+			owner.addNoteToPianoroll();
+			owner.addNoteToSequencer();
+		}
+	}
+
+	/**
+	 * 水平方向のドラッグ操作によるノートの伸縮と移動を行う
+	 * @param e マウスイベントオブジェクト
+	 */
+	public void horizontalDrug(MouseEvent e) {
+		int resolution = owner.getResolution();
+		int resolutionWidth = GuiConstants.Pianoroll.MEASURE_WIDTH / resolution;
+
+		int relativeX; // ノートにおける相対的なx座標値
+		switch(operationMode) {
+		case RIGHT_RESIZE:
+			if(GuiConstants.Note.MAX_X < e.getX()) {
+				break;
+			}
+			relativeX = (int)(e.getX() - getX() + 0.5f); // ノートの左端座標からの相対的なx座標値
+			if(relativeX < 0) {
+				break;
+			}
+			if(prevRelativeX < relativeX) { // 右方向へのドラッグ (ノートが伸びる)
+				int oldWidth = (int)getWidth();
+				int newWidth = resolutionWidth * (Math.abs(relativeX) / resolutionWidth);
+				if(newWidth > oldWidth) {
+					setWidth(newWidth);
+					if(!owner.canExtendAndMove(this)) {
+						setWidth(oldWidth);
+					}
+				}
+			}
+			if(prevRelativeX > relativeX) { // 左方向へのドラッグ (ノートが縮む)
+				int oldWidth = (int)getWidth();
+				int newWidth = resolutionWidth * ((Math.abs(relativeX) / resolutionWidth) + 1);
+				if(newWidth < oldWidth) {
+					setWidth(newWidth);
+				}
+			}
+			prevRelativeX = relativeX;
+			break;
+		case LEFT_RESIZE:
+			if(e.getX() < GuiConstants.Note.MIN_X) {
+				break;
+			}
+			relativeX = (int)(e.getX() - (getX() + getWidth()) - 0.5f); // ノートの右端座標からの相対的なx座標値
+			if(relativeX > 0) {
+				break;
+			}
+			if(prevRelativeX < relativeX) { // 右方向へのドラッグ (ノートが縮む)
+				int newWidth = resolutionWidth * ((Math.abs(relativeX) / resolutionWidth) + 1);
+				int oldWidth = (int)getWidth();
+				if(newWidth < oldWidth) {
+					float newX = (float)(getX() + getWidth() - newWidth);
+					setX(newX);
+					setWidth(newWidth);
+				}
+			}
+			if(prevRelativeX > relativeX) { // 左方向へのドラッグ (ノートが伸びる)
+				int newWidth = resolutionWidth * (Math.abs(relativeX) / resolutionWidth);
+				int oldWidth = (int)getWidth();
+				if(newWidth > oldWidth) {
+					float newX = (float)(getX() + getWidth() - newWidth);
+					float oldX = (float)getX();
+					setX(newX);
+					setWidth(newWidth);
+					if(!owner.canExtendAndMove(this)) {
+						setX(oldX);
+						setWidth(oldWidth);
+					}
+				}
+			}
+			prevRelativeX = relativeX;
+			break;
+		case MOVE:
+			if(e.getX() < GuiConstants.Note.MIN_X || GuiConstants.Note.MAX_X < e.getX()) {
+				break;
+			}
+			relativeX = (int)(e.getX() - getX() + 0.5f - pressRelativeX); // クリックした箇所からの相対的なx座標値
+			int move = resolutionWidth * (relativeX / resolutionWidth);
+			if(prevMove != move) {
+				float newX = (float)(getX() + move);
+				float oldX = (float)getX();
+				if(newX < GuiConstants.Note.MIN_X || GuiConstants.Note.MAX_X < newX + getWidth()) {
+					break;
+				}
+				setX(newX);
+				if(!owner.canExtendAndMove(this)) {
+					setX(oldX);
+				}
+			}
+			prevMove = move;
+			break;
 		}
 	}
 
@@ -120,50 +224,16 @@ public class NoteView extends RectangleBase {
 	 * @param e マウスイベントオブジェクト
 	 */
 	public void verticalDrug(MouseEvent e) {
-		for(int n = 0; n < 12 * AppConstants.Settings.OCTAVES; n++) {
-			float min = GuiConstants.Note.MIN_Y + 12 * n;
-			float max = min + 12;
-			if(min <= e.getY() && e.getY() < max) {
-				if(GuiConstants.Note.MIN_Y <= e.getY() && e.getY() < GuiConstants.Note.MAX_Y) {
-					setY(min);
-				}
-			}
-		}
-	}
-
-	/**
-	 * 水平方向のドラッグ操作によるノートの伸縮を行う
-	 * @param e マウスイベントオブジェクト
-	 */
-	public void horizontalDrug(MouseEvent e) {
-		int resolution = owner.getResolution();
-		int moveX = (int)(e.getX() - getX());
-		int resolutionWidth = GuiConstants.Pianoroll.MEASURE_WIDTH / resolution;
-		// 右方向へのドラッグ
-		if(pressedPosition == PressedPosition.RIGHT && 0 <= Math.abs(moveX)) {
-			for(int n = 0; n < resolution; n++) {
-				int min = resolutionWidth * n;
-				int max = min + resolutionWidth;
-				if(min <= moveX && moveX < max) {
-					if(e.getX() < GuiConstants.Note.MAX_X) {
-						setWidth(resolutionWidth * (n + 1));
+		if(operationMode == OperationMode.MOVE) {
+			for(int n = 0; n < 12 * AppConstants.Settings.OCTAVES; n++) {
+				float min = GuiConstants.Note.MIN_Y + 12 * n;
+				float max = min + 12;
+				if(min <= e.getY() && e.getY() < max) {
+					if(GuiConstants.Note.MIN_Y <= e.getY() && e.getY() <= GuiConstants.Note.MAX_Y) {
+						setY(min);
 					}
 				}
 			}
-		}
-		// 左方向へのドラッグ
-		else if(pressedPosition == PressedPosition.LEFT && 0 <= Math.abs(moveX)) {
-			/*
-			for(int n = 0; n < resolution; n++) {
-				int min = -resolutionWidth * n;
-				int max = min + resolutionWidth;
-				if(min <= moveX && moveX < max) {
-					if(GuiConstants.Note.MIN_X <= e.getX()) {
-						setWidth(resolutionWidth * (n + 1));
-					}
-				}
-			}
-			*/
 		}
 	}
 
@@ -200,6 +270,20 @@ public class NoteView extends RectangleBase {
 			// ノートを半透明にして描画する
 			setOpacity(0.5);
 			setDisable(true);
+		}
+	}
+
+	private void updateCursor() {
+		switch(operationMode) {
+		case LEFT_RESIZE:
+			setCursor(Cursor.W_RESIZE);
+			break;
+		case MOVE:
+			setCursor(Cursor.MOVE);
+			break;
+		case RIGHT_RESIZE:
+			setCursor(Cursor.E_RESIZE);
+			break;
 		}
 	}
 

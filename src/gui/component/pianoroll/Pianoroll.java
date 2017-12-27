@@ -7,6 +7,7 @@ import gui.GuiManager;
 import gui.GuiUtil;
 import gui.component.base.GroupBase;
 import gui.component.pianoroll.note.Note;
+import gui.component.pianoroll.note.NoteView;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -285,6 +286,17 @@ public class Pianoroll extends GroupBase {
 		playTimeline.stop();
 	}
 
+	public boolean canExtendAndMove(NoteView noteView) {
+		for(Note note : notes) {
+			if(note.getView() == noteView) continue;
+			// 他のノートと重なるのを禁止 (ノート同士で横方向の当たり判定を行う)
+			if(noteView.getX() < note.getView().getX() + note.getView().getWidth()
+				&& noteView.getX() + noteView.getWidth() > note.getView().getX()) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public int getResolution() {
 		return owner.getResolution();
