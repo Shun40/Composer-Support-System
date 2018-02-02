@@ -289,6 +289,7 @@ public class Pianoroll extends GroupBase {
 	public boolean canExtendAndMove(NoteView noteView) {
 		for(Note note : notes) {
 			if(note.getView() == noteView) continue;
+			if(note.getModel().getTrack() != 1) continue; // メロディ以外のトラックのノートとの衝突判定はしない
 			// 他のノートと重なるのを禁止 (ノート同士で横方向の当たり判定を行う)
 			if(noteView.getX() < note.getView().getX() + note.getView().getWidth()
 				&& noteView.getX() + noteView.getWidth() > note.getView().getX()) {
