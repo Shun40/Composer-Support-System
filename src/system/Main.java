@@ -22,6 +22,8 @@ public class Main extends Application {
 		}
 		System.out.println("Application version: " + version);
 
+		System.setProperty( "prism.lcdtext", "false" ); // テキストの色化け対策
+
 		new AppManager(stage, version);
 	}
 
