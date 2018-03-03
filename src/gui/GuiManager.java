@@ -29,6 +29,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollBar;
+import midi.MidiUtil;
 import system.AppConstants;
 import system.AppManager;
 
@@ -402,5 +403,18 @@ public class GuiManager extends Scene {
 
 	public int getPredictionTargetMeasure() {
 		return measureBar.getPredictionTarget();
+	}
+
+	public void setupDemo() {
+		// メロディのセットアップ
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 67, MidiUtil.getPosition(1, 1, 0), 720, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 64, MidiUtil.getPosition(1, 2, 240), 240, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 67, MidiUtil.getPosition(1, 3, 0), 480, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 72, MidiUtil.getPosition(1, 4, 0), 480, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 65, MidiUtil.getPosition(2, 1, 0), 720, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 69, MidiUtil.getPosition(2, 2, 240), 240, 100));
+		putNote(new NoteModel(AppConstants.MelodySettings.MELODY_TRACK, AppConstants.MelodySettings.MELODY_PROGRAM, 69, MidiUtil.getPosition(2, 3, 0), 960, 100));
+		// コード進行のセットアップ
+		setChordProgression(0);
 	}
 }

@@ -1,7 +1,7 @@
 package gui.component;
 
-import gui.GuiManager;
 import gui.GuiConstants;
+import gui.GuiManager;
 import gui.component.base.MenubarBase;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -25,6 +25,7 @@ public class Menubar extends MenubarBase {
 		setupFileMenu();
 		setupDictionaryMenu();
 		setupChordProgressionMenu();
+		setupDemoMenu();
 	}
 
 	public void setupFileMenu() {
@@ -102,6 +103,18 @@ public class Menubar extends MenubarBase {
 			});
 			menu.getItems().add(items[n]);
 		}
+		getMenus().addAll(menu);
+	}
+
+	public void setupDemoMenu() {
+		Menu menu = new Menu("デモ");
+		MenuItem item = new MenuItem("セットアップ");
+		item.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				owner.setupDemo();
+			}
+		});
+		menu.getItems().addAll(item);
 		getMenus().addAll(menu);
 	}
 }
